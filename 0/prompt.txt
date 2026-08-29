@@ -1,0 +1,5 @@
+crea un dockerfile con caddy para servir el frontal y un dockerfile para servir el backend de python y cady para servir a la api, y añade al frontend que va a /api las llamadas, el dockerfile usa la versiones de debian
+
+---
+
+saca el .venv del control de versiones

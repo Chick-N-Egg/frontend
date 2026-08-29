@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.10.3",
+  "checkpoint_id": "01M16SHWASBHFAYG6Z3Y6J2DZR",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "backend/.dockerignore",
+    "backend/Caddyfile",
+    "backend/Dockerfile",
+    "backend/entrypoint.sh",
+    "docker-compose.yml",
+    "frontend/.dockerignore",
+    "frontend/Caddyfile",
+    "frontend/Dockerfile",
+    "frontend/index.html",
+    "frontend/map.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 88,
+    "cache_creation_tokens": 44512,
+    "cache_read_tokens": 3289935,
+    "output_tokens": 15933,
+    "api_call_count": 44
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "cli_version": "0.10.3",
+  "checkpoint_id": "01M16SHWASBHFAYG6Z3Y6J2DZR",
+  "session_id": "03e5c589-db62-4470-8c7b-6f72c81cf6ca",
+  "strategy": "manual-commit",
+  "created_at": "2026-08-29T12:57:44.803555614Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "save_step_count": 2,
+  "files_touched": [
+    "backend/.dockerignore",
+    "backend/Caddyfile",
+    "backend/Dockerfile",
+    "backend/entrypoint.sh",
+    "docker-compose.yml",
+    "frontend/.dockerignore",
+    "frontend/Caddyfile",
+    "frontend/Dockerfile",
+    "frontend/index.html",
+    "frontend/map.html"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-5",
+  "turn_id": "5936e164358c",
+  "checkpoint_transcript_start": 103,
+  "transcript_lines_at_start": 103,
+  "compact_transcript_start": 20,
+  "token_usage": {
+    "input_tokens": 88,
+    "cache_creation_tokens": 44512,
+    "cache_read_tokens": 3289935,
+    "output_tokens": 15933,
+    "api_call_count": 44
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-08-29T12:57:44.767779816Z",
+    "agent_lines": 35,
+    "agent_removed": 4,
+    "human_added": 63,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 98,
+    "total_lines_changed": 102,
+    "agent_percentage": 38.23529411764706,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 106,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".github/hooks/entire.json": 61,
+        ".idea/.gitignore": 5,
+        ".idea/frontend.iml": 14,
+        ".idea/inspectionProfiles/Project_Default.xml": 6,
+        ".idea/inspectionProfiles/profiles_settings.xml": 6,
+        ".idea/modules.xml": 8,
+        ".idea/vcs.xml": 6
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 61,
+      "user_lines_removed": 0,
+      "agent_lines_added": 80,
+      "agent_lines_removed": 4,
+      "user_added_per_file": {
+        ".github/hooks/entire.json": 61
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 61,
+      "user_lines_removed": 0,
+      "agent_lines_added": 80,
+      "agent_lines_removed": 4,
+      "user_added_per_file": {
+        ".github/hooks/entire.json": 61
+      }
+    }
+  ]
+}
