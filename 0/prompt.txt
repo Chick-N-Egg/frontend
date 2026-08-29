@@ -1,0 +1,1 @@
+create a swagger for docs and create a readme how to mount the application, explain frontend and backend are the first prototype, documenta en ingles lo hecho en el nuevo backend y frontend y por que se paso a usar nestjs por tener tipos y orm muy estables

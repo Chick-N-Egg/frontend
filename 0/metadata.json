@@ -1,0 +1,101 @@
+{
+  "cli_version": "0.10.3",
+  "checkpoint_id": "01M1784WXV9GRWFJ3AY31VQJ3Z",
+  "session_id": "03e5c589-db62-4470-8c7b-6f72c81cf6ca",
+  "strategy": "manual-commit",
+  "created_at": "2026-08-29T17:12:48.208209511Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "chickapp (1).html"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-5",
+  "turn_id": "2ecf0b70e0c9",
+  "checkpoint_transcript_start": 2413,
+  "transcript_lines_at_start": 2413,
+  "compact_transcript_start": 475,
+  "token_usage": {
+    "input_tokens": 72,
+    "cache_creation_tokens": 33250,
+    "cache_read_tokens": 19798164,
+    "output_tokens": 16709,
+    "api_call_count": 36,
+    "subagent_tokens": {
+      "input_tokens": 0,
+      "cache_creation_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 0,
+      "api_call_count": 0
+    }
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01Vb43DDiPJKT1MHN1DJokFm",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "claude-in-chrome"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "e49c1873b474",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 2049,
+        "end": 2050,
+        "entry_ids": [
+          "8c545b40-6714-4a5d-9c2a-2245750e1050"
+        ],
+        "tool_use_id": "toolu_01Vb43DDiPJKT1MHN1DJokFm"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01Vb43DDiPJKT1MHN1DJokFm"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: claude-in-chrome",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 15
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-08-29T17:12:47.992765071Z",
+    "agent_lines": 0,
+    "agent_removed": 1369,
+    "human_added": 1622,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1622,
+    "total_lines_changed": 3000,
+    "agent_percentage": 45.63333333333333,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 61,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1393,
+      "agent_lines_removed": 1369,
+      "user_added_per_file": {
+        ".github/hooks/entire.json": 61
+      }
+    }
+  ]
+}
