@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LaunchMap – Network Map Prototype</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3d;
+    --accent: #6c47ff;
+    --accent2: #ff4778;
+    --accent3: #00d4aa;
+    --text: #f0f0ff;
+    --text2: #9090b0;
+    --text3: #5a5a7a;
+    --font: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    height: 100vh;
+    overflow: hidden;
+  }
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .screen.active { display: flex; }
+
+  /* ── SCREEN 1: INPUT ── */
+  #screen-input .card {
+    width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .logo span { color: var(--accent); }
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text2);
+    margin: 14px 0 6px;
+  }
+  input, textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    padding: 11px 13px;
+    outline: none;
+  }
+  textarea { min-height: 70px; resize: vertical; }
+  .btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    width: auto;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* ── SCREEN 2: MAP ── */
+  #screen-map { flex-direction: column; }
+  .map-header {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+  }
+  .map-hint {
+    position: absolute;
+    bottom: 28px;
+    left: 0; right: 0;
+    text-align: center;
+    color: var(--text3);
+    font-size: 13px;
+  }
+  .map-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .center-node {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 12px;
+    box-shadow: 0 0 60px rgba(108,71,255,0.5);
+    z-index: 5;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 60px rgba(108,71,255,0.5); }
+    50% { box-shadow: 0 0 90px rgba(108,71,255,0.75); }
+  }
+  .orbit-node {
+    position: absolute;
+    top: 50%; left: 50%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    line-height: 1.3;
+    border: 2px solid rgba(255,255,255,0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    opacity: 0;
+    animation: nodeIn 0.5s ease forwards;
+  }
+  .orbit-node:hover {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.12) !important;
+    box-shadow: 0 0 30px rgba(255,255,255,0.25);
+    z-index: 8;
+  }
+  @keyframes nodeIn {
+    from { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.4); }
+    to   { opacity: 1; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1); }
+  }
+  .connector {
+    position: absolute;
+    top: 50%; left: 50%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(108,71,255,0.4), transparent);
+    transform-origin: left center;
+    z-index: 1;
+  }
+
+  /* platform colors */
+  .plat-Reddit       { background: #ff4500; }
+  .plat-Discord      { background: #5865f2; }
+  .plat-Slack        { background: #6c47ff; }
+  .plat-Facebook     { background: #1877f2; }
+  .plat-LinkedIn     { background: #0a66c2; }
+  .plat-Forum        { background: #00897b; }
+  .plat-Newsletter   { background: #00d4aa; color: #06251f; }
+  .plat-Meetup       { background: #ff4778; }
+  .plat-Twitter\/X   { background: #14171a; }
+
+  /* ── SCREEN 3: PLAYBOOK FULLSCREEN ── */
+  #screen-playbook {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 40px 60px;
+  }
+  .playbook-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .playbook-title { font-size: 30px; font-weight: 900; }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(108,71,255,0.2);
+    color: var(--accent);
+    margin-top: 6px;
+  }
+  .pb-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .pb-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .pb-card.full { grid-column: 1 / -1; }
+  .pb-card h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .pb-card ul { list-style: none; }
+  .pb-card li {
+    font-size: 14px;
+    color: var(--text2);
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .pb-card li:last-child { border-bottom: none; }
+  .post-body, .dm { white-space: pre-wrap; font-size: 13px; color: var(--text2); line-height: 1.7; }
+  .center-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: INPUT -->
+<div class="screen active" id="screen-input">
+  <div class="card">
+    <div class="logo">Launch<span>Map</span></div>
+    <label>Startup Name</label>
+    <input id="s-name" placeholder="e.g. NoteAI" value="NoteAI" />
+    <label>What does it do?</label>
+    <textarea id="s-desc">AI tool that automatically writes session notes for therapists after each client call, saving 2+ hours per day</textarea>
+    <label>Target customer</label>
+    <input id="s-customer" value="Independent therapists running private practices" />
+    <label>Stage</label>
+    <select id="s-stage">
+      <option value="idea">Idea stage</option>
+      <option value="pre-launch" selected>Pre-launch</option>
+      <option value="launched">Launched (0-100 users)</option>
+      <option value="growing">Growing (100+ users)</option>
+    </select>
+    <label>Category</label>
+    <select id="s-category">
+      <option value="healthtech" selected>Healthtech / Wellness</option>
+      <option value="b2b-saas">B2B SaaS</option>
+      <option value="fintech">Fintech</option>
+      <option value="edtech">Edtech</option>
+      <option value="developer-tools">Developer Tools</option>
+      <option value="ai">AI / ML</option>
+      <option value="general-startup">Other / General</option>
+    </select>
+    <button class="btn" id="find-btn" onclick="findCommunities()">Map My Network →</button>
+  </div>
+</div>
+
+<!-- SCREEN 2: MAP -->
+<div class="screen" id="screen-map">
+  <div class="map-header">
+    <div class="logo">Launch<span>Map</span></div>
+    <button class="btn btn-ghost" onclick="goToScreen('screen-input')">← Start over</button>
+  </div>
+  <div class="map-stage" id="map-stage"></div>
+  <div class="map-hint">Click a community to generate its activation playbook</div>
+</div>
+
+<!-- SCREEN 3: PLAYBOOK -->
+<div class="screen" id="screen-playbook">
+  <div class="playbook-top">
+    <div>
+      <div class="playbook-title" id="pb-title">—</div>
+      <span class="tag" id="pb-platform">—</span>
+    </div>
+    <button class="btn btn-ghost" onclick="goToScreen('screen-map')">← Back to map</button>
+  </div>
+  <div id="pb-body"></div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:8000';
+let currentStartup = null;
+let currentCommunities = [];
+
+function goToScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function findCommunities() {
+  currentStartup = {
+    name: document.getElementById('s-name').value.trim(),
+    description: document.getElementById('s-desc').value.trim(),
+    target_customer: document.getElementById('s-customer').value.trim(),
+    stage: document.getElementById('s-stage').value,
+    category: document.getElementById('s-category').value,
+  };
+  if (!currentStartup.name || !currentStartup.description || !currentStartup.target_customer) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  const btn = document.getElementById('find-btn');
+  btn.disabled = true;
+  btn.textContent = 'Scanning 2,847 communities...';
+
+  try {
+    const res = await fetch(`${API_BASE}/find-communities`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(currentStartup),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    currentCommunities = data.communities;
+    renderMap(currentCommunities);
+    goToScreen('screen-map');
+  } catch (err) {
+    alert('Error connecting to API. Is the backend running on port 8000?\n\n' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Map My Network →';
+  }
+}
+
+function renderMap(communities) {
+  const stage = document.getElementById('map-stage');
+  stage.innerHTML = '';
+
+  // center node
+  const center = document.createElement('div');
+  center.className = 'center-node';
+  center.textContent = currentStartup.name;
+  stage.appendChild(center);
+
+  const cx = stage.clientWidth / 2 || window.innerWidth / 2;
+  const cy = stage.clientHeight / 2 || window.innerHeight / 2;
+  const radius = Math.min(cx, cy) * 0.7;
+  const n = communities.length;
+
+  communities.forEach((c, i) => {
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+    const x = radius * Math.cos(angle);
+    const y = radius * Math.sin(angle);
+    const score = c.relevance_score || 70;
+    const size = 60 + score * 0.55;
+
+    // connector line
+    const dist = Math.sqrt(x * x + y * y);
+    const angleDeg = Math.atan2(y, x) * (180 / Math.PI);
+    const line = document.createElement('div');
+    line.className = 'connector';
+    line.style.width = dist + 'px';
+    line.style.transform = `rotate(${angleDeg}deg)`;
+    stage.appendChild(line);
+
+    // node
+    const node = document.createElement('div');
+    const platformClass = 'plat-' + c.platform.replace('/', '\\/');
+    node.className = `orbit-node ${platformClass}`;
+    node.style.width = size + 'px';
+    node.style.height = size + 'px';
+    node.style.setProperty('--tx', x + 'px');
+    node.style.setProperty('--ty', y + 'px');
+    node.style.animationDelay = (i * 0.06) + 's';
+    node.innerHTML = `${c.name}<br><span style="opacity:0.75;font-weight:600">${score}%</span>`;
+    node.onclick = () => generatePlaybook(c);
+    stage.appendChild(node);
+  });
+}
+
+async function generatePlaybook(community) {
+  goToScreen('screen-playbook');
+  document.getElementById('pb-title').textContent = community.name;
+  document.getElementById('pb-platform').textContent = community.platform;
+  document.getElementById('pb-body').innerHTML = `
+    <div class="center-loading">
+      <div class="spinner"></div>
+      <div style="color:var(--text2)">Generating activation playbook for ${community.name}...</div>
+    </div>`;
+
+  try {
+    const res = await fetch(`${API_BASE}/generate-playbook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        startup: currentStartup,
+        community_name: community.name,
+        community_platform: community.platform,
+        community_description: community.icp_match || '',
+      }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const p = await res.json();
+    renderPlaybook(p);
+  } catch (err) {
+    document.getElementById('pb-body').innerHTML =
+      `<div style="color:var(--accent2);padding:40px;">Error: ${err.message}</div>`;
+  }
+}
+
+function renderPlaybook(p) {
+  const week1 = (p.week1_actions || []).map(a => `<li>→ ${a}</li>`).join('');
+  const dos = (p.dos || []).map(d => `<li>✓ ${d}</li>`).join('');
+  const donts = (p.donts || []).map(d => `<li>✗ ${d}</li>`).join('');
+
+  document.getElementById('pb-body').innerHTML = `
+    <div class="pb-grid">
+      <div class="pb-card">
+        <h3>📅 Week 1 Action Plan</h3>
+        <ul>${week1}</ul>
+      </div>
+      <div class="pb-card">
+        <h3>🎯 Targets</h3>
+        <ul>
+          <li>Week 1 goal: ${p.kpis?.week1_target || '—'}</li>
+          <li>Conversion goal: ${p.kpis?.conversion_goal || '—'}</li>
+        </ul>
+        <h3 style="margin-top:16px">Do's & Don'ts</h3>
+        <ul>${dos}${donts}</ul>
+      </div>
+      <div class="pb-card full">
+        <h3>📝 First Post (copy-paste ready)</h3>
+        <strong>${p.first_post?.title || ''}</strong>
+        <div class="post-body">${p.first_post?.body || ''}</div>
+      </div>
+      <div class="pb-card full">
+        <h3>💬 DM Template</h3>
+        <div class="dm">${p.first_dm_template || ''}</div>
+      </div>
+      <div class="pb-card full">
+        <h3>💡 Insider Tip</h3>
+        <div class="post-body">${p.insider_tip || ''}</div>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>

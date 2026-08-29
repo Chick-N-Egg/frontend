@@ -1,0 +1,374 @@
+{
+  "communities": [
+    {
+      "id": "r-entrepreneur",
+      "name": "r/Entrepreneur",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/Entrepreneur",
+      "size": "1.7M",
+      "tags": ["startup", "business", "founders", "b2b", "b2c"],
+      "engagement": "high",
+      "categories": ["general-startup", "b2b-saas", "productivity", "fintech"]
+    },
+    {
+      "id": "r-startups",
+      "name": "r/startups",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/startups",
+      "size": "1.1M",
+      "tags": ["startup", "founders", "early-stage", "fundraising"],
+      "engagement": "high",
+      "categories": ["general-startup", "b2b-saas", "deeptech"]
+    },
+    {
+      "id": "r-saas",
+      "name": "r/SaaS",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/SaaS",
+      "size": "180K",
+      "tags": ["saas", "b2b", "software", "mrr", "churn"],
+      "engagement": "high",
+      "categories": ["b2b-saas", "productivity", "developer-tools"]
+    },
+    {
+      "id": "r-indiehackers",
+      "name": "r/indiehackers",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/indiehackers",
+      "size": "95K",
+      "tags": ["indie", "bootstrapped", "solopreneur", "mrr"],
+      "engagement": "high",
+      "categories": ["b2b-saas", "productivity", "developer-tools", "marketplace"]
+    },
+    {
+      "id": "ih-community",
+      "name": "Indie Hackers Community",
+      "platform": "Forum",
+      "url": "https://indiehackers.com",
+      "size": "80K",
+      "tags": ["bootstrapped", "mrr", "solopreneur", "products"],
+      "engagement": "very-high",
+      "categories": ["b2b-saas", "productivity", "developer-tools"]
+    },
+    {
+      "id": "hn-showhn",
+      "name": "Hacker News – Show HN",
+      "platform": "Forum",
+      "url": "https://news.ycombinator.com/show",
+      "size": "10M",
+      "tags": ["tech", "developer", "product-launch", "feedback"],
+      "engagement": "high",
+      "categories": ["developer-tools", "b2b-saas", "deeptech", "ai"]
+    },
+    {
+      "id": "producthunt",
+      "name": "Product Hunt",
+      "platform": "Forum",
+      "url": "https://producthunt.com",
+      "size": "3M",
+      "tags": ["product-launch", "early-adopters", "tech", "startup"],
+      "engagement": "high",
+      "categories": ["general-startup", "b2b-saas", "productivity", "ai", "developer-tools"]
+    },
+    {
+      "id": "linkedin-founders",
+      "name": "Startup Founders & Entrepreneurs LinkedIn Group",
+      "platform": "LinkedIn",
+      "url": "https://linkedin.com/groups/82814",
+      "size": "800K",
+      "tags": ["founders", "networking", "b2b", "enterprise"],
+      "engagement": "medium",
+      "categories": ["general-startup", "b2b-saas", "enterprise"]
+    },
+    {
+      "id": "slack-launch",
+      "name": "Launch House Slack",
+      "platform": "Slack",
+      "url": "https://launchhouse.com",
+      "size": "5K",
+      "tags": ["founders", "early-stage", "community", "networking"],
+      "engagement": "very-high",
+      "categories": ["general-startup", "b2b-saas"]
+    },
+    {
+      "id": "discord-buildinpublic",
+      "name": "Build In Public Discord",
+      "platform": "Discord",
+      "url": "https://discord.gg/buildinpublic",
+      "size": "12K",
+      "tags": ["transparency", "indie", "saas", "founders"],
+      "engagement": "high",
+      "categories": ["b2b-saas", "productivity", "developer-tools"]
+    },
+    {
+      "id": "r-healthtech",
+      "name": "r/HealthTech",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/HealthTech",
+      "size": "45K",
+      "tags": ["health", "medical", "digital-health", "wellness"],
+      "engagement": "medium",
+      "categories": ["healthtech", "wellness", "medtech"]
+    },
+    {
+      "id": "r-therapists",
+      "name": "r/therapists",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/therapists",
+      "size": "180K",
+      "tags": ["therapy", "mental-health", "clinical", "counseling"],
+      "engagement": "high",
+      "categories": ["healthtech", "medtech", "wellness"]
+    },
+    {
+      "id": "r-fintech",
+      "name": "r/fintech",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/fintech",
+      "size": "120K",
+      "tags": ["fintech", "payments", "banking", "finance"],
+      "engagement": "medium",
+      "categories": ["fintech"]
+    },
+    {
+      "id": "r-personalfinance",
+      "name": "r/personalfinance",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/personalfinance",
+      "size": "17M",
+      "tags": ["finance", "budgeting", "investing", "savings"],
+      "engagement": "very-high",
+      "categories": ["fintech", "consumer"]
+    },
+    {
+      "id": "r-productivity",
+      "name": "r/productivity",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/productivity",
+      "size": "1.3M",
+      "tags": ["productivity", "tools", "gtd", "focus", "workflow"],
+      "engagement": "high",
+      "categories": ["productivity", "b2b-saas"]
+    },
+    {
+      "id": "r-remotework",
+      "name": "r/remotework",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/remotework",
+      "size": "280K",
+      "tags": ["remote", "work-from-home", "distributed-teams", "async"],
+      "engagement": "high",
+      "categories": ["productivity", "hr-tech", "b2b-saas"]
+    },
+    {
+      "id": "r-marketing",
+      "name": "r/marketing",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/marketing",
+      "size": "1.6M",
+      "tags": ["marketing", "growth", "digital-marketing", "seo"],
+      "engagement": "high",
+      "categories": ["martech", "b2b-saas"]
+    },
+    {
+      "id": "r-smallbusiness",
+      "name": "r/smallbusiness",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/smallbusiness",
+      "size": "1.8M",
+      "tags": ["small-business", "smb", "ecommerce", "local"],
+      "engagement": "high",
+      "categories": ["smb", "ecommerce", "general-startup"]
+    },
+    {
+      "id": "fb-female-founders",
+      "name": "Female Founder Collective Facebook Group",
+      "platform": "Facebook",
+      "url": "https://www.facebook.com/groups/femalefounderscollective",
+      "size": "35K",
+      "tags": ["female-founders", "diversity", "startup", "networking"],
+      "engagement": "high",
+      "categories": ["general-startup", "b2b-saas", "consumer"]
+    },
+    {
+      "id": "fb-startup-founders",
+      "name": "Startup Founders & Entrepreneurs Facebook Group",
+      "platform": "Facebook",
+      "url": "https://facebook.com/groups/startupfounder",
+      "size": "220K",
+      "tags": ["founders", "startup", "networking", "b2b"],
+      "engagement": "medium",
+      "categories": ["general-startup"]
+    },
+    {
+      "id": "fb-ecom",
+      "name": "Ecommerce Entrepreneurs Facebook Group",
+      "platform": "Facebook",
+      "url": "https://facebook.com/groups/ecommerceentrepreneurs",
+      "size": "85K",
+      "tags": ["ecommerce", "shopify", "dropshipping", "dtc"],
+      "engagement": "high",
+      "categories": ["ecommerce", "consumer"]
+    },
+    {
+      "id": "slack-mattermost",
+      "name": "Online Geniuses Slack",
+      "platform": "Slack",
+      "url": "https://onlinegeniuses.com",
+      "size": "25K",
+      "tags": ["digital-marketing", "growth", "ecommerce", "saas"],
+      "engagement": "high",
+      "categories": ["martech", "ecommerce", "b2b-saas"]
+    },
+    {
+      "id": "discord-developers",
+      "name": "The Programmer's Hangout Discord",
+      "platform": "Discord",
+      "url": "https://discord.gg/programming",
+      "size": "350K",
+      "tags": ["developers", "coding", "software", "tech"],
+      "engagement": "high",
+      "categories": ["developer-tools", "ai", "deeptech"]
+    },
+    {
+      "id": "discord-ai-builders",
+      "name": "AI/ML Builders Discord",
+      "platform": "Discord",
+      "url": "https://discord.gg/aibuilders",
+      "size": "45K",
+      "tags": ["ai", "machine-learning", "llm", "builders"],
+      "engagement": "very-high",
+      "categories": ["ai", "developer-tools", "deeptech"]
+    },
+    {
+      "id": "twitter-buildinpublic",
+      "name": "#BuildInPublic Twitter/X Community",
+      "platform": "Twitter/X",
+      "url": "https://twitter.com/search?q=%23buildinpublic",
+      "size": "500K+",
+      "tags": ["buildinpublic", "indie", "saas", "founders", "transparency"],
+      "engagement": "very-high",
+      "categories": ["b2b-saas", "developer-tools", "general-startup"]
+    },
+    {
+      "id": "newsletter-tldr",
+      "name": "TLDR Newsletter (Tech)",
+      "platform": "Newsletter",
+      "url": "https://tldr.tech",
+      "size": "1.2M subscribers",
+      "tags": ["tech", "developer", "startup", "ai"],
+      "engagement": "high",
+      "categories": ["developer-tools", "b2b-saas", "ai"]
+    },
+    {
+      "id": "newsletter-theHustle",
+      "name": "The Hustle Newsletter",
+      "platform": "Newsletter",
+      "url": "https://thehustle.co",
+      "size": "2M subscribers",
+      "tags": ["business", "startup", "entrepreneurs"],
+      "engagement": "high",
+      "categories": ["general-startup", "b2b-saas"]
+    },
+    {
+      "id": "meetup-techstartups",
+      "name": "Tech Startups Meetup Groups (global)",
+      "platform": "Meetup",
+      "url": "https://meetup.com",
+      "size": "Local varies",
+      "tags": ["networking", "local", "founders", "investors"],
+      "engagement": "very-high",
+      "categories": ["general-startup"]
+    },
+    {
+      "id": "r-edtech",
+      "name": "r/edtech",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/edtech",
+      "size": "38K",
+      "tags": ["education", "edtech", "learning", "teaching"],
+      "engagement": "medium",
+      "categories": ["edtech"]
+    },
+    {
+      "id": "r-recruiting",
+      "name": "r/recruiting",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/recruiting",
+      "size": "120K",
+      "tags": ["recruiting", "hiring", "hr", "talent"],
+      "engagement": "high",
+      "categories": ["hr-tech", "b2b-saas"]
+    },
+    {
+      "id": "r-cscareerquestions",
+      "name": "r/cscareerquestions",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/cscareerquestions",
+      "size": "750K",
+      "tags": ["tech-jobs", "software-engineering", "career", "interviews"],
+      "engagement": "very-high",
+      "categories": ["hr-tech", "edtech", "developer-tools"]
+    },
+    {
+      "id": "discord-jobseekers",
+      "name": "Job Seekers Discord",
+      "platform": "Discord",
+      "url": "https://discord.gg/jobseekers",
+      "size": "28K",
+      "tags": ["jobs", "career", "interviews", "networking"],
+      "engagement": "high",
+      "categories": ["hr-tech", "edtech"]
+    },
+    {
+      "id": "r-legaladvice",
+      "name": "r/legaladvice",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/legaladvice",
+      "size": "1.5M",
+      "tags": ["legal", "law", "contracts", "advice"],
+      "engagement": "very-high",
+      "categories": ["legaltech"]
+    },
+    {
+      "id": "r-realestate",
+      "name": "r/realestate",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/realestate",
+      "size": "1.3M",
+      "tags": ["real-estate", "property", "investing", "landlord"],
+      "engagement": "high",
+      "categories": ["proptech", "fintech"]
+    },
+    {
+      "id": "r-growmybusiness",
+      "name": "r/GrowMyBusiness",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/GrowMyBusiness",
+      "size": "55K",
+      "tags": ["smb", "growth", "marketing", "b2b"],
+      "engagement": "medium",
+      "categories": ["smb", "martech", "b2b-saas"]
+    },
+    {
+      "id": "slack-sales-hacker",
+      "name": "Sales Hacker Slack Community",
+      "platform": "Slack",
+      "url": "https://saleshacker.com/community",
+      "size": "18K",
+      "tags": ["sales", "b2b-sales", "outbound", "crm", "revenue"],
+      "engagement": "high",
+      "categories": ["b2b-saas", "sales-tech", "martech"]
+    },
+    {
+      "id": "r-sales",
+      "name": "r/sales",
+      "platform": "Reddit",
+      "url": "https://reddit.com/r/sales",
+      "size": "220K",
+      "tags": ["sales", "b2b", "outbound", "cold-email", "closing"],
+      "engagement": "high",
+      "categories": ["b2b-saas", "sales-tech"]
+    }
+  ]
+}
