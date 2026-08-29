@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --cream:#FBF8FF;
+  --cream2:#F2EFFF;
+  --ink:#120D1E;
+  --ink2:#3D3358;
+  --gold:#7B6FDB;
+  --gold2:#9B91E8;
+  --gold3:#C4BCFF;
+  --gold4:#EAE7FF;
+  --bd:rgba(123,111,219,0.22);
+  --bd2:rgba(123,111,219,0.12);
+  --red:#C4401A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--cream);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 56px;
+  background:rgba(251,248,243,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--bd2);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:9px;
+  font-family:'Instrument Serif',serif;
+  font-size:22px;color:var(--ink);letter-spacing:-0.3px;
+  text-decoration:none;
+}
+.nav-logo span{color:var(--gold);}
+.nav-logo svg{width:36px;height:36px;flex-shrink:0;}
+
+/* animated egg */
+@keyframes crack-wobble{0%,100%{transform:rotate(0deg);}20%{transform:rotate(-4deg);}40%{transform:rotate(4deg);}60%{transform:rotate(-3deg);}80%{transform:rotate(2deg);}}
+@keyframes crack-appear{0%,30%{opacity:0;stroke-dashoffset:40;}100%{opacity:1;stroke-dashoffset:0;}}
+@keyframes chick-rise{0%,40%{transform:translateY(10px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+@keyframes top-lift{0%,50%{transform:translateY(0) rotate(0);}100%{transform:translateY(-8px) rotate(-10deg);}}
+.egg-anim{animation:crack-wobble 2s ease-in-out infinite;}
+.egg-crack{stroke-dasharray:40;stroke-dashoffset:40;animation:crack-appear 1s ease-out 0.5s forwards;}
+.chick-body{animation:chick-rise 0.6s ease-out 1.2s both;}
+.egg-top{transform-origin:20px 18px;animation:top-lift 0.5s ease-out 1.4s both;}
+.nav-right{display:flex;align-items:center;gap:32px;}
+.nav-link{font-size:13px;font-weight:500;color:var(--ink2);text-decoration:none;transition:color .2s;}
+.nav-link:hover{color:var(--ink);}
+.nav-btn{
+  font-size:13px;font-weight:700;
+  padding:9px 24px;border-radius:100px;
+  background:var(--ink);color:var(--cream);
+  text-decoration:none;transition:background .2s;
+}
+.nav-btn:hover{background:var(--ink2);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:140px 48px 60px;
+  position:relative;
+}
+.hero-eyebrow{
+  display:block;
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(36px,5.5vw,72px);
+  font-weight:400;
+  letter-spacing:-0.5px;
+  color:var(--gold);
+  margin-bottom:20px;
+  font-style:normal;
+  line-height:1.1;
+}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+
+.hero-h1{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(54px,9vw,128px);
+  font-weight:400;
+  line-height:0.93;
+  letter-spacing:-2px;
+  color:var(--ink);
+  margin-bottom:32px;
+  max-width:880px;
+  text-wrap:balance;
+}
+.hero-h1 i{
+  font-style:italic;
+  background:linear-gradient(135deg,#7B6FDB 0%,#A78BFA 50%,#C4BCFF 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-sub{
+  font-size:17px;font-weight:400;
+  color:var(--ink2);line-height:1.7;
+  max-width:520px;margin:0 auto 44px;
+}
+
+.hero-actions{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.btn-primary{
+  font-size:15px;font-weight:700;
+  padding:15px 36px;border-radius:100px;
+  background:var(--ink);color:var(--cream);
+  text-decoration:none;border:none;cursor:pointer;transition:background .2s;
+}
+.btn-primary:hover{background:var(--ink2);}
+.btn-secondary{
+  font-size:15px;font-weight:500;color:var(--ink2);
+  text-decoration:none;border-bottom:1px solid rgba(74,63,48,0.3);
+  padding-bottom:1px;transition:color .2s,border-color .2s;
+}
+.btn-secondary:hover{color:var(--ink);border-color:var(--ink);}
+
+/* ── JOURNEY SECTION ── */
+.journey{
+  padding:100px 56px 120px;
+  border-top:1px solid var(--bd2);
+}
+.ji{max-width:1080px;margin:0 auto;}
+.section-tag{
+  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:18px;
+}
+.section-h{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(36px,4.5vw,60px);
+  font-weight:400;letter-spacing:-1.5px;
+  color:var(--ink);margin-bottom:14px;line-height:1.05;
+}
+.section-h i{color:var(--gold);font-style:italic;}
+.section-p{font-size:16px;color:var(--ink2);line-height:1.65;max-width:520px;margin-bottom:72px;}
+
+/* Visual journey flow */
+.flow{display:flex;flex-direction:column;gap:0;}
+
+.flow-step{
+  display:grid;
+  grid-template-columns:48px 1fr;
+  gap:0 28px;
+  position:relative;
+}
+.flow-step:not(:last-child) .flow-line{
+  position:absolute;left:23px;top:48px;bottom:-1px;
+  width:2px;background:var(--bd);
+}
+
+.flow-num-col{
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:10px;
+  z-index:1;
+}
+.flow-num{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--gold4);border:2px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:800;color:var(--gold);
+  flex-shrink:0;
+}
+.flow-step.active-step .flow-num{
+  background:var(--gold);color:var(--cream);border-color:var(--gold);
+}
+
+.flow-content{
+  padding:6px 0 52px;
+}
+.flow-label{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:6px;
+}
+.flow-title{
+  font-family:'Instrument Serif',serif;
+  font-size:26px;font-weight:400;letter-spacing:-0.5px;
+  color:var(--ink);margin-bottom:10px;
+}
+.flow-desc{font-size:14px;color:var(--ink2);line-height:1.65;max-width:560px;}
+
+/* Step-specific visuals */
+.flow-visual{
+  margin-top:20px;
+  background:var(--cream2);
+  border:1px solid var(--bd2);
+  border-radius:12px;
+  overflow:hidden;
+  max-width:600px;
+}
+
+/* Step 1 — input */
+.input-mock{padding:20px 24px;}
+.input-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.input-text{
+  font-size:14px;color:var(--ink2);line-height:1.65;
+  border-left:2px solid var(--gold);padding-left:14px;
+  font-style:italic;
+}
+.input-q{
+  margin-top:16px;padding:14px 16px;
+  background:var(--gold4);border:1px solid var(--bd);border-radius:8px;
+  font-size:13px;color:var(--ink);line-height:1.5;
+}
+.input-q strong{color:var(--gold);font-weight:700;}
+
+/* Step 2 — community list */
+.comm-mock{display:flex;flex-direction:column;}
+.cm-header{
+  padding:12px 18px;border-bottom:1px solid var(--bd2);
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);
+}
+.cm-row{
+  display:grid;grid-template-columns:44px 1fr auto;
+  align-items:center;padding:12px 18px;
+  border-bottom:1px solid var(--bd2);gap:12px;
+}
+.cm-row:last-child{border-bottom:none;}
+.cm-row.top{background:var(--gold4);}
+.cm-score{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:-1px;}
+.cm-name{font-size:13px;font-weight:700;color:var(--ink);}
+.cm-meta{font-size:11px;color:var(--ink2);margin-top:2px;}
+.cm-tag{
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;
+  background:var(--gold4);border:1px solid var(--bd);color:var(--gold);
+}
+
+/* Step 3 — draft */
+.draft-mock{padding:20px 24px;}
+.draft-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.draft-post{
+  font-size:13px;color:var(--ink);line-height:1.65;
+  background:white;border:1px solid var(--bd2);border-radius:8px;padding:14px 16px;
+  font-style:italic;margin-bottom:12px;
+}
+.draft-actions{display:flex;gap:8px;}
+.draft-btn{
+  font-size:12px;font-weight:700;padding:7px 16px;border-radius:100px;
+  cursor:pointer;font-family:inherit;
+}
+.draft-btn.primary{background:var(--ink);color:var(--cream);border:none;}
+.draft-btn.out{background:transparent;border:1px solid var(--bd);color:var(--ink2);}
+
+/* Step 4 — refine */
+.refine-mock{padding:20px 24px;display:flex;flex-direction:column;gap:10px;}
+.signal-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-radius:8px;border:1px solid var(--bd2);
+  font-size:13px;
+}
+.signal-row.pos{background:#F0FBF0;border-color:rgba(0,160,80,0.15);}
+.signal-row.neg{background:#FBF5F0;border-color:rgba(196,64,26,0.15);}
+.sig-channel{font-weight:600;color:var(--ink);}
+.sig-out{font-size:11px;font-weight:700;}
+.sig-out.yes{color:#00A050;}
+.sig-out.no{color:var(--red);}
+.refine-note{
+  font-size:12px;color:var(--ink2);
+  background:var(--gold4);border:1px solid var(--bd);
+  border-radius:8px;padding:12px 14px;line-height:1.55;
+}
+.refine-note strong{color:var(--gold);}
+
+/* ── PRODUCT DASHBOARD ── */
+.dashboard-section{
+  padding:0 40px 120px;
+}
+.ds-label{
+  text-align:center;
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;
+}
+.dashboard-frame{
+  max-width:1100px;margin:0 auto;
+  border:1px solid var(--bd);border-radius:16px;overflow:hidden;
+  background:#FFFFFF;
+  box-shadow:0 32px 80px rgba(24,18,10,0.08),0 0 0 1px rgba(200,155,60,0.08);
+}
+
+/* Frame bar */
+.frame-bar{
+  display:flex;align-items:center;height:44px;
+  background:#F8F6F1;border-bottom:1px solid var(--bd2);
+  padding:0 16px;gap:6px;
+}
+.fb-dot{width:10px;height:10px;border-radius:50%;}
+.fb-dot:nth-child(1){background:#FF5F57;}
+.fb-dot:nth-child(2){background:#FFBD2E;}
+.fb-dot:nth-child(3){background:#27C840;}
+.fb-url{
+  flex:1;margin:0 16px;
+  background:white;border:1px solid rgba(0,0,0,0.08);border-radius:6px;
+  padding:5px 14px;font-size:12px;color:var(--ink2);text-align:center;
+}
+
+/* App bar inside frame */
+.app-topbar{
+  display:flex;align-items:center;height:50px;
+  border-bottom:1px solid var(--bd2);background:#FDFBF7;
+}
+.atb-logo{
+  padding:0 20px;font-family:'Instrument Serif',serif;
+  font-size:17px;color:var(--ink);border-right:1px solid var(--bd2);
+  height:100%;display:flex;align-items:center;min-width:140px;
+}
+.atb-logo span{color:var(--gold);}
+.atb-icp{
+  padding:0 20px;border-right:1px solid var(--bd2);height:100%;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.atb-icp-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);}
+.atb-icp-val{font-size:13px;font-weight:600;color:var(--ink);}
+.atb-right{margin-left:auto;padding:0 20px;display:flex;gap:8px;align-items:center;}
+.atb-badge{
+  font-size:10px;font-weight:700;padding:4px 12px;border-radius:100px;
+  background:var(--gold4);border:1px solid var(--bd);color:var(--gold);
+}
+
+/* Two-panel */
+.app-panels{display:grid;grid-template-columns:360px 1fr;min-height:500px;}
+.panel-l{border-right:1px solid var(--bd2);}
+.panel-head{
+  padding:12px 18px;border-bottom:1px solid var(--bd2);
+  display:flex;align-items:center;justify-content:space-between;
+  background:#FDFBF7;
+}
+.ph-t{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink2);}
+.ph-sub{font-size:10px;color:var(--gold);}
+
+.comm-rows{display:flex;flex-direction:column;}
+.comm-r{
+  display:grid;grid-template-columns:48px 1fr 56px;
+  align-items:center;padding:13px 16px;
+  border-bottom:1px solid rgba(200,155,60,0.08);
+  cursor:pointer;transition:background .15s;gap:10px;
+}
+.comm-r:hover{background:rgba(200,155,60,0.04);}
+.comm-r.on{background:var(--gold4);border-left:2px solid var(--gold);padding-left:14px;}
+.comm-r:last-child{border-bottom:none;}
+.cr-score{font-size:22px;font-weight:800;color:var(--gold);letter-spacing:-1px;line-height:1;}
+.cr-n{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+.cr-m{font-size:11px;color:var(--ink2);}
+.cr-speed{font-size:11px;font-weight:600;color:var(--ink2);text-align:right;}
+.cr-speed span{display:block;font-size:9px;color:rgba(74,63,48,0.5);letter-spacing:0.3px;}
+
+/* Playbook panel */
+.panel-r{display:flex;flex-direction:column;}
+.pb-header{
+  padding:16px 24px;border-bottom:1px solid var(--bd2);
+  background:var(--gold4);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pb-h{font-size:15px;font-weight:700;color:var(--ink);}
+.pb-s{font-size:11px;font-weight:600;color:var(--gold);margin-top:2px;}
+.cp-btn{
+  font-size:11px;font-weight:700;padding:7px 16px;border-radius:6px;
+  background:var(--ink);color:var(--cream);border:none;cursor:pointer;font-family:inherit;
+}
+.pb-body{padding:22px 24px;display:flex;flex-direction:column;gap:14px;}
+.d-row{display:flex;gap:14px;}
+.d-tag{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);min-width:56px;padding-top:3px;}
+.d-text{font-size:13px;color:var(--ink2);line-height:1.6;}
+.post-b{
+  background:white;border:1px solid var(--bd2);border-left:3px solid var(--gold);
+  border-radius:0 8px 8px 0;padding:14px 16px;
+}
+.post-bl{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.post-bt{font-size:13px;color:var(--ink);line-height:1.65;font-style:italic;}
+.kpis{margin-top:8px;padding-top:14px;border-top:1px solid var(--bd2);display:flex;gap:20px;}
+.kpi-v{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:-0.5px;}
+.kpi-l{font-size:10px;color:var(--ink2);margin-top:2px;}
+
+/* ── PRICING ── */
+.pricing-section{padding:120px 56px;border-top:1px solid var(--bd2);}
+.pricing-inner{max-width:1000px;margin:0 auto;}
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:64px;}
+.p-card{
+  border:1px solid var(--bd2);border-radius:14px;
+  padding:36px 30px;background:white;
+}
+.p-card.hot{border-color:var(--gold);background:var(--gold4);}
+.p-badge{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.p-tier{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink2);margin-bottom:8px;}
+.p-price{
+  font-family:'Instrument Serif',serif;
+  font-size:52px;font-weight:400;letter-spacing:-2px;color:var(--ink);line-height:1;margin-bottom:4px;
+}
+.p-price span{font-size:16px;font-weight:400;letter-spacing:0;color:var(--ink2);font-family:'Plus Jakarta Sans',sans-serif;}
+.p-note{font-size:12px;color:var(--ink2);margin-bottom:24px;}
+.p-div{height:1px;background:var(--bd2);margin-bottom:24px;}
+.p-feats{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.p-feats li{font-size:13px;color:var(--ink2);padding-left:18px;position:relative;line-height:1.5;}
+.p-feats li::before{content:'·';position:absolute;left:0;color:var(--gold);font-weight:800;font-size:16px;line-height:1.2;}
+.p-btn{
+  width:100%;padding:13px;border-radius:8px;
+  font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;
+}
+.p-btn-dark{background:var(--ink);border:none;color:var(--cream);}
+.p-btn-dark:hover{background:var(--ink2);}
+.p-btn-out{background:transparent;border:1px solid var(--bd);color:var(--ink);}
+.p-btn-out:hover{border-color:var(--ink2);}
+
+/* ── CTA ── */
+.cta-section{
+  padding:160px 56px;text-align:center;
+  background:var(--ink);
+}
+.cta-h{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(48px,7vw,100px);
+  font-weight:400;letter-spacing:-3px;
+  color:var(--cream);line-height:0.95;margin-bottom:28px;
+}
+.cta-h i{color:var(--gold2);font-style:italic;}
+.cta-p{font-size:17px;color:rgba(251,248,243,0.7);margin-bottom:44px;line-height:1.65;}
+.cta-form{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cta-inp{
+  padding:14px 22px;border-radius:100px;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  color:var(--cream);font-family:inherit;font-size:14px;
+  outline:none;width:280px;
+}
+.cta-inp::placeholder{color:rgba(251,248,243,0.4);}
+.cta-inp:focus{border-color:var(--gold2);}
+.cta-go{
+  padding:14px 32px;border-radius:100px;
+  background:var(--gold);border:none;
+  color:var(--ink);font-family:inherit;font-size:14px;font-weight:700;
+  cursor:pointer;transition:background .2s;
+}
+.cta-go:hover{background:var(--gold2);}
+.cta-fine{margin-top:18px;font-size:12px;color:rgba(251,248,243,0.45);}
+
+/* ── FOOTER ── */
+footer{
+  padding:28px 56px;background:var(--ink);
+  border-top:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.f-logo{font-family:'Instrument Serif',serif;font-size:18px;color:var(--cream);}
+.f-logo span{color:var(--gold);}
+.f-note{font-size:12px;color:rgba(251,248,243,0.4);}
+
+/* reveal */
+.reveal{opacity:0;transition:opacity .8s ease;}
+.reveal.in{opacity:1;}
+.d1{transition-delay:.12s;}.d2{transition-delay:.24s;}.d3{transition-delay:.36s;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="20" cy="26" rx="13" ry="9" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1.2"/>
+      <path d="M7 24 Q12 20 15 23 Q18 26 20 22 Q22 18 25 21 Q28 24 33 22" stroke="#7B6FDB" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <circle cx="20" cy="18" r="7" fill="#A78BFA"/>
+      <circle cx="17.5" cy="17" r="1.2" fill="#120D1E"/>
+      <circle cx="22.5" cy="17" r="1.2" fill="#120D1E"/>
+      <path d="M19 19.5 L21 19.5 L20 21 Z" fill="#C4401A"/>
+    </svg>
+    Chick<span>.</span>
+  </a>
+  <div class="nav-right">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#cta" class="nav-btn">Request access</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:clamp(72px,10vw,110px);height:auto;margin-bottom:20px;">
+    <ellipse cx="40" cy="52" rx="26" ry="18" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="2"/>
+    <circle cx="40" cy="35" r="16" fill="#A78BFA"/>
+    <circle cx="35" cy="33" r="2.5" fill="#120D1E"/>
+    <circle cx="45" cy="33" r="2.5" fill="#120D1E"/>
+    <circle cx="35.8" cy="32.2" r="0.9" fill="white"/>
+    <circle cx="45.8" cy="32.2" r="0.9" fill="white"/>
+    <path d="M37.5 38 L42.5 38 L40 42 Z" fill="#C4401A"/>
+    <path d="M16 48 Q24 40 30 46 Q35 51 40 44 Q45 37 50 44 Q56 51 64 46" stroke="#7B6FDB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>
+  <div class="hero-eyebrow">Your GTM Co-Founder for Founders</div>
+  <h1 class="hero-h1">
+    From idea<br>to <i>first user.</i>
+  </h1>
+  <p class="hero-sub">
+    Describe what you're building. Chick asks the right questions, finds every community where your customer lives, ranks them, and drafts the outreach. You send. It learns. Every reply and every silence makes the next suggestion sharper.
+  </p>
+  <div class="hero-actions">
+    <a href="#cta" class="btn-primary">Request access</a>
+    <a href="#how" class="btn-secondary">See how it works →</a>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section id="how" class="journey">
+  <div class="ji">
+    <div class="section-tag reveal">How it works</div>
+    <h2 class="section-h reveal">The part <i>before</i> Apollo,<br>Clay, and Apify.</h2>
+    <p class="section-p reveal">Every other tool assumes you already know your ICP. Chick is built for founders who are still figuring that out — and turns the uncertainty into a strategy.</p>
+
+    <div class="flow">
+
+      <!-- Step 1 -->
+      <div class="flow-step reveal">
+        <div class="flow-line"></div>
+        <div class="flow-num-col"><div class="flow-num">1</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Describe</div>
+          <div class="flow-title">Tell Chick what you're building in plain language</div>
+          <div class="flow-desc">No forms. No structured input. Just describe your idea the way you'd explain it to a friend. Chick asks short, precise follow-up questions to sharpen the ICP hypothesis before it searches anything.</div>
+          <div class="flow-visual">
+            <div class="input-mock">
+              <div class="input-lbl">You said</div>
+              <div class="input-text">"I'm building a tool that helps independent therapists manage client admin — billing, notes, insurance. It's a mess for most of them right now."</div>
+              <div class="input-q"><strong>Chick asks:</strong> Are you targeting therapists in private practice only, or also those employed at clinics? And do they currently use any software, or doing it manually?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="flow-step reveal">
+        <div class="flow-line"></div>
+        <div class="flow-num-col"><div class="flow-num">2</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Discover</div>
+          <div class="flow-title">Real communities. Verified data. Ranked by response likelihood.</div>
+          <div class="flow-desc">Chick searches 2,847 communities — subreddits, Discords, Facebook groups, forums — verified via Cala. No hallucinated names. No dead groups. Ranked by ICP density and how likely they are to respond to someone like you.</div>
+          <div class="flow-visual">
+            <div class="cm-header">Top communities for your ICP</div>
+            <div class="cm-row top">
+              <div class="cm-score">96</div>
+              <div><div class="cm-name">r/therapists</div><div class="cm-meta">180K members · Reddit · Very high ICP density</div></div>
+              <div class="cm-tag">#1 match</div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-score">91</div>
+              <div><div class="cm-name">SimplePractice Forum</div><div class="cm-meta">65K members · Forum · Tool-aware audience</div></div>
+              <div class="cm-tag">#2 match</div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-score">87</div>
+              <div><div class="cm-name">Private Practice FB Group</div><div class="cm-meta">47K members · Facebook · High engagement</div></div>
+              <div class="cm-tag">#3 match</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flow-step reveal">
+        <div class="flow-line"></div>
+        <div class="flow-num-col"><div class="flow-num">3</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Draft</div>
+          <div class="flow-title">The right approach for each community — drafted and ready</div>
+          <div class="flow-desc">A lurk-and-comment strategy for Reddit. A direct DM for Discord. An open post for Facebook groups. Chick writes the specific post or message for each community — you edit, you send. The finding is ours. The conversation is yours.</div>
+          <div class="flow-visual">
+            <div class="draft-mock">
+              <div class="draft-lbl">r/therapists · First post — ready to send</div>
+              <div class="draft-post">"I'm building a tool to help independent therapists cut admin time. Before I go further — what's the most frustrating part of running your practice that has nothing to do with helping clients?"</div>
+              <div class="draft-actions">
+                <button class="draft-btn primary">Copy & send</button>
+                <button class="draft-btn out">Edit first</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="flow-step reveal">
+        <div class="flow-num-col"><div class="flow-num">4</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Refine</div>
+          <div class="flow-title">Every reply, every silence — the AI learns and sharpens</div>
+          <div class="flow-desc">Every attempt is logged: which community, which message, what happened. Chick classifies each outcome and re-ranks the strategy. Silence isn't failure — it's signal. The next pass is always sharper than the last.</div>
+          <div class="flow-visual">
+            <div class="refine-mock">
+              <div class="signal-row pos">
+                <div class="sig-channel">r/therapists · post</div>
+                <div class="sig-out yes">8 replies · 2 DMs booked</div>
+              </div>
+              <div class="signal-row neg">
+                <div class="sig-channel">Cold DM · LinkedIn</div>
+                <div class="sig-out no">0 replies · silence</div>
+              </div>
+              <div class="signal-row pos">
+                <div class="sig-channel">SimplePractice Forum · post</div>
+                <div class="sig-out yes">5 replies · 1 call booked</div>
+              </div>
+              <div class="refine-note"><strong>Chick learned:</strong> Community posts outperform cold DMs 8:1 for this ICP. LinkedIn removed from your next playbook. Reddit and forums prioritised.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LIVE DASHBOARD -->
+<div class="dashboard-section">
+  <div class="ds-label reveal">What you actually see</div>
+  <div class="dashboard-frame reveal">
+    <div class="frame-bar">
+      <div class="fb-dot"></div><div class="fb-dot"></div><div class="fb-dot"></div>
+      <div class="fb-url">app.chick.co · your ICP dashboard</div>
+    </div>
+    <div class="app-topbar">
+      <div class="atb-logo">Chick<span>.</span></div>
+      <div class="atb-icp">
+        <div class="atb-icp-lbl">Active ICP</div>
+        <div class="atb-icp-val">Independent therapists · private practice</div>
+      </div>
+      <div class="atb-right">
+        <div class="atb-badge">2,847 communities scanned</div>
+        <div class="atb-badge">Top 10 surfaced</div>
+      </div>
+    </div>
+    <div class="app-panels">
+      <div class="panel-l">
+        <div class="panel-head">
+          <div class="ph-t">Ranked communities</div>
+          <div class="ph-sub">by ICP density + response rate</div>
+        </div>
+        <div class="comm-rows">
+          <div class="comm-r on" onclick="pick(this,0)">
+            <div class="cr-score">96</div>
+            <div><div class="cr-n">r/therapists</div><div class="cr-m">180K members · Reddit · Very high ICP density</div></div>
+            <div class="cr-speed">~4 days<span>to reply</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,1)">
+            <div class="cr-score">91</div>
+            <div><div class="cr-n">SimplePractice Community</div><div class="cr-m">65K members · Forum · Tool-aware</div></div>
+            <div class="cr-speed">~3 days<span>to reply</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,2)">
+            <div class="cr-score">87</div>
+            <div><div class="cr-n">Private Practice FB Group</div><div class="cr-m">47K members · Facebook · Active</div></div>
+            <div class="cr-speed">~5 days<span>to reply</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,3)">
+            <div class="cr-score">83</div>
+            <div><div class="cr-n">Therapy Business Discord</div><div class="cr-m">12K members · Discord · DM-friendly</div></div>
+            <div class="cr-speed">~2 days<span>to reply</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,4)">
+            <div class="cr-score">79</div>
+            <div><div class="cr-n">Counseling Today Newsletter</div><div class="cr-m">38K subscribers · High-trust</div></div>
+            <div class="cr-speed">~7 days<span>to reply</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-r">
+        <div class="pb-header">
+          <div>
+            <div class="pb-h" id="pb-h">r/therapists — 7-Day Playbook</div>
+            <div class="pb-s">Ranked #1 for your ICP · Copy-paste ready</div>
+          </div>
+          <button class="cp-btn" onclick="cp()">Copy post</button>
+        </div>
+        <div class="pb-body">
+          <div class="d-row"><div class="d-tag">Day 1</div><div class="d-text">Lurk. Read the top 20 posts. Note their exact language. Do not post yet.</div></div>
+          <div class="d-row"><div class="d-tag">Day 2–4</div><div class="d-text">Comment on 3 posts per day with genuine value. No promotion. Build presence first.</div></div>
+          <div class="d-row"><div class="d-tag">Day 5</div><div class="d-text">Post the question below. Reply to every comment within 2 hours.</div></div>
+          <div class="post-b">
+            <div class="post-bl">First post — copy paste</div>
+            <div class="post-bt" id="post-txt">"I'm building a tool to help independent therapists cut admin time. Before I go further — what's the most frustrating part of running your practice that has nothing to do with helping clients?"</div>
+          </div>
+          <div class="d-row"><div class="d-tag">Day 6</div><div class="d-text">DM everyone who replied with 3+ words. Ask one question. Don't pitch yet.</div></div>
+          <div class="d-row"><div class="d-tag">Day 7</div><div class="d-text">Count conversations. Track outcomes. Chick learns what worked and re-ranks for next pass.</div></div>
+          <div class="kpis">
+            <div><div class="kpi-v">5–12</div><div class="kpi-l">Expected replies</div></div>
+            <div><div class="kpi-v">3–6</div><div class="kpi-l">DM conversations</div></div>
+            <div><div class="kpi-v">1–3</div><div class="kpi-l">Calls possible</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="pricing" class="pricing-section">
+  <div class="pricing-inner">
+    <div class="section-tag reveal">Pricing</div>
+    <h2 class="section-h reveal">Start free.<br><i>Scale when it works.</i></h2>
+    <p class="section-p reveal">Free tier available. Upgrade when you're ready for the full refinement loop.</p>
+    <div class="p-grid">
+      <div class="p-card reveal d1">
+        <div class="p-tier">Free</div>
+        <div class="p-price">£0<span>/mo</span></div>
+        <div class="p-note">3 community searches/month</div>
+        <div class="p-div"></div>
+        <ul class="p-feats">
+          <li>3 community searches/month</li>
+          <li>Top 3 communities ranked</li>
+          <li>Basic confidence score</li>
+          <li>No activation playbook</li>
+        </ul>
+        <button class="p-btn p-btn-out">Start free →</button>
+      </div>
+      <div class="p-card hot reveal d2">
+        <div class="p-badge">★ Most Popular</div>
+        <div class="p-tier">Pro</div>
+        <div class="p-price">£49<span>/mo</span></div>
+        <div class="p-note">82% gross margin · full loop</div>
+        <div class="p-div"></div>
+        <ul class="p-feats">
+          <li>Unlimited searches</li>
+          <li>Full top-10 ranked community list</li>
+          <li>7-day playbook per community</li>
+          <li>Copy-paste posts + DM templates</li>
+          <li>Outcome tracking + AI refinement</li>
+          <li>Pattern intelligence updates</li>
+        </ul>
+        <button class="p-btn p-btn-dark">Get Pro →</button>
+      </div>
+      <div class="p-card reveal d3">
+        <div class="p-tier">Agency</div>
+        <div class="p-price">£199<span>/mo</span></div>
+        <div class="p-note">90% gross margin · multi-startup</div>
+        <div class="p-div"></div>
+        <ul class="p-feats">
+          <li>Up to 10 startup profiles</li>
+          <li>White-label playbook export</li>
+          <li>Client dashboard</li>
+          <li>Priority pattern intelligence</li>
+          <li>Accelerator cohort ready</li>
+        </ul>
+        <button class="p-btn p-btn-out">Talk to us →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div id="cta" class="cta-section">
+  <h2 class="cta-h reveal">You build it.<br><i>Chick finds them.</i></h2>
+  <p class="cta-p reveal">Describe your idea. Chick maps where your customers live and writes exactly how to reach them.</p>
+  <div class="cta-form reveal">
+    <input class="cta-inp" type="email" placeholder="your@email.com">
+    <button class="cta-go">Request access →</button>
+  </div>
+  <div class="cta-fine reveal">Free tier available · No credit card required</div>
+</div>
+
+<footer>
+  <div class="f-logo">Chick<span>.</span></div>
+  <div class="f-note">Built at Tech Europe × Cala Hackathon · Barcelona 2026</div>
+</footer>
+
+<script>
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+const PB=[
+  {h:'r/therapists — 7-Day Playbook',t:'"I\'m building a tool to help independent therapists cut admin time. Before I go further — what\'s the most frustrating part of running your practice that has nothing to do with helping clients?"'},
+  {h:'SimplePractice Forum — 7-Day Playbook',t:'"Quick question — has anyone found a good system for handling the gap between what insurance pays and what you actually charge? Researching this for something I\'m building."'},
+  {h:'Private Practice FB Group — Playbook',t:'"Genuine question — what\'s the one thing about running your private practice you wish you could hand off? I\'m building a tool for exactly this."'},
+  {h:'Therapy Business Discord — Playbook',t:'"Hey everyone — new here. Building something for practice owners around the admin side. What\'s eating your time every week that has nothing to do with your actual clients?"'},
+  {h:'Counseling Today Newsletter — Playbook',t:'"Looking for 10 independent practice owners to get early access in exchange for 20 minutes of feedback. Reply here and I\'ll reach out."'},
+];
+function pick(el,i){
+  document.querySelectorAll('.comm-r').forEach(r=>r.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('pb-h').textContent=PB[i].h;
+  document.getElementById('post-txt').textContent=PB[i].t;
+}
+function cp(){
+  navigator.clipboard.writeText(document.getElementById('post-txt').textContent).then(()=>{
+    const b=document.querySelector('.cp-btn');
+    b.textContent='Copied!';
+    setTimeout(()=>b.textContent='Copy post',1500);
+  });
+}
+</script>
+</body>
+</html>

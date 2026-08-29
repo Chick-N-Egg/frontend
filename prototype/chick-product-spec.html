@@ -1,0 +1,171 @@
+<title>Chick — Product Spec</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#FBF8FF;font-family:'Plus Jakarta Sans',sans-serif;color:#120D1E;padding:48px 48px 80px;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:900px;margin:0 auto;}
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:48px;}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:20px;color:#120D1E;display:flex;align-items:center;gap:8px;}
+.nav-logo span{color:#7B6FDB;}
+.nav-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;border:1px solid rgba(123,111,219,0.35);padding:0.2rem 0.7rem;border-radius:99px;margin-left:auto;}
+.eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;margin-bottom:0.75rem;}
+h1{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.15;margin-bottom:0.5rem;}
+h1 i{color:#7B6FDB;font-style:italic;}
+.intro{font-size:0.95rem;color:#3D3358;margin-bottom:3rem;max-width:600px;line-height:1.7;}
+.section{margin-bottom:3rem;padding-top:2.5rem;border-top:1px solid rgba(123,111,219,0.22);}
+h2{font-family:'Instrument Serif',serif;font-size:1.5rem;font-weight:400;margin-bottom:1.25rem;}
+h3{font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#7B6FDB;margin-bottom:0.75rem;margin-top:1.5rem;}
+p{font-size:0.875rem;color:#3D3358;line-height:1.7;margin-bottom:0.75rem;}
+
+.feature-card{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:12px;padding:20px 24px;margin-bottom:12px;}
+.feature-num{font-family:'Instrument Serif',serif;font-size:1.8rem;color:rgba(123,111,219,0.30);line-height:1;margin-bottom:4px;}
+.feature-name{font-family:'Instrument Serif',serif;font-size:1.1rem;color:#120D1E;margin-bottom:6px;}
+.feature-desc{font-size:0.82rem;color:#3D3358;line-height:1.65;margin-bottom:12px;}
+
+.ac-list{list-style:none;padding:0;}
+.ac-list li{font-size:0.8rem;color:#3D3358;padding:6px 0 6px 20px;border-bottom:1px solid rgba(123,111,219,0.10);position:relative;line-height:1.5;}
+.ac-list li::before{content:'✓';position:absolute;left:0;color:#7B6FDB;font-weight:700;}
+
+.user-story{background:#FBF8FF;border:1px solid rgba(123,111,219,0.22);border-left:3px solid #7B6FDB;border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.82rem;color:#3D3358;line-height:1.6;margin-bottom:8px;font-style:italic;}
+
+.badge{display:inline-block;font-size:0.6rem;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(123,111,219,0.12);border:1px solid rgba(123,111,219,0.30);color:#7B6FDB;margin-right:4px;}
+.badge-green{background:rgba(34,197,94,0.10);border-color:rgba(34,197,94,0.30);color:#16a34a;}
+.badge-amber{background:rgba(245,158,11,0.10);border-color:rgba(245,158,11,0.30);color:#d97706;}
+.badge-red{background:rgba(196,64,26,0.10);border-color:rgba(196,64,26,0.30);color:#C4401A;}
+
+.priority-row{display:grid;grid-template-columns:200px 80px 1fr;gap:12px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(123,111,219,0.12);font-size:0.82rem;}
+.priority-row:last-child{border-bottom:none;}
+.priority-row strong{color:#120D1E;}
+
+.dark-card{background:#120D1E;border-radius:16px;padding:28px 32px;margin-top:1rem;}
+.dark-card h3{color:#C4BCFF;}
+.dark-card p{font-size:0.85rem;color:#9B91E8;line-height:1.7;margin-top:0.5rem;}
+</style>
+
+<div class="wrap">
+
+<nav class="nav">
+  <div class="nav-logo">
+    <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
+      <ellipse cx="20" cy="26" rx="13" ry="9" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1.2"/>
+      <path d="M7 24 Q12 20 15 23 Q18 26 20 22 Q22 18 25 21 Q28 24 33 22" stroke="#7B6FDB" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <circle cx="20" cy="18" r="7" fill="#A78BFA"/>
+      <circle cx="17.5" cy="17" r="1.2" fill="#120D1E"/>
+      <circle cx="22.5" cy="17" r="1.2" fill="#120D1E"/>
+      <path d="M19 19.5 L21 19.5 L20 21 Z" fill="#C4401A"/>
+    </svg>
+    Chick<span>.</span>
+  </div>
+  <div class="nav-tag">Product Spec</div>
+</nav>
+
+<div class="eyebrow">Product — v0.1 — Hackathon Build</div>
+<h1>Product specification<br>& <i>feature brief.</i></h1>
+<p class="intro">The complete feature set, user stories, and acceptance criteria for the Chick MVP — everything a builder needs to implement, test, and ship.</p>
+
+<!-- PROBLEM -->
+<div class="section">
+  <h2>Problem Statement</h2>
+  <p>Pre-launch founders waste their first 90 days on the wrong channels. They don't have a wrong product — they have no system for finding the right people to talk to. Apollo, Clay, and Apify assume you already know your ICP. <strong>Chick is built for the part before that.</strong></p>
+  <p>The result: founders get their first customer conversation 4–8 weeks faster than going it alone, with community-specific outreach that doesn't get them banned.</p>
+</div>
+
+<!-- FEATURES -->
+<div class="section">
+  <h2>Features — MVP Scope</h2>
+
+  <div class="feature-card">
+    <div class="feature-num">01</div>
+    <div class="feature-name">Idea Intake</div>
+    <div class="feature-desc">Free-text input. No forms. Founder describes their idea in plain language — rambling is fine. Fastino converts it to a structured ICP hypothesis in seconds.</div>
+    <div class="user-story">"As a founder, I want to describe my idea in plain English so I don't have to fill in a structured form before I've validated anything."</div>
+    <ul class="ac-list">
+      <li>Text input accepts minimum 10 characters, no maximum enforced</li>
+      <li>Fastino extraction completes within 3 seconds on p95</li>
+      <li>Structured output shows audience hypothesis, product category, stage, tone</li>
+      <li>If extraction confidence &lt;0.6, show 3 follow-up questions before proceeding</li>
+      <li>Founder can edit any structured field before running discovery</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-num">02</div>
+    <div class="feature-name">Community Discovery</div>
+    <div class="feature-desc">Chick searches subreddits, Discord servers, and Facebook groups where the ICP actually lives. Cala verifies every result — no dead communities, no stale member counts.</div>
+    <div class="user-story">"As a founder, I want a list of real, active communities where my target customer hangs out, so I'm not wasting outreach on dead channels."</div>
+    <ul class="ac-list">
+      <li>Returns minimum 10, maximum 30 verified communities</li>
+      <li>Each community shows platform, member count, and activity score</li>
+      <li>Dead communities (0 posts in 30 days) are filtered before display</li>
+      <li>Results load within 8 seconds on p95</li>
+      <li>Founder can mark any community as "irrelevant" to exclude from kit</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-num">03</div>
+    <div class="feature-name">Confidence Scoring</div>
+    <div class="feature-desc">Every community scored on three axes: Reach (relevant members, not raw count), Receptiveness (mod culture, self-promo rules), Warmth (founder's existing foothold). Top 10 surface first.</div>
+    <div class="user-story">"As a founder, I want communities ranked by how likely I am to get a response, not just how big they are."</div>
+    <ul class="ac-list">
+      <li>Three scores displayed per community (Reach / Receptiveness / Warmth), each 0–100</li>
+      <li>Composite score used for sort order</li>
+      <li>Founder can re-sort by any individual axis</li>
+      <li>Score methodology shown on hover (no black box)</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-num">04</div>
+    <div class="feature-name">Outreach Kit Generation</div>
+    <div class="feature-desc">For each selected community, Chick drafts the right move for that culture. A 7-day plan, a copy-paste post, a DM template, platform-specific Do's & Don'ts, Week 1 KPIs.</div>
+    <div class="user-story">"As a founder, I want ready-to-use outreach copy written for the specific community I'm posting in, not a generic template."</div>
+    <ul class="ac-list">
+      <li>Kit generated per community, not one-size-fits-all</li>
+      <li>Post copy respects community tone and mod rules from Cala data</li>
+      <li>DM template distinct from public post</li>
+      <li>7-day day-by-day plan is actionable (specific actions per day, not vague advice)</li>
+      <li>All copy is copy-paste ready — no placeholder text left in output</li>
+      <li>Kit generates within 10 seconds on p95</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-num">05</div>
+    <div class="feature-name">Tracking & Refinement Loop</div>
+    <div class="feature-desc">Every attempt logged: channel, message variant, outcome. Silence is a signal too. Patterns re-rank communities for the next pass — every loop, the founder gets closer to PMF.</div>
+    <div class="user-story">"As a founder, I want to log what happened with each outreach attempt so the system can tell me what's working and adjust my strategy."</div>
+    <ul class="ac-list">
+      <li>Outcome options: Yes / No / Interested / Silence</li>
+      <li>Response time logged automatically if founder records date</li>
+      <li>Refinement run triggers automatically after 5+ logged events</li>
+      <li>Re-ranked list shows delta from original ranking (↑↓ indicator)</li>
+      <li>Pattern summary shown in plain language ("Discord converting 3× better than Reddit")</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PRIORITY -->
+<div class="section">
+  <h2>Build Priority</h2>
+  <div class="priority-row" style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#7B6FDB;border-bottom:2px solid rgba(123,111,219,0.22);">
+    <div>Feature</div><div>Priority</div><div>Notes</div>
+  </div>
+  <div class="priority-row"><strong>Intake + Fastino</strong><div><span class="badge-green badge">P0</span></div><div style="color:#3D3358;">Core loop starts here. No Fastino = no product.</div></div>
+  <div class="priority-row"><strong>Community Discovery</strong><div><span class="badge-green badge">P0</span></div><div style="color:#3D3358;">Cala integration. Must show real data at demo.</div></div>
+  <div class="priority-row"><strong>Confidence Scoring</strong><div><span class="badge-green badge">P0</span></div><div style="color:#3D3358;">Differentiator. Don't skip this for a raw list.</div></div>
+  <div class="priority-row"><strong>Outreach Kit</strong><div><span class="badge-amber badge">P1</span></div><div style="color:#3D3358;">Core value delivery. Aim for hackathon demo.</div></div>
+  <div class="priority-row"><strong>Tracking</strong><div><span class="badge-amber badge">P1</span></div><div style="color:#3D3358;">Needed for the refinement story. Minimal UI ok.</div></div>
+  <div class="priority-row"><strong>Refinement Loop</strong><div><span class="badge-red badge">P2</span></div><div style="color:#3D3358;">Post-hackathon. Needs tracking data to be meaningful.</div></div>
+</div>
+
+<!-- OUT OF SCOPE -->
+<div class="section">
+  <div class="dark-card">
+    <h3>Out of Scope — MVP</h3>
+    <p>The following are explicitly not in scope for the hackathon build and should not be designed around:<br><br>
+    Automated posting or DM sending on behalf of the founder · Email outreach tooling · CRM or pipeline management · Multi-founder teams / collaboration · Mobile app · Payment / billing flows · Integrations beyond Fastino and Cala · Analytics beyond the core tracking log</p>
+  </div>
+</div>
+
+</div>

@@ -1,1003 +1,1393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chick – Find Your First 100 Customers</title>
-  <style>
-    :root {
-      --bg: #0a0a0f;
-      --surface: #13131a;
-      --surface2: #1c1c28;
-      --border: #2a2a3d;
-      --accent: #6c47ff;
-      --accent2: #ff4778;
-      --accent3: #00d4aa;
-      --text: #f0f0ff;
-      --text2: #9090b0;
-      --text3: #5a5a7a;
-      --green: #00d4aa;
-      --yellow: #ffd166;
-      --red: #ff4778;
-      --radius: 12px;
-      --font: 'Inter', system-ui, -apple-system, sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ── HEADER ── */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 40px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(10,10,15,0.95);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .logo span { color: var(--accent); }
-
-    .header-stats {
-      display: flex;
-      gap: 32px;
-    }
-
-    .hstat {
-      text-align: center;
-    }
-
-    .hstat-num {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--accent3);
-    }
-
-    .hstat-label {
-      font-size: 11px;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* ── MAIN LAYOUT ── */
-    .app {
-      display: grid;
-      grid-template-columns: 420px 1fr;
-      min-height: calc(100vh - 77px);
-    }
-
-    /* ── LEFT PANEL ── */
-    .left-panel {
-      border-right: 1px solid var(--border);
-      padding: 32px 28px;
-      overflow-y: auto;
-      background: var(--surface);
-    }
-
-    .panel-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--accent);
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text2);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: var(--font);
-      font-size: 14px;
-      padding: 12px 14px;
-      transition: border-color 0.2s;
-      outline: none;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--accent);
-    }
-
-    textarea { resize: vertical; min-height: 80px; }
-
-    select option { background: var(--surface2); }
-
-    .btn-primary {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--accent), #8b5cf6);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      margin-top: 8px;
-      letter-spacing: 0.3px;
-    }
-
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    /* Loader */
-    .loader {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 24px;
-      text-align: center;
-    }
-
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .loader-text { color: var(--text2); font-size: 14px; }
-    .loader-sub { color: var(--text3); font-size: 12px; }
-
-    /* Results list */
-    .results-section { margin-top: 28px; display: none; }
-
-    .results-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .results-count {
-      font-size: 13px;
-      color: var(--text2);
-    }
-
-    .results-count strong { color: var(--accent3); }
-
-    .community-card {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: border-color 0.2s, transform 0.1s;
-      position: relative;
-    }
-
-    .community-card:hover {
-      border-color: var(--accent);
-      transform: translateX(2px);
-    }
-
-    .community-card.active {
-      border-color: var(--accent);
-      background: rgba(108,71,255,0.1);
-    }
-
-    .card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .card-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.3;
-    }
-
-    .score-badge {
-      flex-shrink: 0;
-      font-size: 13px;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: rgba(0,212,170,0.15);
-      color: var(--green);
-    }
-
-    .score-badge.medium { background: rgba(255,209,102,0.15); color: var(--yellow); }
-    .score-badge.low { background: rgba(255,71,120,0.15); color: var(--red); }
-
-    .card-platform {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .card-icp {
-      font-size: 12px;
-      color: var(--text2);
-      line-height: 1.5;
-    }
-
-    .card-meta {
-      display: flex;
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .meta-pill {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 20px;
-      background: var(--surface);
-      color: var(--text3);
-      border: 1px solid var(--border);
-    }
-
-    /* ── RIGHT PANEL ── */
-    .right-panel {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    /* Empty state */
-    .empty-state {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 60px;
-      text-align: center;
-    }
-
-    .empty-icon {
-      font-size: 64px;
-      opacity: 0.3;
-    }
-
-    .empty-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--text2);
-    }
-
-    .empty-sub {
-      font-size: 15px;
-      color: var(--text3);
-      max-width: 380px;
-      line-height: 1.6;
-    }
-
-    /* Stats row */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .stat-tile {
-      background: var(--surface);
-      padding: 20px 24px;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text3);
-      margin-bottom: 6px;
-    }
-
-    .stat-value {
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: -1px;
-    }
-
-    .stat-value.green { color: var(--green); }
-    .stat-value.purple { color: var(--accent); }
-    .stat-value.pink { color: var(--accent2); }
-    .stat-value.yellow { color: var(--yellow); }
-
-    .stat-change {
-      font-size: 12px;
-      color: var(--green);
-      margin-top: 2px;
-    }
-
-    /* Playbook area */
-    .playbook-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 32px 36px;
-      display: none;
-    }
-
-    .playbook-area.visible { display: block; }
-
-    .playbook-header {
-      margin-bottom: 28px;
-    }
-
-    .playbook-title {
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
-    }
-
-    .playbook-platform-tag {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      background: rgba(108,71,255,0.2);
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .playbook-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .playbook-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-    }
-
-    .playbook-card.full { grid-column: 1 / -1; }
-
-    .card-header {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--accent);
-      margin-bottom: 14px;
-    }
-
-    .action-list { list-style: none; }
-
-    .action-list li {
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--text2);
-      line-height: 1.5;
-      display: flex;
-      gap: 10px;
-    }
-
-    .action-list li:last-child { border-bottom: none; }
-
-    .action-list li::before {
-      content: '→';
-      color: var(--accent);
-      flex-shrink: 0;
-      font-weight: 700;
-    }
-
-    .post-preview {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-    }
-
-    .post-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 10px;
-    }
-
-    .post-body {
-      font-size: 13px;
-      color: var(--text2);
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    .post-type-tag {
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: rgba(0,212,170,0.1);
-      color: var(--green);
-      font-weight: 600;
-    }
-
-    .dm-template {
-      background: var(--surface2);
-      border-left: 3px solid var(--accent);
-      padding: 14px 16px;
-      border-radius: 0 8px 8px 0;
-      font-size: 13px;
-      color: var(--text2);
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    .dos-donts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .do-list, .dont-list { list-style: none; }
-
-    .do-list li, .dont-list li {
-      padding: 6px 0;
-      font-size: 13px;
-      color: var(--text2);
-      display: flex;
-      gap: 8px;
-      line-height: 1.4;
-    }
-
-    .do-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
-    .dont-list li::before { content: '✗'; color: var(--red); font-weight: 700; flex-shrink: 0; }
-
-    .insider-tip {
-      background: linear-gradient(135deg, rgba(108,71,255,0.1), rgba(255,71,120,0.05));
-      border: 1px solid rgba(108,71,255,0.3);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      font-size: 14px;
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    .insider-tip::before {
-      content: '💡 Insider tip: ';
-      font-weight: 700;
-      color: var(--yellow);
-    }
-
-    .kpi-row {
-      display: flex;
-      gap: 16px;
-    }
-
-    .kpi-item {
-      flex: 1;
-      background: var(--surface2);
-      border-radius: 8px;
-      padding: 14px;
-      text-align: center;
-    }
-
-    .kpi-label {
-      font-size: 11px;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .kpi-value {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--accent3);
-      line-height: 1.4;
-    }
-
-    .playbook-loader {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 80px;
-      text-align: center;
-    }
-
-    .btn-generate-playbook {
-      display: inline-block;
-      padding: 10px 20px;
-      background: var(--accent);
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 14px;
-      transition: opacity 0.2s;
-    }
-
-    .btn-generate-playbook:hover { opacity: 0.85; }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    /* Glow effects */
-    .glow { box-shadow: 0 0 30px rgba(108,71,255,0.15); }
-
-    /* Mobile responsiveness */
-    @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; }
-      .right-panel { border-top: 1px solid var(--border); }
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
-      .playbook-grid { grid-template-columns: 1fr; }
-      header { padding: 16px 20px; }
-      .header-stats { display: none; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --cream:#FBF8FF;
+  --cream2:#F2EFFF;
+  --ink:#120D1E;
+  --ink2:#3D3358;
+  --gold:#7B6FDB;
+  --gold2:#9B91E8;
+  --gold3:#C4BCFF;
+  --gold4:#EAE7FF;
+  --bd:rgba(123,111,219,0.22);
+  --bd2:rgba(123,111,219,0.12);
+  --red:#C4401A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--cream);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:41px;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 56px;
+  background:rgba(251,248,243,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--bd2);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:9px;
+  font-family:'Instrument Serif',serif;
+  font-size:22px;color:var(--ink);letter-spacing:-0.3px;
+  text-decoration:none;
+}
+.nav-logo span{color:var(--gold);}
+.nav-logo svg{width:36px;height:36px;flex-shrink:0;}
+
+/* animated egg */
+@keyframes crack-wobble{0%,100%{transform:rotate(0deg);}20%{transform:rotate(-4deg);}40%{transform:rotate(4deg);}60%{transform:rotate(-3deg);}80%{transform:rotate(2deg);}}
+@keyframes crack-appear{0%,30%{opacity:0;stroke-dashoffset:40;}100%{opacity:1;stroke-dashoffset:0;}}
+@keyframes chick-rise{0%,40%{transform:translateY(10px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+@keyframes top-lift{0%,50%{transform:translateY(0) rotate(0);}100%{transform:translateY(-8px) rotate(-10deg);}}
+.egg-anim{animation:crack-wobble 2s ease-in-out infinite;}
+.egg-crack{stroke-dasharray:40;stroke-dashoffset:40;animation:crack-appear 1s ease-out 0.5s forwards;}
+.chick-body{animation:chick-rise 0.6s ease-out 1.2s both;}
+.egg-top{transform-origin:20px 18px;animation:top-lift 0.5s ease-out 1.4s both;}
+.nav-right{display:flex;align-items:center;gap:32px;}
+.nav-link{font-size:13px;font-weight:500;color:var(--ink2);text-decoration:none;transition:color .2s;}
+.nav-link:hover{color:var(--ink);}
+.nav-btn{
+  font-size:13px;font-weight:700;
+  padding:9px 24px;border-radius:100px;
+  background:var(--ink);color:var(--cream);
+  text-decoration:none;transition:background .2s;
+}
+.nav-btn:hover{background:var(--ink2);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:180px 48px 60px;
+  position:relative;
+}
+.hero-eyebrow{
+  display:block;
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(36px,5.5vw,72px);
+  font-weight:400;
+  letter-spacing:-0.5px;
+  color:var(--gold);
+  margin-bottom:20px;
+  font-style:normal;
+  line-height:1.1;
+}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+
+.hero-h1{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(54px,9vw,128px);
+  font-weight:400;
+  line-height:0.93;
+  letter-spacing:-2px;
+  color:var(--ink);
+  margin-bottom:32px;
+  max-width:880px;
+  text-wrap:balance;
+}
+.hero-h1 i{
+  font-style:italic;
+  background:linear-gradient(135deg,#7B6FDB 0%,#A78BFA 50%,#C4BCFF 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-sub{
+  font-size:17px;font-weight:400;
+  color:var(--ink2);line-height:1.7;
+  max-width:520px;margin:0 auto 44px;
+}
+
+.hero-actions{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.btn-primary{
+  font-size:15px;font-weight:700;
+  padding:15px 36px;border-radius:100px;
+  background:var(--ink);color:var(--cream);
+  text-decoration:none;border:none;cursor:pointer;transition:background .2s;
+}
+.btn-primary:hover{background:var(--ink2);}
+.btn-secondary{
+  font-size:15px;font-weight:500;color:var(--ink2);
+  text-decoration:none;border-bottom:1px solid rgba(74,63,48,0.3);
+  padding-bottom:1px;transition:color .2s,border-color .2s;
+}
+.btn-secondary:hover{color:var(--ink);border-color:var(--ink);}
+
+/* ── JOURNEY SECTION ── */
+.journey{
+  padding:100px 56px 120px;
+  border-top:1px solid var(--bd2);
+}
+.ji{max-width:1080px;margin:0 auto;}
+.section-tag{
+  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:18px;
+}
+.section-h{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(48px,6vw,88px);
+  font-weight:400;letter-spacing:-2px;
+  color:var(--ink);margin-bottom:16px;line-height:1.0;
+}
+.section-h i{color:var(--gold);font-style:italic;}
+.section-p{font-size:18px;color:var(--ink2);line-height:1.65;max-width:560px;margin-bottom:72px;}
+
+/* Visual journey flow */
+.flow{display:flex;flex-direction:column;gap:0;}
+
+.flow-step{
+  display:grid;
+  grid-template-columns:48px 1fr;
+  gap:0 28px;
+  position:relative;
+}
+.flow-step:not(:last-child) .flow-line{
+  position:absolute;left:23px;top:48px;bottom:-1px;
+  width:2px;background:var(--bd);
+}
+
+.flow-num-col{
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:10px;
+  z-index:1;
+}
+.flow-num{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--gold4);border:2px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:800;color:var(--gold);
+  flex-shrink:0;
+}
+.flow-step.active-step .flow-num{
+  background:var(--gold);color:var(--cream);border-color:var(--gold);
+}
+
+.flow-content{
+  padding:6px 0 52px;
+}
+.flow-label{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:6px;
+}
+.flow-title{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(26px,3vw,38px);font-weight:400;letter-spacing:-0.5px;
+  color:var(--ink);margin-bottom:10px;
+}
+.flow-desc{font-size:16px;color:var(--ink2);line-height:1.7;max-width:560px;}
+
+/* Step-specific visuals */
+.flow-visual{
+  margin-top:20px;
+  background:var(--cream2);
+  border:1px solid var(--bd2);
+  border-radius:12px;
+  overflow:hidden;
+  max-width:600px;
+}
+
+/* Step 1 — input */
+.input-mock{padding:20px 24px;}
+.input-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.input-text{
+  font-size:14px;color:var(--ink2);line-height:1.65;
+  border-left:2px solid var(--gold);padding-left:14px;
+  font-style:italic;
+}
+.input-q{
+  margin-top:16px;padding:14px 16px;
+  background:var(--gold4);border:1px solid var(--bd);border-radius:8px;
+  font-size:13px;color:var(--ink);line-height:1.5;
+}
+.input-q strong{color:var(--gold);font-weight:700;}
+
+/* Step 2 — community list */
+.comm-mock{display:flex;flex-direction:column;}
+.cm-header{
+  padding:12px 18px;border-bottom:1px solid var(--bd2);
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);
+}
+.cm-row{
+  display:grid;grid-template-columns:44px 1fr auto;
+  align-items:center;padding:12px 18px;
+  border-bottom:1px solid var(--bd2);gap:12px;
+}
+.cm-row:last-child{border-bottom:none;}
+.cm-row.top{background:var(--gold4);}
+.cm-score{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:-1px;}
+.cm-name{font-size:13px;font-weight:700;color:var(--ink);}
+.cm-meta{font-size:11px;color:var(--ink2);margin-top:2px;}
+.cm-tag{
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;
+  background:var(--gold4);border:1px solid var(--bd);color:var(--gold);
+}
+
+/* Step 3 — draft */
+.draft-mock{padding:20px 24px;}
+.draft-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.draft-post{
+  font-size:13px;color:var(--ink);line-height:1.65;
+  background:white;border:1px solid var(--bd2);border-radius:8px;padding:14px 16px;
+  font-style:italic;margin-bottom:12px;
+}
+.draft-actions{display:flex;gap:8px;}
+.draft-btn{
+  font-size:12px;font-weight:700;padding:7px 16px;border-radius:100px;
+  cursor:pointer;font-family:inherit;
+}
+.draft-btn.primary{background:var(--ink);color:var(--cream);border:none;}
+.draft-btn.out{background:transparent;border:1px solid var(--bd);color:var(--ink2);}
+
+/* Step 4 — refine */
+.refine-mock{padding:20px 24px;display:flex;flex-direction:column;gap:10px;}
+.signal-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-radius:8px;border:1px solid var(--bd2);
+  font-size:13px;
+}
+.signal-row.pos{background:#F0FBF0;border-color:rgba(0,160,80,0.15);}
+.signal-row.neg{background:#FBF5F0;border-color:rgba(196,64,26,0.15);}
+.sig-channel{font-weight:600;color:var(--ink);}
+.sig-out{font-size:11px;font-weight:700;}
+.sig-out.yes{color:#00A050;}
+.sig-out.no{color:var(--red);}
+.refine-note{
+  font-size:12px;color:var(--ink2);
+  background:var(--gold4);border:1px solid var(--bd);
+  border-radius:8px;padding:12px 14px;line-height:1.55;
+}
+.refine-note strong{color:var(--gold);}
+
+/* ── PRODUCT DASHBOARD ── */
+.dashboard-section{
+  padding:0 40px 120px;
+}
+.ds-label{
+  text-align:center;
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;
+}
+.dashboard-frame{
+  max-width:1100px;margin:0 auto;
+  border:1px solid var(--bd);border-radius:16px;overflow:hidden;
+  background:#FFFFFF;
+  box-shadow:0 32px 80px rgba(24,18,10,0.08),0 0 0 1px rgba(200,155,60,0.08);
+}
+
+/* Frame bar */
+.frame-bar{
+  display:flex;align-items:center;height:44px;
+  background:#F8F6F1;border-bottom:1px solid var(--bd2);
+  padding:0 16px;gap:6px;
+}
+.fb-dot{width:10px;height:10px;border-radius:50%;}
+.fb-dot:nth-child(1){background:#FF5F57;}
+.fb-dot:nth-child(2){background:#FFBD2E;}
+.fb-dot:nth-child(3){background:#27C840;}
+.fb-url{
+  flex:1;margin:0 16px;
+  background:white;border:1px solid rgba(0,0,0,0.08);border-radius:6px;
+  padding:5px 14px;font-size:12px;color:var(--ink2);text-align:center;
+}
+
+/* App bar inside frame */
+.app-topbar{
+  display:flex;align-items:center;height:50px;
+  border-bottom:1px solid var(--bd2);background:#FDFBF7;
+}
+.atb-logo{
+  padding:0 20px;font-family:'Instrument Serif',serif;
+  font-size:17px;color:var(--ink);border-right:1px solid var(--bd2);
+  height:100%;display:flex;align-items:center;min-width:140px;
+}
+.atb-logo span{color:var(--gold);}
+.atb-icp{
+  padding:0 20px;border-right:1px solid var(--bd2);height:100%;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.atb-icp-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);}
+.atb-icp-val{font-size:13px;font-weight:600;color:var(--ink);}
+.atb-right{margin-left:auto;padding:0 20px;display:flex;gap:8px;align-items:center;}
+.atb-badge{
+  font-size:10px;font-weight:700;padding:4px 12px;border-radius:100px;
+  background:var(--gold4);border:1px solid var(--bd);color:var(--gold);
+}
+
+/* Two-panel */
+.app-panels{display:grid;grid-template-columns:360px 1fr;min-height:500px;}
+.panel-l{border-right:1px solid var(--bd2);}
+.panel-head{
+  padding:12px 18px;border-bottom:1px solid var(--bd2);
+  display:flex;align-items:center;justify-content:space-between;
+  background:#FDFBF7;
+}
+.ph-t{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink2);}
+.ph-sub{font-size:10px;color:var(--gold);}
+
+.comm-rows{display:flex;flex-direction:column;}
+.comm-r{
+  display:grid;grid-template-columns:48px 1fr 56px;
+  align-items:center;padding:13px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;transition:background .15s;gap:10px;
+}
+.comm-r:hover{background:rgba(123,111,219,0.05);}
+.comm-r.on{background:var(--cream2);border-left:2px solid var(--gold);padding-left:14px;}
+.comm-r:last-child{border-bottom:none;}
+.cr-score{font-size:22px;font-weight:800;color:var(--gold);letter-spacing:-1px;line-height:1;}
+.cr-n{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+.cr-m{font-size:11px;color:var(--ink2);}
+.cr-speed{font-size:11px;font-weight:600;color:var(--ink2);text-align:right;}
+.cr-speed span{display:block;font-size:9px;color:rgba(61,51,88,0.5);letter-spacing:0.3px;}
+
+/* Playbook panel */
+.panel-r{display:flex;flex-direction:column;}
+.pb-header{
+  padding:16px 24px;border-bottom:1px solid var(--bd2);
+  background:var(--gold4);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pb-h{font-size:15px;font-weight:700;color:var(--ink);}
+.pb-s{font-size:11px;font-weight:600;color:var(--gold);margin-top:2px;}
+.cp-btn{
+  font-size:11px;font-weight:700;padding:7px 16px;border-radius:6px;
+  background:var(--ink);color:var(--cream);border:none;cursor:pointer;font-family:inherit;
+}
+.pb-body{padding:22px 24px;display:flex;flex-direction:column;gap:14px;}
+.d-row{display:flex;gap:14px;}
+.d-tag{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);min-width:56px;padding-top:3px;}
+.d-text{font-size:13px;color:var(--ink2);line-height:1.6;}
+.post-b{
+  background:white;border:1px solid var(--bd2);border-left:3px solid var(--gold);
+  border-radius:0 8px 8px 0;padding:14px 16px;
+}
+.post-bl{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.post-bt{font-size:13px;color:var(--ink);line-height:1.65;font-style:italic;}
+.kpis{margin-top:8px;padding-top:14px;border-top:1px solid var(--bd2);display:flex;gap:20px;}
+.kpi-v{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:-0.5px;}
+.kpi-l{font-size:10px;color:var(--ink2);margin-top:2px;}
+
+/* ── PRICING ── */
+.pricing-section{padding:120px 56px;border-top:1px solid var(--bd2);}
+.pricing-inner{max-width:1000px;margin:0 auto;}
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:64px;}
+.p-card{
+  border:1px solid var(--bd2);border-radius:14px;
+  padding:36px 30px;background:white;
+}
+.p-card.hot{border-color:var(--gold);background:var(--gold4);}
+.p-badge{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.p-tier{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink2);margin-bottom:8px;}
+.p-price{
+  font-family:'Instrument Serif',serif;
+  font-size:52px;font-weight:400;letter-spacing:-2px;color:var(--ink);line-height:1;margin-bottom:4px;
+}
+.p-price span{font-size:16px;font-weight:400;letter-spacing:0;color:var(--ink2);font-family:'Plus Jakarta Sans',sans-serif;}
+.p-note{font-size:12px;color:var(--ink2);margin-bottom:24px;}
+.p-div{height:1px;background:var(--bd2);margin-bottom:24px;}
+.p-feats{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.p-feats li{font-size:13px;color:var(--ink2);padding-left:18px;position:relative;line-height:1.5;}
+.p-feats li::before{content:'·';position:absolute;left:0;color:var(--gold);font-weight:800;font-size:16px;line-height:1.2;}
+.p-btn{
+  width:100%;padding:13px;border-radius:8px;
+  font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;
+}
+.p-btn-dark{background:var(--ink);border:none;color:var(--cream);}
+.p-btn-dark:hover{background:var(--ink2);}
+.p-btn-out{background:transparent;border:1px solid var(--bd);color:var(--ink);}
+.p-btn-out:hover{border-color:var(--ink2);}
+
+/* ── CTA ── */
+.cta-section{
+  padding:160px 56px;text-align:center;
+  background:linear-gradient(160deg,#2D1F6E 0%,#4A3599 50%,#3D2B88 100%);
+}
+.cta-h{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(48px,7vw,100px);
+  font-weight:400;letter-spacing:-3px;
+  color:var(--cream);line-height:0.95;margin-bottom:28px;
+}
+.cta-h i{color:var(--gold2);font-style:italic;}
+.cta-p{font-size:17px;color:rgba(251,248,243,0.7);margin-bottom:44px;line-height:1.65;}
+.cta-form{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cta-inp{
+  padding:14px 22px;border-radius:100px;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  color:var(--cream);font-family:inherit;font-size:14px;
+  outline:none;width:280px;
+}
+.cta-inp::placeholder{color:rgba(251,248,243,0.4);}
+.cta-inp:focus{border-color:var(--gold2);}
+.cta-go{
+  padding:14px 32px;border-radius:100px;
+  background:var(--gold);border:none;
+  color:var(--ink);font-family:inherit;font-size:14px;font-weight:700;
+  cursor:pointer;transition:background .2s;
+}
+.cta-go:hover{background:var(--gold2);}
+.cta-fine{margin-top:18px;font-size:12px;color:rgba(251,248,243,0.45);}
+
+/* ── FOOTER ── */
+footer{
+  padding:28px 56px;background:#2D1F6E;
+  border-top:1px solid rgba(196,188,255,0.15);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.f-logo{font-family:'Instrument Serif',serif;font-size:18px;color:var(--cream);}
+.f-logo span{color:var(--gold);}
+.f-note{font-size:12px;color:rgba(251,248,243,0.4);}
+
+/* reveal */
+.reveal{opacity:0;transition:opacity .8s ease;}
+.reveal.in{opacity:1;}
+
+/* ── NEST WIDGET ── */
+@keyframes egg-drop{0%{transform:translateY(-24px) scale(0.7);opacity:0;}60%{transform:translateY(4px) scale(1.08);opacity:1;}100%{transform:translateY(0) scale(1);opacity:1;}}
+@keyframes chick-pop{0%{transform:translateY(6px) scale(0.8);opacity:0;}70%{transform:translateY(-4px) scale(1.1);opacity:1;}100%{transform:translateY(0) scale(1);opacity:1;}}
+@keyframes shell-open{0%{transform:translateY(0) rotate(0);opacity:1;}100%{transform:translateY(-10px) rotate(-18deg);opacity:0;}}
+@keyframes nest-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+
+.nest-widget{
+  position:fixed;bottom:32px;right:32px;z-index:200;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  pointer-events:none;
+}
+.nest-label{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold);background:var(--cream2);
+  border:1px solid var(--bd);border-radius:100px;
+  padding:4px 12px;opacity:0;transition:opacity .4s;
+}
+.nest-label.show{opacity:1;}
+.nest-bowl{
+  position:relative;width:140px;height:90px;
+}
+/* nest SVG is the base — always visible */
+.nest-svg{width:100%;height:100%;}
+
+/* egg slots */
+.nest-eggs{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:flex;align-items:flex-end;justify-content:center;
+  gap:6px;padding-bottom:18px;
+}
+.n-egg{
+  position:relative;width:30px;height:36px;
+  opacity:0;transform:translateY(-20px) scale(0.7);
+  transition:none;
+}
+.n-egg.landed{
+  animation:egg-drop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.n-egg.hatched .egg-shell-top{
+  animation:shell-open .4s ease-out forwards;
+}
+.n-egg.hatched .chick-face{
+  animation:chick-pop .45s cubic-bezier(.34,1.56,.64,1) .15s forwards;
+}
+.egg-shell-top{transform-origin:50% 100%;display:block;}
+.chick-face{opacity:0;transform:translateY(6px) scale(0.8);}
+.nest-count{
+  position:absolute;top:-8px;right:-8px;
+  background:var(--gold);color:white;
+  font-size:9px;font-weight:800;
+  width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .3s;
+}
+.nest-count.show{opacity:1;}
+.d1{transition-delay:.12s;}.d2{transition-delay:.24s;}.d3{transition-delay:.36s;}
+</style>
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <div class="logo-icon">🗺️</div>
-    Chick<span>.</span>
-  </div>
-  <div class="header-stats">
-    <div class="hstat">
-      <div class="hstat-num" id="stat-communities">2,847</div>
-      <div class="hstat-label">Communities Mapped</div>
-    </div>
-    <div class="hstat">
-      <div class="hstat-num" id="stat-startups">312</div>
-      <div class="hstat-label">Startups Helped</div>
-    </div>
-    <div class="hstat">
-      <div class="hstat-num" id="stat-days">6.3d</div>
-      <div class="hstat-label">Avg. Days to Customer</div>
-    </div>
-  </div>
-</header>
-
-<div class="app">
-
-  <!-- ── LEFT PANEL ── -->
-  <div class="left-panel">
-    <div class="panel-title">Your Startup</div>
-
-    <div class="form-group">
-      <label>Startup Name</label>
-      <input type="text" id="startup-name" placeholder="e.g. NoteAI, Chick, Yonder" />
-    </div>
-
-    <div class="form-group">
-      <label>What does it do?</label>
-      <textarea id="startup-desc" placeholder="e.g. AI that automatically writes session notes for therapists after each client call, saving 2 hours per day..."></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Who is your target customer?</label>
-      <input type="text" id="startup-customer" placeholder="e.g. Independent therapists in private practice" />
-    </div>
-
-    <div class="form-group">
-      <label>Stage</label>
-      <select id="startup-stage">
-        <option value="idea">💡 Idea stage</option>
-        <option value="pre-launch" selected>🚀 Pre-launch</option>
-        <option value="launched">🌱 Launched (0-100 users)</option>
-        <option value="growing">📈 Growing (100+ users)</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Sector</label>
-      <select id="startup-category">
-        <option value="b2b-saas">B2B SaaS</option>
-        <option value="healthtech">Healthtech / Wellness</option>
-        <option value="fintech">Fintech</option>
-        <option value="edtech">Edtech</option>
-        <option value="developer-tools">Developer Tools</option>
-        <option value="productivity">Productivity</option>
-        <option value="hr-tech">HR Tech / Recruiting</option>
-        <option value="ecommerce">Ecommerce</option>
-        <option value="ai">AI / ML</option>
-        <option value="consumer">Consumer</option>
-        <option value="general-startup">Other / General</option>
-      </select>
-    </div>
-
-    <button class="btn-primary" id="find-btn" onclick="findCommunities()">
-      🔍 Find My First 100 Customers
-    </button>
-
-    <!-- Loader -->
-    <div class="loader" id="find-loader">
-      <div class="spinner"></div>
-      <div class="loader-text">Scanning 2,847 communities...</div>
-      <div class="loader-sub">Matching your ICP across Reddit, Discord, Slack & more</div>
-    </div>
-
-    <!-- Results -->
-    <div class="results-section" id="results-section">
-      <div class="results-header">
-        <div class="panel-title" style="margin:0">Top Matches</div>
-        <div class="results-count"><strong id="match-count">0</strong> communities found</div>
-      </div>
-      <div id="community-list"></div>
-    </div>
-  </div>
-
-  <!-- ── RIGHT PANEL ── -->
-  <div class="right-panel">
-
-    <!-- Empty state -->
-    <div class="empty-state" id="empty-state">
-      <div class="empty-icon">🗺️</div>
-      <div class="empty-title">Your customer map lives here</div>
-      <div class="empty-sub">Enter your startup details and we'll find exactly where your first customers are hiding — with a step-by-step activation playbook for each community.</div>
-    </div>
-
-    <!-- Stats row (hidden until results) -->
-    <div class="stats-row" id="stats-row" style="display:none">
-      <div class="stat-tile">
-        <div class="stat-label">Communities Found</div>
-        <div class="stat-value purple" id="s1">—</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Est. Reachable Audience</div>
-        <div class="stat-value green" id="s2">—</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Fastest Path to Customer</div>
-        <div class="stat-value yellow" id="s3">—</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Top Platform</div>
-        <div class="stat-value pink" id="s4">—</div>
-      </div>
-    </div>
-
-    <!-- Playbook area -->
-    <div class="playbook-area" id="playbook-area">
-      <div id="playbook-content"></div>
-    </div>
-
+<!-- STICKY NEST WIDGET -->
+<div class="nest-widget" id="nestWidget">
+  <div class="nest-label" id="nestLabel">leads found</div>
+  <div class="nest-bowl">
+    <!-- nest base SVG -->
+    <svg class="nest-svg" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute;bottom:0;left:0;">
+      <!-- woven nest -->
+      <ellipse cx="70" cy="75" rx="58" ry="14" fill="#C4BCFF" opacity="0.35"/>
+      <path d="M15 72 Q35 58 55 65 Q70 70 85 63 Q105 56 125 70 Q130 78 125 84 Q105 90 70 90 Q35 90 15 84 Q10 78 15 72Z" fill="#EAE7FF" stroke="#9B91E8" stroke-width="1.2"/>
+      <!-- nest weave lines -->
+      <path d="M20 80 Q40 70 60 76 Q80 82 100 74 Q118 68 128 78" stroke="#9B91E8" stroke-width="1" fill="none" opacity="0.6"/>
+      <path d="M18 76 Q38 66 58 72 Q78 78 98 70 Q116 64 126 74" stroke="#9B91E8" stroke-width="0.8" fill="none" opacity="0.4"/>
+    </svg>
+    <!-- egg slots — filled by JS -->
+    <div class="nest-eggs" id="nestEggs"></div>
+    <div class="nest-count" id="nestCount">0</div>
   </div>
 </div>
 
+<!-- ANNOUNCEMENT BANNER -->
+<div id="ann-banner" style="position:fixed;top:0;left:0;right:0;z-index:150;background:#EAE7FF;border-bottom:1px solid rgba(123,111,219,0.18);padding:10px 24px;text-align:center;overflow:hidden;">
+  <span style="font-family:'Instrument Serif',serif;font-size:15px;font-style:italic;color:#7B6FDB;letter-spacing:0.01em;">Now in private beta —&nbsp;</span><a href="#cta" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:#7B6FDB;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;border-bottom:1.5px solid #A78BFA;padding-bottom:1px;">Request early access →</a>
+</div>
+<style>
+/* Global text size bumps */
+.flow-title{font-size:clamp(30px,3.5vw,44px)!important;}
+.flow-desc{font-size:18px!important;line-height:1.75!important;}
+.section-p{font-size:20px!important;line-height:1.7!important;}
+.hero-sub{font-size:20px!important;line-height:1.7!important;}
+.nm-action{font-size:16px!important;line-height:1.7!important;}
+.comm-name{font-size:15px!important;}
+.comm-meta{font-size:13px!important;}
+</style>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+      <ellipse cx="20" cy="26" rx="13" ry="9" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1.2"/>
+      <path d="M7 24 Q12 20 15 23 Q18 26 20 22 Q22 18 25 21 Q28 24 33 22" stroke="#7B6FDB" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <circle cx="20" cy="18" r="7" fill="#A78BFA"/>
+      <circle cx="17.5" cy="17" r="1.2" fill="#120D1E"/>
+      <circle cx="22.5" cy="17" r="1.2" fill="#120D1E"/>
+      <path d="M19 19.5 L21 19.5 L20 21 Z" fill="#C4401A"/>
+    </svg>
+    Chick<span>.</span>
+  </a>
+  <div class="nav-right">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#cta" class="nav-btn">Request access</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:clamp(100px,12vw,140px);height:auto;margin-bottom:28px;">
+    <!-- egg body -->
+    <ellipse cx="60" cy="78" rx="39" ry="27" fill="#EAE7FF" stroke="#7B6FDB" stroke-width="1.8"/>
+    <!-- crack line across the egg -->
+    <path d="M21 72 Q30 62 37 68 Q44 74 54 64 Q64 54 72 62 Q80 70 90 64 Q98 60 99 72" stroke="#7B6FDB" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- chick head -->
+    <circle cx="60" cy="52" r="22" fill="#A78BFA"/>
+    <!-- eyes — open round dots -->
+    <circle cx="52" cy="49" r="3.5" fill="#120D1E"/>
+    <circle cx="68" cy="49" r="3.5" fill="#120D1E"/>
+    <!-- eye shine -->
+    <circle cx="53.5" cy="47.5" r="1.2" fill="#fff"/>
+    <circle cx="69.5" cy="47.5" r="1.2" fill="#fff"/>
+    <!-- beak -->
+    <path d="M56 56 L64 56 L60 62 Z" fill="#C4401A"/>
+    <!-- rosy cheeks -->
+    <ellipse cx="46" cy="55" rx="5" ry="3" fill="#C4BCFF" opacity="0.6"/>
+    <ellipse cx="74" cy="55" rx="5" ry="3" fill="#C4BCFF" opacity="0.6"/>
+  </svg>
+  <div class="hero-eyebrow">Your GTM Co-Founder</div>
+  <h1 class="hero-h1">
+    From idea<br>to <i>first user.</i>
+  </h1>
+  <p class="hero-sub">
+    Tell Chick what you're building. It finds exactly where your customers live — and builds you a forever-live, closed-loop go-to-market playbook.
+  </p>
+  <div class="hero-actions">
+    <a href="#cta" class="btn-primary">Request early access</a>
+    <a href="#how" class="btn-secondary">How it works →</a>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section id="how" class="journey">
+  <div class="ji">
+    <div class="section-tag reveal">How it works</div>
+    <h2 class="section-h reveal" style="line-height:1.08;">Every other tool assumes you<br><i>already know your customer.</i></h2>
+    <p class="section-p reveal">Chick is built for founders who are still figuring that out — and turns the uncertainty into a go-to-market playbook.</p>
+
+    <div class="flow">
+
+      <!-- Step 1 -->
+      <div class="flow-step reveal">
+        <div class="flow-line"></div>
+        <div class="flow-num-col"><div class="flow-num">1</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Describe</div>
+          <div class="flow-title">Tell Chick what you're building in plain language</div>
+          <div class="flow-desc">No forms. No structured input. Just describe your idea the way you'd explain it to a friend. Chick asks short, precise follow-up questions to sharpen the ICP hypothesis before it searches anything.</div>
+          <div class="flow-visual">
+            <div class="input-mock">
+              <div class="input-lbl">You said</div>
+              <div class="input-text">"I've built a productivity app — it turns your goals into a daily action plan with AI coaching and focus sessions. Been posting on LinkedIn and X for 3 months. Almost zero signups. I have no audience, no personal brand. I just need to find people who will actually care about this."</div>
+              <div class="input-q"><strong>Chick asks:</strong> Who gets the most from this — people managing big life goals, or professionals trying to do deep work? And what's the moment someone realises they need something like this — a failed new year's resolution, burnout, a missed promotion?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="flow-step reveal">
+        <div class="flow-line"></div>
+        <div class="flow-num-col"><div class="flow-num">2</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Discover</div>
+          <div class="flow-title">Your map. Every community, creator, and audience that matters.</div>
+          <div class="flow-desc">Chick scrapes the entire web — Reddit, Facebook Groups, Instagram, TikTok, YouTube, X, forums, niche communities — and goes deeper than the platform. It finds the specific creators with loyal communities, the Facebook group with 300K daily-active buyers, the TikToker whose audience will act on a recommendation. Then it tells you exactly who to target and why.</div>
+          <div class="flow-visual">
+            <div class="cm-header">Top communities across all platforms</div>
+            <div class="cm-row top">
+              <div class="cm-score">97</div>
+              <div><div class="cm-name">Ali Abdaal · YouTube</div><div class="cm-meta">Creator · 5.1M subscribers · His audience buys productivity tools</div></div>
+              <div class="cm-tag">Creator</div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-score">94</div>
+              <div><div class="cm-name">Remote-first Slack networks</div><div class="cm-meta">Business · Team leads actively buying tools for distributed teams</div></div>
+              <div class="cm-tag">B2B</div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-score">91</div>
+              <div><div class="cm-name">Starter Story newsletter</div><div class="cm-meta">Publisher · 300K founder subscribers · Product placement available</div></div>
+              <div class="cm-tag">Publisher</div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-score">88</div>
+              <div><div class="cm-name">r/productivity · Reddit</div><div class="cm-meta">Community · 3.1M members · App recs weekly · High buyer intent</div></div>
+              <div class="cm-tag">Community</div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-score">84</div>
+              <div><div class="cm-name">SaaS ops leads · LinkedIn</div><div class="cm-meta">Business · Chiefs of Staff buying team tools · 10–50 seats per deal</div></div>
+              <div class="cm-tag">B2B</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flow-step reveal">
+        <div class="flow-line"></div>
+        <div class="flow-num-col"><div class="flow-num">3</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Playbook</div>
+          <div class="flow-title">You know exactly what to do — and exactly what to say</div>
+          <div class="flow-desc">Chick found where your customer lives and the language they respond to — and creates you a messaging strategy for each community on each platform. You review. You send. The finding is Chick's. The conversation is yours.</div>
+          <div class="flow-visual">
+            <div class="draft-mock">
+              <div class="draft-lbl">Ali Abdaal · collab pitch — ready to send</div>
+              <div class="draft-post">"Hey Ali — I've built a productivity app that turns goals into a daily action plan with AI coaching. No audience, no brand — just a product I think your community would genuinely love. Would you be open to trying it and sharing honestly if it clicks?"</div>
+              <div class="draft-actions">
+                <button class="draft-btn primary">Copy & send</button>
+                <button class="draft-btn out">Edit first</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="flow-step reveal">
+        <div class="flow-num-col"><div class="flow-num">4</div></div>
+        <div class="flow-content">
+          <div class="flow-label">Learn</div>
+          <div class="flow-title">The AI is constantly learning and sharpening</div>
+          <div class="flow-desc">Every attempt is logged — which community, which message, what happened. Chick classifies every outcome and re-ranks your strategy. The more you use it, the sharper it gets.</div>
+          <div class="flow-visual">
+            <div class="refine-mock">
+              <div class="signal-row pos">
+                <div class="sig-channel">r/productivity · post</div>
+                <div class="sig-out yes">84 upvotes · 11 DMs · 3 signups</div>
+              </div>
+              <div class="signal-row neg">
+                <div class="sig-channel">LinkedIn posts · 3 months</div>
+                <div class="sig-out no">340 impressions · 0 signups</div>
+              </div>
+              <div class="signal-row pos">
+                <div class="sig-channel">r/getdisciplined · comment thread</div>
+                <div class="sig-out yes">22 replies · 2 calls booked</div>
+              </div>
+              <div class="refine-note"><strong>Chick learned:</strong> Reddit communities convert 18× better than LinkedIn. Emotional pain-point framing outperforms feature posts. Ali Abdaal collab flagged as highest-leverage next move.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LIVE DASHBOARD -->
+<div class="dashboard-section">
+  <div class="ds-label reveal">Your live dashboard</div>
+  <div class="dashboard-frame reveal">
+    <div class="frame-bar">
+      <div class="fb-dot"></div><div class="fb-dot"></div><div class="fb-dot"></div>
+      <div class="fb-url">app.chick.co · your ICP dashboard</div>
+    </div>
+    <div class="app-topbar">
+      <div class="atb-logo">Chick<span>.</span></div>
+      <div class="atb-icp">
+        <div class="atb-icp-lbl">Active ICP</div>
+        <div class="atb-icp-val">Productivity app · goal-setters with no system</div>
+      </div>
+      <div class="atb-right">
+        <div class="atb-badge">2,847 communities scanned</div>
+        <div class="atb-badge">Top 10 surfaced</div>
+      </div>
+    </div>
+    <div class="app-panels">
+      <div class="panel-l">
+        <div class="panel-head">
+          <div class="ph-t">Ranked communities</div>
+          <div class="ph-sub">by ICP density + response rate</div>
+        </div>
+        <div class="comm-rows">
+          <div class="comm-r on" onclick="pick(this,0)">
+            <div class="cr-score">97</div>
+            <div><div class="cr-n">Ali Abdaal · YouTube</div><div class="cr-m">5.1M subscribers · #1 productivity creator · His audience buys this</div></div>
+            <div class="cr-speed">DM first<span>then collab</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,1)">
+            <div class="cr-score">94</div>
+            <div><div class="cr-n">r/productivity</div><div class="cr-m">3.1M members · Reddit · App recs weekly · High buyer intent</div></div>
+            <div class="cr-speed">~2 days<span>to reply</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,2)">
+            <div class="cr-score">91</div>
+            <div><div class="cr-n">Thomas Frank · YouTube</div><div class="cr-m">3.2M subscribers · Tools & systems · Trusted reviewer</div></div>
+            <div class="cr-speed">DM first<span>then collab</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,3)">
+            <div class="cr-score">88</div>
+            <div><div class="cr-n">r/getdisciplined</div><div class="cr-m">1.2M members · Reddit · Goal-setters in pain · Very active</div></div>
+            <div class="cr-speed">~1 day<span>to reply</span></div>
+          </div>
+          <div class="comm-r" onclick="pick(this,4)">
+            <div class="cr-score">84</div>
+            <div><div class="cr-n">Building a Second Brain</div><div class="cr-m">80K members · Facebook · Obsessive goal-trackers · Exact ICP</div></div>
+            <div class="cr-speed">~3 days<span>to reply</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-r">
+        <div class="pb-header">
+          <div>
+            <div class="pb-h" id="pb-h">Ali Abdaal · YouTube — 30-Day GTM Playbook</div>
+            <div class="pb-s">Ranked #1 for your ICP · Copy-paste ready</div>
+          </div>
+          <button class="cp-btn" onclick="cp()">Copy post</button>
+        </div>
+        <div class="pb-body">
+          <div class="d-row"><div class="d-tag">Day 1</div><div class="d-text">Watch his last 10 videos. Note the exact language his audience uses in comments. Do not pitch yet.</div></div>
+          <div class="d-row"><div class="d-tag">Day 2–4</div><div class="d-text">Leave 3 genuine, insightful comments per day. No links. No promotion. Build recognition first.</div></div>
+          <div class="d-row"><div class="d-tag">Day 5</div><div class="d-text">Send the DM below. Keep it short. Make it about him, not you.</div></div>
+          <div class="post-b">
+            <div class="post-bl">Collab pitch — copy paste</div>
+            <div class="post-bt" id="post-txt">"Hey Ali — I've built a productivity app that turns goals into a daily action plan with AI coaching. No audience, no brand — just a product I think your community would genuinely love. Would you be open to trying it and sharing honestly if it clicks?"</div>
+          </div>
+          <div class="d-row"><div class="d-tag">Day 6</div><div class="d-text">If no reply, follow up once with a short video demo. Keep it under 60 seconds.</div></div>
+          <div class="d-row"><div class="d-tag">Day 7+</div><div class="d-text">Log outcome. Chick re-ranks based on response. Thomas Frank queued as next creator target.</div></div>
+          <div class="kpis">
+            <div><div class="kpi-v">5–12</div><div class="kpi-l">Expected replies</div></div>
+            <div><div class="kpi-v">3–6</div><div class="kpi-l">DM conversations</div></div>
+            <div><div class="kpi-v">1–3</div><div class="kpi-l">Calls possible</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCAN ANIMATION SECTION -->
+<div id="scan-section" style="padding:100px 56px;background:var(--cream);border-top:1px solid var(--bd2);">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-tag reveal" style="margin-bottom:20px;">Under the hood</div>
+    <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(32px,4vw,52px);color:var(--ink);margin-bottom:16px;text-wrap:balance;">Chick scans <i style="color:var(--gold);">the entire web.</i><br>In minutes.</h2>
+    <p style="font-size:18px;color:var(--ink2);margin-bottom:56px;max-width:560px;line-height:1.7;">Every scan crawls tens of thousands of sources — communities, creators, businesses, and publishers. It doesn't re-scrape what it already knows. It surfaces what's relevant to you, right now.</p>
+
+    <!-- Scanner UI -->
+    <div style="background:#fff;border:1.5px solid var(--bd);border-radius:24px;overflow:hidden;box-shadow:0 4px 40px rgba(123,111,219,0.10);">
+      <!-- Top bar -->
+      <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;background:var(--cream2);border-bottom:1px solid var(--bd2);">
+        <div style="width:10px;height:10px;border-radius:50%;background:#FF5F57;"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#FEBC2E;"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#28C840;"></div>
+        <span style="margin-left:12px;font-size:12px;font-family:monospace;color:var(--ink2);">chick · live scan · productivity app</span>
+        <span id="scan-status" style="margin-left:auto;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#28C840;">● SCANNING</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;min-height:340px;">
+        <!-- Communities column -->
+        <div style="padding:24px 20px;border-right:1px solid var(--bd2);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Communities</div>
+          <div id="col-communities" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+        <!-- Creators column -->
+        <div style="padding:24px 20px;border-right:1px solid var(--bd2);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Creators</div>
+          <div id="col-creators" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+        <!-- Businesses column -->
+        <div style="padding:24px 20px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Businesses &amp; Publishers</div>
+          <div id="col-businesses" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+      </div>
+
+      <!-- Bottom aggregation bar -->
+      <div style="padding:20px 24px;border-top:1px solid var(--bd2);background:var(--cream2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;align-items:center;gap:32px;">
+          <div>
+            <div id="scan-count" style="font-size:32px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-1px;">0</div>
+            <div style="font-size:10px;color:var(--ink2);text-transform:uppercase;letter-spacing:0.1em;">sources scanned</div>
+          </div>
+          <div>
+            <div id="match-count" style="font-size:32px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:-1px;">0</div>
+            <div style="font-size:10px;color:var(--ink2);text-transform:uppercase;letter-spacing:0.1em;">matches found</div>
+          </div>
+        </div>
+        <div id="scan-bar-wrap" style="flex:1;max-width:400px;min-width:200px;">
+          <div style="height:6px;border-radius:100px;background:var(--bd2);overflow:hidden;">
+            <div id="scan-bar" style="height:100%;width:0%;border-radius:100px;background:linear-gradient(90deg,#7B6FDB,#C4BCFF);transition:width 0.3s ease;"></div>
+          </div>
+          <div id="scan-label" style="font-size:11px;color:var(--ink2);margin-top:6px;font-family:monospace;">Initialising crawl...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.scan-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;font-family:monospace;
+  color:var(--ink2);
+  padding:4px 0;
+  animation:scan-fade-in 0.3s ease both;
+}
+.scan-item.hit{color:var(--gold);font-weight:700;}
+.scan-dot{width:6px;height:6px;border-radius:50%;background:var(--bd);flex-shrink:0;}
+.scan-item.hit .scan-dot{background:var(--gold);}
+@keyframes scan-fade-in{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+</style>
+
 <script>
-  // ── CONFIG ──────────────────────────────────────────────────────────────
-  const API_BASE = '/api';
-  let selectedCommunity = null;
-  let allCommunities = [];
-  let currentStartup = null;
+(function(){
+  const communities=[
+    {t:'r/productivity',hit:true},{t:'r/getdisciplined',hit:true},{t:'r/selfimprovement',hit:false},
+    {t:'Indie Hackers forum',hit:false},{t:'r/Entrepreneur',hit:true},{t:'Building a Second Brain FB',hit:true},
+    {t:'YC Startup School forum',hit:true},{t:'r/startups',hit:false},{t:'r/ADHD',hit:false},
+    {t:'Deep Work Discord',hit:true},{t:'r/personalfinance',hit:false},{t:'Cortex Podcast Reddit',hit:true},
+  ];
+  const creators=[
+    {t:'@aliabdaal YouTube',hit:true},{t:'@thomasfrank YouTube',hit:true},{t:'@mattdavella',hit:false},
+    {t:'@mkbhd',hit:false},{t:'@nathanbarry newsletter',hit:true},{t:'@hubermanlab',hit:false},
+    {t:'@augustbradley Notion',hit:true},{t:'@lexfridman',hit:false},{t:'@tiagoforte BASB',hit:true},
+    {t:'@myler productivity',hit:false},{t:'@codewithchris',hit:false},{t:'@fortelabs',hit:true},
+  ];
+  const businesses=[
+    {t:'Starter Story newsletter',hit:true},{t:'Habits Weekly newsletter',hit:true},{t:'Notion HQ blog',hit:false},
+    {t:'Remote.co job board',hit:false},{t:'Zapier blog sponsors',hit:true},{t:'Hiten Shah newsletter',hit:false},
+    {t:'SaaStr community',hit:true},{t:'Atlassian team blogs',hit:false},{t:'Superhuman blog',hit:true},
+    {t:'The Hustle newsletter',hit:false},{t:'Morning Brew sponsors',hit:true},{t:'Lenny\'s Newsletter',hit:true},
+  ];
 
-  // ── FIND COMMUNITIES ─────────────────────────────────────────────────────
-  async function findCommunities() {
-    const name = document.getElementById('startup-name').value.trim();
-    const desc = document.getElementById('startup-desc').value.trim();
-    const customer = document.getElementById('startup-customer').value.trim();
-    const stage = document.getElementById('startup-stage').value;
-    const category = document.getElementById('startup-category').value;
+  let scanIdx=0, totalScanned=0, totalMatched=0;
+  const maxItems=12;
 
-    if (!name || !desc || !customer) {
-      alert('Please fill in all fields to find your communities.');
+  function addItem(col,data){
+    const el=document.createElement('div');
+    el.className='scan-item'+(data.hit?' hit':'');
+    el.innerHTML=`<div class="scan-dot"></div><span>${data.t}</span>${data.hit?'<span style="margin-left:auto;color:#7B6FDB;font-size:10px;">✓</span>':''}`;
+    col.appendChild(el);
+    if(col.children.length>8){col.removeChild(col.children[0]);}
+  }
+
+  function tick(){
+    if(scanIdx>=maxItems*3) return;
+    const ci=document.getElementById('col-communities');
+    const cr=document.getElementById('col-creators');
+    const cb=document.getElementById('col-businesses');
+
+    const c=communities[scanIdx%communities.length];
+    const cr2=creators[scanIdx%creators.length];
+    const b=businesses[scanIdx%businesses.length];
+
+    addItem(ci,c); addItem(cr,cr2); addItem(cb,b);
+
+    totalScanned+=Math.floor(Math.random()*800+400);
+    if(c.hit) totalMatched++;
+    if(cr2.hit) totalMatched++;
+    if(b.hit) totalMatched++;
+
+    document.getElementById('scan-count').textContent=totalScanned.toLocaleString();
+    document.getElementById('match-count').textContent=totalMatched;
+    document.getElementById('scan-bar').style.width=Math.min(100,(scanIdx/maxItems)*100*3/3)+'%';
+
+    const labels=['Crawling Reddit communities...','Scanning YouTube channels...','Checking newsletter audiences...','Analysing Facebook groups...','Searching Slack networks...','Scoring business audiences...','Cross-referencing ICP signals...','Ranking by engagement density...'];
+    document.getElementById('scan-label').textContent=labels[scanIdx%labels.length];
+
+    scanIdx++;
+    if(scanIdx>=maxItems){
+      document.getElementById('scan-status').textContent='✓ COMPLETE';
+      document.getElementById('scan-status').style.color='#C4BCFF';
+      document.getElementById('scan-label').textContent=`${totalScanned.toLocaleString()} sources scanned · Top 12 surfaced`;
       return;
     }
+    setTimeout(tick, 420);
+  }
 
-    currentStartup = { name, description: desc, target_customer: customer, stage, category };
-
-    // Show loader
-    document.getElementById('find-btn').disabled = true;
-    document.getElementById('find-loader').style.display = 'flex';
-    document.getElementById('results-section').style.display = 'none';
-    document.getElementById('empty-state').style.display = 'none';
-    document.getElementById('stats-row').style.display = 'none';
-    document.getElementById('playbook-area').classList.remove('visible');
-
-    try {
-      const res = await fetch(`${API_BASE}/find-communities`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentStartup)
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      allCommunities = data.communities;
-
-      renderCommunities(allCommunities);
-      renderStats(allCommunities);
-
-    } catch (err) {
-      console.error(err);
-      alert('Error connecting to API.\n\n' + err.message);
-    } finally {
-      document.getElementById('find-btn').disabled = false;
-      document.getElementById('find-loader').style.display = 'none';
+  // Start when section scrolls into view
+  const section=document.getElementById('scan-section');
+  let started=false;
+  const obs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting && !started){
+      started=true;
+      setTimeout(tick,600);
     }
-  }
-
-  // ── RENDER COMMUNITY LIST ────────────────────────────────────────────────
-  function renderCommunities(communities) {
-    const list = document.getElementById('community-list');
-    document.getElementById('match-count').textContent = communities.length;
-    list.innerHTML = '';
-
-    communities.forEach((c, i) => {
-      const score = c.relevance_score || 85;
-      const scoreClass = score >= 80 ? '' : score >= 60 ? 'medium' : 'low';
-
-      const card = document.createElement('div');
-      card.className = 'community-card';
-      card.dataset.index = i;
-      card.innerHTML = `
-        <div class="card-top">
-          <div>
-            <div class="card-platform">${c.platform}</div>
-            <div class="card-name">${c.name}</div>
-          </div>
-          <div class="score-badge ${scoreClass}">${score}%</div>
-        </div>
-        <div class="card-icp">${c.icp_match || c.approach || ''}</div>
-        <div class="card-meta">
-          <div class="meta-pill">👥 ${c.size || 'Unknown'}</div>
-          <div class="meta-pill">⚡ ${c.engagement_level || 'High'}</div>
-          <div class="meta-pill">⏱ ${c.time_to_first_customer || '3-7 days'}</div>
-        </div>
-        <button class="btn-generate-playbook" onclick="generatePlaybook(${i}, event)">
-          Generate Activation Playbook →
-        </button>
-      `;
-      card.addEventListener('click', () => selectCommunity(i, card));
-      list.appendChild(card);
-    });
-
-    document.getElementById('results-section').style.display = 'block';
-  }
-
-  // ── RENDER STATS ROW ─────────────────────────────────────────────────────
-  function renderStats(communities) {
-    const statsRow = document.getElementById('stats-row');
-    statsRow.style.display = 'grid';
-
-    document.getElementById('s1').textContent = communities.length;
-
-    // Estimate total audience
-    let totalM = communities.length * 180;
-    document.getElementById('s2').textContent = totalM > 1000 ? `${(totalM/1000).toFixed(1)}M+` : `${totalM}K+`;
-
-    // Fastest
-    const fastest = communities
-      .map(c => c.time_to_first_customer || '7 days')
-      .sort((a,b) => parseInt(a) - parseInt(b))[0];
-    document.getElementById('s3').textContent = fastest || '3-5 days';
-
-    // Top platform
-    const platforms = communities.map(c => c.platform);
-    const topPlatform = platforms.sort((a,b) =>
-      platforms.filter(v => v===b).length - platforms.filter(v => v===a).length
-    )[0];
-    document.getElementById('s4').textContent = topPlatform || 'Reddit';
-  }
-
-  // ── SELECT COMMUNITY ─────────────────────────────────────────────────────
-  function selectCommunity(index, cardEl) {
-    document.querySelectorAll('.community-card').forEach(c => c.classList.remove('active'));
-    cardEl.classList.add('active');
-    selectedCommunity = allCommunities[index];
-
-    // Show preview in playbook area without generating
-    const playbook = document.getElementById('playbook-area');
-    const content = document.getElementById('playbook-content');
-    playbook.classList.add('visible');
-
-    content.innerHTML = `
-      <div class="playbook-header">
-        <div class="playbook-title">${selectedCommunity.name}</div>
-        <span class="playbook-platform-tag">${selectedCommunity.platform}</span>
-      </div>
-      <p style="color:var(--text2); margin-bottom:20px; font-size:15px; line-height:1.6;">
-        ${selectedCommunity.icp_match || selectedCommunity.approach || 'This community matches your target audience.'}
-      </p>
-      <p style="color:var(--text3); font-size:14px;">
-        Click <strong style="color:var(--accent)">Generate Activation Playbook</strong> on the community card to get your step-by-step GTM plan for this channel.
-      </p>
-    `;
-  }
-
-  // ── GENERATE PLAYBOOK ────────────────────────────────────────────────────
-  async function generatePlaybook(index, event) {
-    event.stopPropagation();
-    if (!currentStartup) return;
-
-    const community = allCommunities[index];
-    selectedCommunity = community;
-
-    // Mark active
-    document.querySelectorAll('.community-card').forEach((c, i) => {
-      c.classList.toggle('active', i === index);
-    });
-
-    const playbook = document.getElementById('playbook-area');
-    const content = document.getElementById('playbook-content');
-    playbook.classList.add('visible');
-
-    content.innerHTML = `
-      <div class="playbook-loader">
-        <div class="spinner"></div>
-        <div class="loader-text">Generating your playbook for ${community.name}...</div>
-        <div class="loader-sub">Crafting your first post, DM templates and weekly action plan</div>
-      </div>
-    `;
-
-    try {
-      const res = await fetch(`${API_BASE}/generate-playbook`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          startup: currentStartup,
-          community_name: community.name,
-          community_platform: community.platform,
-          community_description: community.icp_match || ''
-        })
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      renderPlaybook(data, community);
-
-    } catch (err) {
-      content.innerHTML = `<div style="padding:40px;color:var(--red);">Error generating playbook: ${err.message}</div>`;
-    }
-  }
-
-  // ── RENDER PLAYBOOK ──────────────────────────────────────────────────────
-  function renderPlaybook(p, community) {
-    const content = document.getElementById('playbook-content');
-
-    const week1Html = (p.week1_actions || []).map(a =>
-      `<li>${a}</li>`
-    ).join('');
-
-    const dosHtml = (p.dos || []).map(d => `<li>${d}</li>`).join('');
-    const dontsHtml = (p.donts || []).map(d => `<li>${d}</li>`).join('');
-
-    content.innerHTML = `
-      <div class="playbook-header">
-        <div class="playbook-title">${p.community || community.name}</div>
-        <span class="playbook-platform-tag">${p.platform || community.platform}</span>
-      </div>
-
-      <div class="playbook-grid">
-
-        <!-- Week 1 Actions -->
-        <div class="playbook-card">
-          <div class="card-header">📅 Week 1 Action Plan</div>
-          <ul class="action-list">${week1Html}</ul>
-        </div>
-
-        <!-- KPIs -->
-        <div class="playbook-card">
-          <div class="card-header">🎯 Targets</div>
-          <div class="kpi-row">
-            <div class="kpi-item">
-              <div class="kpi-label">Week 1 Goal</div>
-              <div class="kpi-value">${p.kpis?.week1_target || '10 replies, 3 DMs'}</div>
-            </div>
-            <div class="kpi-item">
-              <div class="kpi-label">Conversion Goal</div>
-              <div class="kpi-value">${p.kpis?.conversion_goal || '5 beta signups'}</div>
-            </div>
-          </div>
-
-          <div style="margin-top:16px;">
-            <div class="card-header">Do's & Don'ts</div>
-            <div class="dos-donts">
-              <ul class="do-list">${dosHtml}</ul>
-              <ul class="dont-list">${dontsHtml}</ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- First Post -->
-        <div class="playbook-card full">
-          <div class="card-header">📝 Your First Post (Copy & Paste Ready)</div>
-          <div class="post-preview">
-            <div class="post-title">${p.first_post?.title || 'Post title'}</div>
-            <div class="post-body">${p.first_post?.body || ''}</div>
-            <span class="post-type-tag">${p.first_post?.post_type || 'discussion'}</span>
-          </div>
-        </div>
-
-        <!-- DM Template -->
-        <div class="playbook-card full">
-          <div class="card-header">💬 DM Template (For Engaged Members)</div>
-          <div class="dm-template">${p.first_dm_template || ''}</div>
-        </div>
-
-        <!-- Insider Tip -->
-        <div class="playbook-card full">
-          <div class="insider-tip">${p.insider_tip || ''}</div>
-        </div>
-
-      </div>
-    `;
-  }
-
-  // ── INIT: load stats ─────────────────────────────────────────────────────
-  fetch(`${API_BASE}/dashboard-stats`)
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById('stat-communities').textContent = d.communities_mapped?.toLocaleString() || '2,847';
-      document.getElementById('stat-startups').textContent = d.startups_helped || '312';
-      document.getElementById('stat-days').textContent = (d.avg_days_to_first_customer || 6.3) + 'd';
-    })
-    .catch(() => {}); // Silently ignore if backend not running yet
+  },{threshold:0.3});
+  obs.observe(section);
+})();
 </script>
 
+<!-- COMMUNITY RADAR SECTION -->
+<div id="research" style="padding:100px 56px;background:linear-gradient(160deg,#2D1F6E 0%,#3D2B88 100%);border-top:1px solid rgba(196,188,255,0.15);">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-tag reveal" style="margin-bottom:20px;color:var(--lilac3);border-color:rgba(196,188,255,0.25);">Your community map</div>
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start;">
+
+      <!-- Left: heading + ranked list -->
+      <div>
+        <h2 class="section-h reveal" style="color:#fff;margin-bottom:16px;font-size:clamp(36px,4vw,56px);">The map is<br><i style="color:var(--lilac3);">already built.</i></h2>
+        <p class="section-p reveal" style="color:rgba(255,255,255,0.75);margin-bottom:40px;font-size:18px;line-height:1.75;">Chick finds the specific creators, communities, businesses, and publishers where your customer already trusts someone — not just social platforms. Ranked. Scored. With a clear reason why each one matters. Click any row to see your next move.</p>
+
+        <!-- Ranked community rows -->
+        <div id="comm-list" style="display:flex;flex-direction:column;gap:10px;">
+          <div class="comm-row" data-idx="0" onclick="selectComm(0)">
+            <div class="comm-rank">#1</div>
+            <div class="comm-icon" style="background:#FF0000;">YT</div>
+            <div class="comm-detail">
+              <div class="comm-name">Ali Abdaal · YouTube</div>
+              <div class="comm-meta">Creator · 5.1M subscribers</div>
+            </div>
+            <div class="comm-score-wrap"><div class="comm-score-bar" style="width:97%"></div><div class="comm-score-num">97</div></div>
+          </div>
+          <div class="comm-row" data-idx="1" onclick="selectComm(1)">
+            <div class="comm-rank">#2</div>
+            <div class="comm-icon" style="background:#4A154B;">Sl</div>
+            <div class="comm-detail">
+              <div class="comm-name">Remote-First Slack networks</div>
+              <div class="comm-meta">B2B · Team leads · Tool-seekers</div>
+            </div>
+            <div class="comm-score-wrap"><div class="comm-score-bar" style="width:94%"></div><div class="comm-score-num">94</div></div>
+          </div>
+          <div class="comm-row" data-idx="2" onclick="selectComm(2)">
+            <div class="comm-rank">#3</div>
+            <div class="comm-icon" style="background:#FF6B35;">✉</div>
+            <div class="comm-detail">
+              <div class="comm-name">Newsletter sponsorships</div>
+              <div class="comm-meta">Starter Story · Habits Weekly · 300K+</div>
+            </div>
+            <div class="comm-score-wrap"><div class="comm-score-bar" style="width:91%"></div><div class="comm-score-num">91</div></div>
+          </div>
+          <div class="comm-row" data-idx="3" onclick="selectComm(3)">
+            <div class="comm-rank">#4</div>
+            <div class="comm-icon" style="background:#FF4500;">r/</div>
+            <div class="comm-detail">
+              <div class="comm-name">r/productivity · Reddit</div>
+              <div class="comm-meta">Community · 3.1M members</div>
+            </div>
+            <div class="comm-score-wrap"><div class="comm-score-bar" style="width:88%"></div><div class="comm-score-num">88</div></div>
+          </div>
+          <div class="comm-row" data-idx="4" onclick="selectComm(4)">
+            <div class="comm-rank">#5</div>
+            <div class="comm-icon" style="background:#0078D4;">B2B</div>
+            <div class="comm-detail">
+              <div class="comm-name">SaaS company team budgets</div>
+              <div class="comm-meta">B2B · Ops leads · 10–50 seats</div>
+            </div>
+            <div class="comm-score-wrap"><div class="comm-score-bar" style="width:84%"></div><div class="comm-score-num">84</div></div>
+          </div>
+        </div>
+        <div style="margin-top:20px;font-size:0.8rem;color:rgba(255,255,255,0.35);text-align:left;">+ 7 more communities ranked · <a href="#cta" style="color:var(--lilac3);font-weight:600;text-decoration:none;">See full report →</a></div>
+      </div>
+
+      <!-- Right: radial burst chart + action card -->
+      <div>
+        <canvas id="burstChart" width="600" height="600" style="width:100%;max-width:600px;display:block;margin:0 auto 28px;cursor:pointer;"></canvas>
+
+        <!-- #1 next move card -->
+        <div class="next-move-card" id="nextMoveCard">
+          <div class="nm-eyebrow">⚡ Your #1 next move</div>
+          <div class="nm-community" id="nmComm">Ali Abdaal · YouTube</div>
+          <div class="nm-action" id="nmAction">5.1M subscribers — the #1 productivity creator globally. His audience buys what he recommends. Watch his last 10 videos, leave 3 genuine comments per day for 5 days, then DM: "Built a productivity app I think your community would love — open to an honest review?" One mention = thousands of signups.</div>
+          <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;" id="nmTags">
+            <span class="nm-tag">5.1M subscribers</span>
+            <span class="nm-tag">Creator collab</span>
+            <span class="nm-tag">Highest leverage</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Community list rows */
+.comm-row{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:16px;border:1.5px solid rgba(255,255,255,0.09);cursor:pointer;transition:all .2s;background:rgba(255,255,255,0.04);}
+.comm-row:hover,.comm-row.active{border-color:rgba(196,188,255,0.6);background:rgba(123,111,219,0.18);}
+.comm-rank{font-size:0.85rem;font-weight:800;color:var(--lilac3);width:28px;flex-shrink:0;letter-spacing:0.05em;}
+.comm-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:#fff;flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif;}
+.comm-detail{flex:1;min-width:0;}
+.comm-name{font-size:1rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.comm-meta{font-size:0.8rem;color:rgba(255,255,255,0.55);margin-top:3px;}
+.comm-score-wrap{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.comm-score-bar{height:5px;border-radius:100px;background:linear-gradient(90deg,var(--lilac),var(--lilac3));transition:width .4s;}
+.comm-score-num{font-size:1rem;font-weight:800;color:var(--lilac3);width:28px;text-align:right;}
+/* Next move card */
+.next-move-card{background:linear-gradient(135deg,var(--lilac) 0%,#9B91E8 100%);border-radius:24px;padding:36px 36px 30px;}
+.nm-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:12px;}
+.nm-community{font-family:'Instrument Serif',serif;font-size:2rem;color:#fff;margin-bottom:14px;font-style:italic;}
+.nm-action{font-size:1rem;color:rgba(255,255,255,0.92);line-height:1.7;}
+.nm-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lilac);background:rgba(255,255,255,0.95);border-radius:100px;padding:5px 14px;}
+@media(max-width:768px){
+  #research .section-h{font-size:clamp(2rem,5vw,3rem)!important;}
+  #research>div>div[style*="grid"]{grid-template-columns:1fr!important;gap:40px!important;}
+}
+</style>
+
+<script>
+// Community data
+const COMMS=[
+  {name:'Ali Abdaal · YouTube',short:'Ali Abdaal',platform:'YouTube',color:'#FF0000',score:97,action:'5.1M subscribers — the #1 productivity creator globally. His audience buys what he recommends. Watch his last 10 videos, leave 3 genuine comments per day for 5 days, then DM: "Built a productivity app I think your community would love — open to an honest review?" One mention = thousands of signups.',tags:['5.1M subscribers','Creator collab','Highest leverage']},
+  {name:'Remote-First Slack networks',short:'Remote Slack groups',platform:'Slack',color:'#4A154B',score:94,action:'Remote-first companies run internal Slack workspaces where team leads actively search for tools to help distributed teams focus and hit goals. Get into 3–5 remote work Slack communities (e.g. Remote Work Hub, Running Remote). Post in #tools channels. B2B word-of-mouth at its fastest.',tags:['B2B · team leads','Tool-seekers','High conversion']},
+  {name:'Newsletter sponsorships',short:'Newsletter placements',platform:'Newsletter',color:'#FF6B35',score:91,action:'Sponsor a single issue of a productivity-focused newsletter — Starter Story (300K), Habits Weekly (150K), or The Hustle. A well-written 3-sentence placement in one newsletter can drive 500–2,000 signups in 24 hours at far lower CPM than any paid ad.',tags:['Newsletter placement','Warm audience','B2B + consumer']},
+  {name:'r/productivity · Reddit',short:'r/productivity',platform:'Reddit',color:'#FF4500',score:88,action:'3.1M members actively recommend apps to each other. Day 1–3: absorb the language of failure — how people describe not following through. Day 4: post "What\'s the one thing every productivity app gets wrong?" Reply within 2 hours. DM the best responders.',tags:['3.1M members','App recs weekly','High buyer intent']},
+  {name:'SaaS company offsite budgets',short:'SaaS team tools',platform:'B2B',color:'#0078D4',score:84,action:'Companies with 10–50 person remote teams actively buy productivity tools as a team. Target ops leads and chiefs of staff at Series A SaaS companies on LinkedIn. Message: "We help distributed teams close the gap between goals and daily execution." B2B deal = 10–50 seats at once.',tags:['B2B · 10–50 seats','Ops leads','High deal value']},
+  {name:'Thomas Frank · YouTube',short:'Thomas Frank',platform:'YouTube',color:'#1877F2',score:79,action:'3.2M subscribers, all productivity-obsessed. Thomas reviews tools for a living — a positive mention drives direct signups from buyers who already trust him. Comment on 5 videos, then pitch a free review access. His audience converts at 3× the rate of typical YouTube.',tags:['3.2M subscribers','Tool reviewer','High trust']},
+  {name:'YC Startup School forums',short:'YC Startup School',platform:'Forum',color:'#F26625',score:75,action:'Founders at Startup School are actively building habits and trying to stay focused while building. Post in the community forum about the problem — not the product. Offer free beta access. Founders make great early adopters and refer their teams.',tags:['Founder audience','Early adopters','Referral potential']},
+  {name:'Notion power users · FB',short:'Notion community',platform:'Facebook',color:'#4267B2',score:71,action:'230K Notion power users who already build elaborate productivity systems. They\'re halfway to your product. Position as the "execution layer" on top of their Notion setup. Post: "How do you bridge the gap between your second brain and actually doing the work?"',tags:['230K members','System-builders','Adjacent ICP']},
+  {name:'Chief of Staff networks',short:'CoS network',platform:'LinkedIn',color:'#0A66C2',score:67,action:'Chiefs of Staff at fast-growing startups are responsible for team productivity and goal alignment — they buy tools for their whole company. LinkedIn message 20 CoS profiles per week with a specific, relevant ask. Conversion rate is low but deal value is high.',tags:['B2B decision-makers','Team tool buyers','High deal value']},
+  {name:'Deep Work Discord servers',short:'Deep Work Discord',platform:'Discord',color:'#5865F2',score:63,action:'Multiple large Discords built around Cal Newport\'s Deep Work principles. These users pay for quality, have high willingness to try new tools, and are vocal evangelists when they find something that works. Join for 2 weeks, then share in #tools.',tags:['Niche community','Willingness to pay','Evangelist potential']},
+  {name:'HR Tech Slack communities',short:'HR Tech Slack',platform:'Slack',color:'#36C5F0',score:59,action:'HR professionals and people ops leads at mid-size companies buy goal-tracking and productivity tools at scale. People Ops Professionals Slack (8K members) and HR Open Source community are direct paths to team buyers.',tags:['People ops buyers','Team licences','B2B channel']},
+  {name:'Product Hunt launch',short:'Product Hunt',platform:'ProductHunt',color:'#DA552F',score:55,action:'A top-5 Product Hunt launch puts you in front of 50K+ early adopters in 24 hours. Prepare 20 supporters to upvote in the first hour. Launch Tuesday or Wednesday. The comments also give you real ICP feedback immediately.',tags:['50K+ reach','Early adopters','Launch moment']},
+];
+
+let selectedIdx=0;
+
+function selectComm(idx){
+  selectedIdx=idx;
+  document.querySelectorAll('.comm-row').forEach((r,i)=>r.classList.toggle('active',i===idx));
+  const c=COMMS[idx];
+  document.getElementById('nmComm').textContent=c.name;
+  document.getElementById('nmAction').textContent=c.action;
+  const tagEl=document.getElementById('nmTags');
+  tagEl.innerHTML=c.tags.map(t=>`<span class="nm-tag">${t}</span>`).join('');
+  drawBurst(idx);
+}
+
+// AnswerThePublic-style radial burst
+function drawBurst(activeIdx){
+  const canvas=document.getElementById('burstChart');
+  if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.offsetWidth||500;
+  canvas.width=W*dpr; canvas.height=W*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=W+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  const cx=W/2, cy=W/2;
+  const R=W*0.36; // radius to node centres
+  const N=COMMS.length;
+
+  ctx.clearRect(0,0,W,W);
+
+  // Draw curved lines from centre to each node
+  COMMS.forEach((c,i)=>{
+    const angle=Math.PI*2/N*i - Math.PI/2;
+    const nx=cx+Math.cos(angle)*R;
+    const ny=cy+Math.sin(angle)*R;
+    const isActive=(i===activeIdx);
+
+    // Curved line (bezier, slight bend like AnswerThePublic)
+    const mx=cx+Math.cos(angle)*R*0.5;
+    const my=cy+Math.sin(angle)*R*0.5;
+    // perpendicular offset for curve
+    const px=-Math.sin(angle)*R*0.12;
+    const py= Math.cos(angle)*R*0.12;
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.quadraticCurveTo(mx+px, my+py, nx, ny);
+    ctx.strokeStyle=isActive ? c.color : 'rgba(255,255,255,0.12)';
+    ctx.lineWidth=isActive ? 2 : 1;
+    ctx.stroke();
+
+    // Node circle — size proportional to score
+    const nodeR=Math.round(8+((c.score-60)/40)*10); // 8–18px
+    ctx.beginPath();
+    ctx.arc(nx, ny, nodeR, 0, Math.PI*2);
+    ctx.fillStyle=isActive ? c.color : (i<5?c.color+'CC':'rgba(255,255,255,0.2)');
+    ctx.fill();
+    if(isActive){
+      ctx.strokeStyle='#fff';
+      ctx.lineWidth=2.5;
+      ctx.stroke();
+    }
+
+    // Label
+    const labelR=R+nodeR+6;
+    const lx=cx+Math.cos(angle)*labelR;
+    const ly=cy+Math.sin(angle)*labelR;
+    ctx.fillStyle=isActive ? '#fff' : 'rgba(255,255,255,0.45)';
+    ctx.font=(isActive?'700 ':'500 ')+'11px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign=lx<cx-10?'right':lx>cx+10?'left':'center';
+    ctx.textBaseline=ly<cy-10?'bottom':ly>cy+10?'top':'middle';
+    ctx.fillText(c.short, lx, ly);
+
+    // Score badge on active
+    if(isActive){
+      ctx.fillStyle=c.color;
+      ctx.beginPath();
+      ctx.arc(nx+nodeR-2, ny-nodeR+2, 9, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.font='bold 8px Plus Jakarta Sans, sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(c.score, nx+nodeR-2, ny-nodeR+2);
+    }
+  });
+
+  // Central node
+  const cR=32;
+  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,cR);
+  grad.addColorStop(0,'#9B91E8');
+  grad.addColorStop(1,'#7B6FDB');
+  ctx.beginPath();
+  ctx.arc(cx,cy,cR,0,Math.PI*2);
+  ctx.fillStyle=grad;
+  ctx.fill();
+  ctx.strokeStyle='rgba(196,188,255,0.5)';
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  // Central label
+  ctx.fillStyle='#fff';
+  ctx.font='bold 9px Plus Jakarta Sans, sans-serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('productivity', cx, cy-5);
+  ctx.fillText('app', cx, cy+7);
+}
+
+// Click on canvas to select nearest community
+document.getElementById('burstChart').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const W=rect.width, cx=W/2, cy=W/2, R=W*0.36, N=COMMS.length;
+  let best=-1, bestD=Infinity;
+  COMMS.forEach((c,i)=>{
+    const angle=Math.PI*2/N*i-Math.PI/2;
+    const nx=cx+Math.cos(angle)*R, ny=cy+Math.sin(angle)*R;
+    const d=Math.hypot(mx-nx,my-ny);
+    if(d<bestD){bestD=d;best=i;}
+  });
+  if(bestD<40)selectComm(best);
+});
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelector('.comm-row').classList.add('active');
+  drawBurst(0);
+});
+setTimeout(()=>drawBurst(0),200);
+window.addEventListener('resize',()=>drawBurst(selectedIdx));
+
+// keep selectComm for list click — reuse same fn above
+// lefthand list only shows top 5; clicks still update chart
+function selectComm(idx){
+  selectedIdx=idx;
+  document.querySelectorAll('.comm-row').forEach((r,i)=>r.classList.toggle('active',i===idx));
+  const c=COMMS[idx];
+  document.getElementById('nmComm').textContent=c.name;
+  document.getElementById('nmAction').textContent=c.action;
+  document.getElementById('nmTags').innerHTML=c.tags.map(t=>`<span class="nm-tag">${t}</span>`).join('');
+  drawBurst(idx);
+}
+
+</script>
+
+<!-- PRICING -->
+<div id="pricing" class="pricing-section">
+  <div class="pricing-inner">
+    <div class="section-tag reveal">Pricing</div>
+    <h2 class="section-h reveal">Start free.<br><i>Scale when it works.</i></h2>
+    <p class="section-p reveal">Free tier available. Upgrade when you're ready for the full refinement loop.</p>
+    <div class="p-grid">
+      <div class="p-card reveal d1">
+        <div class="p-tier">Free</div>
+        <div class="p-price">£0<span>/mo</span></div>
+        <div class="p-note">3 community searches/month</div>
+        <div class="p-div"></div>
+        <ul class="p-feats">
+          <li>3 community searches/month</li>
+          <li>Top 3 communities ranked</li>
+          <li>Basic confidence score</li>
+          <li>No activation playbook</li>
+        </ul>
+        <button class="p-btn p-btn-out">Start free →</button>
+      </div>
+      <div class="p-card hot reveal d2">
+        <div class="p-badge">★ Most Popular</div>
+        <div class="p-tier">Pro</div>
+        <div class="p-price">£49<span>/mo</span></div>
+        <div class="p-note">82% gross margin · full loop</div>
+        <div class="p-div"></div>
+        <ul class="p-feats">
+          <li>Unlimited searches</li>
+          <li>Full top-10 ranked community list</li>
+          <li>7-day playbook per community</li>
+          <li>Copy-paste posts + DM templates</li>
+          <li>Outcome tracking + AI refinement</li>
+          <li>Pattern intelligence updates</li>
+        </ul>
+        <button class="p-btn p-btn-dark">Get Pro →</button>
+      </div>
+      <div class="p-card reveal d3">
+        <div class="p-tier">Agency</div>
+        <div class="p-price">£199<span>/mo</span></div>
+        <div class="p-note">90% gross margin · multi-startup</div>
+        <div class="p-div"></div>
+        <ul class="p-feats">
+          <li>Up to 10 startup profiles</li>
+          <li>White-label playbook export</li>
+          <li>Client dashboard</li>
+          <li>Priority pattern intelligence</li>
+          <li>Accelerator cohort ready</li>
+        </ul>
+        <button class="p-btn p-btn-out">Talk to us →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div id="cta" class="cta-section">
+  <h2 class="cta-h reveal">You build it.<br><i>Chick finds them.</i></h2>
+  <p class="cta-p reveal">Describe your idea. Chick maps where your customers live and writes exactly how to reach them.</p>
+  <div class="cta-form reveal">
+    <input class="cta-inp" type="email" placeholder="your@email.com">
+    <button class="cta-go">Request access →</button>
+  </div>
+  <div class="cta-fine reveal">Free tier available · No credit card required</div>
+</div>
+
+<footer>
+  <div class="f-logo">Chick<span>.</span></div>
+  <div class="f-note">Built at Tech Europe × Cala Hackathon · Barcelona 2026</div>
+</footer>
+
+<script>
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ── NEST ANIMATION ── */
+const nestEggs=document.getElementById('nestEggs');
+const nestCount=document.getElementById('nestCount');
+const nestLabel=document.getElementById('nestLabel');
+let eggCount=0;
+
+// Labels for each milestone
+const milestones=['Idea captured','Communities found','Drafts ready','Refining…'];
+
+function makeEggSVG(hatched){
+  // Each egg: shell bottom + shell top (that flies off) + chick face inside
+  return `<svg viewBox="0 0 30 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="36">
+    <!-- egg body bottom -->
+    <ellipse cx="15" cy="28" rx="12" ry="8" fill="#F2EFFF" stroke="#9B91E8" stroke-width="1"/>
+    <path d="M3 28 Q3 14 15 10 Q27 14 27 28" fill="#F2EFFF" stroke="#9B91E8" stroke-width="1"/>
+    <!-- crack line -->
+    <path d="M3 21 L7 18 L10 21 L13 17 L16 21 L19 17 L22 21 L27 19" stroke="#9B91E8" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- shell top (flies off on hatch) -->
+    <g class="egg-shell-top">
+      <path d="M5 21 L7 18 L10 21 L13 17 L16 21 L19 17 L22 21 L25 19 Q27 12 25 7 Q22 1 15 1 Q8 1 5 7 Q3 12 5 21Z" fill="#F2EFFF" stroke="#9B91E8" stroke-width="1" stroke-linejoin="round"/>
+    </g>
+    <!-- chick face (pops up on hatch) -->
+    <g class="chick-face">
+      <circle cx="15" cy="19" r="7" fill="#A78BFA"/>
+      <path d="M11.5 18 Q13 16.5 14.5 18" stroke="#120D1E" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M15.5 18 Q17 16.5 18.5 18" stroke="#120D1E" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M13.5 21 L16.5 21 L15 23.5Z" fill="#C4401A"/>
+    </g>
+  </svg>`;
+}
+
+function addEgg(hatchAfter){
+  eggCount++;
+  const slot=document.createElement('div');
+  slot.className='n-egg';
+  slot.innerHTML=makeEggSVG(false);
+  nestEggs.appendChild(slot);
+
+  // drop in
+  requestAnimationFrame(()=>{
+    slot.classList.add('landed');
+    nestCount.textContent=eggCount;
+    nestCount.classList.add('show');
+    nestLabel.classList.add('show');
+    nestLabel.textContent=milestones[eggCount-1]||'leads found';
+  });
+
+  // hatch after delay
+  if(hatchAfter){
+    setTimeout(()=>{slot.classList.add('hatched');},900);
+  }
+}
+
+// Watch the 4 journey steps
+const steps=document.querySelectorAll('.flow-step');
+const stepObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting && !e.target.dataset.egged){
+      e.target.dataset.egged='1';
+      const isLast=eggCount>=3;
+      addEgg(isLast); // hatch the last one
+    }
+  });
+},{threshold:0.5});
+steps.forEach(s=>stepObs.observe(s));
+
+const PB=[
+  {h:'Ali Abdaal · YouTube — 30-Day GTM Playbook',t:'"Hey Ali — I\'ve built a productivity app that turns goals into a daily action plan with AI coaching. No audience, no brand — just a product I think your community would genuinely love. Would you be open to trying it and sharing honestly if it clicks?"'},
+  {h:'r/productivity — 30-Day GTM Playbook',t:'"Genuine question — what\'s the one thing every productivity app gets wrong? I\'m building something in this space and want to understand the real frustrations before I go any further."'},
+  {h:'Thomas Frank · YouTube — 30-Day GTM Playbook',t:'"Hey Thomas — huge fan of your systems content. I\'ve built a goal-to-action productivity app with AI coaching. Think your audience would genuinely find it useful. Would you be open to an honest review?"'},
+  {h:'r/getdisciplined — 30-Day GTM Playbook',t:'"Has anyone actually found a system that helps them follow through on goals long-term — not just for a week? I\'ve been building something around this and want to know what\'s actually worked for people here."'},
+  {h:'Building a Second Brain · Facebook — 30-Day GTM Playbook',t:'"For those of you who\'ve built a solid second brain — how do you actually bridge the gap between capturing ideas and executing on them daily? That\'s the problem I\'m trying to solve."'},
+];
+function pick(el,i){
+  document.querySelectorAll('.comm-r').forEach(r=>r.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('pb-h').textContent=PB[i].h;
+  document.getElementById('post-txt').textContent=PB[i].t;
+}
+function cp(){
+  navigator.clipboard.writeText(document.getElementById('post-txt').textContent).then(()=>{
+    const b=document.querySelector('.cp-btn');
+    b.textContent='Copied!';
+    setTimeout(()=>b.textContent='Copy post',1500);
+  });
+}
+</script>
 </body>
 </html>

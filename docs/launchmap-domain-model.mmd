@@ -1,0 +1,114 @@
+classDiagram
+    class Startup {
+        +id
+        +pitch StartupPitch
+        +stage Stage
+        +category Category
+        +create()
+    }
+    class StartupPitch {
+        +name
+        +description
+        +target_customer
+    }
+    class Stage {
+        <<enumeration>>
+        IDEA
+        PRE_LAUNCH
+        LAUNCHED
+        GROWING
+    }
+    class Category {
+        <<enumeration>>
+        HEALTHTECH
+        B2B_SAAS
+        FINTECH
+        EDTECH
+        DEVELOPER_TOOLS
+        AI
+        GENERAL_STARTUP
+    }
+    Startup *-- StartupPitch
+    Startup --> Stage
+    Startup --> Category
+
+    class MatchResult {
+        +id
+        +startup_id
+        +matches CommunityMatch
+        +computed_at
+        +top(n)
+    }
+    class CommunityMatch {
+        +community_id
+        +relevance RelevanceScore
+        +icp_match
+        +engagement EngagementLevel
+        +time_to_first_customer
+    }
+    class RelevanceScore {
+        +value
+    }
+    class EngagementLevel {
+        <<enumeration>>
+        LOW
+        MEDIUM
+        HIGH
+        VERY_HIGH
+    }
+    MatchResult "1" *-- "1..10" CommunityMatch
+    CommunityMatch *-- RelevanceScore
+    CommunityMatch --> EngagementLevel
+    MatchResult ..> Startup : startup_id
+
+    class Playbook {
+        +id
+        +startup_id
+        +community_id
+        +week1_actions
+        +first_post FirstPost
+        +dm_template
+        +outcome Outcome
+        +record_outcome(status)
+    }
+    class FirstPost {
+        +title
+        +body
+        +post_type
+    }
+    class Outcome {
+        +status OutcomeStatus
+        +replies
+        +dms
+        +signups
+        +recorded_at
+    }
+    class OutcomeStatus {
+        <<enumeration>>
+        NOT_EXECUTED
+        EXECUTED
+        CONVERTED
+        NO_RESPONSE
+    }
+    Playbook *-- FirstPost
+    Playbook *-- Outcome
+    Outcome --> OutcomeStatus
+    Playbook ..> Startup : startup_id + community_id
+
+    class PlaybookRepository {
+        <<interface>>
+        +find_by_id(id)
+        +save(playbook)
+    }
+    class MatchResultRepository {
+        <<interface>>
+        +find_by_id(id)
+        +save(result)
+    }
+    class CommunityMatcher {
+        <<interface>>
+        +match(startup, catalog)
+    }
+    PlaybookRepository ..> Playbook
+    MatchResultRepository ..> MatchResult
+    CommunityMatcher ..> CommunityMatch

@@ -1,0 +1,182 @@
+<title>Chick — API & Integrations</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#FBF8FF;font-family:'Plus Jakarta Sans',sans-serif;color:#120D1E;padding:48px 48px 80px;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:900px;margin:0 auto;}
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:48px;}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:20px;color:#120D1E;display:flex;align-items:center;gap:8px;}
+.nav-logo span{color:#7B6FDB;}
+.nav-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;border:1px solid rgba(123,111,219,0.35);padding:0.2rem 0.7rem;border-radius:99px;margin-left:auto;}
+.eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;margin-bottom:0.75rem;}
+h1{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.15;margin-bottom:0.5rem;}
+h1 i{color:#7B6FDB;font-style:italic;}
+.intro{font-size:0.95rem;color:#3D3358;margin-bottom:3rem;max-width:600px;line-height:1.7;}
+.section{margin-bottom:3rem;padding-top:2.5rem;border-top:1px solid rgba(123,111,219,0.22);}
+h2{font-family:'Instrument Serif',serif;font-size:1.5rem;font-weight:400;margin-bottom:1.25rem;}
+h3{font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#7B6FDB;margin-bottom:0.75rem;margin-top:1.5rem;}
+
+.integration-card{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.int-header{display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid rgba(123,111,219,0.22);}
+.int-icon{background:rgba(123,111,219,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;padding:16px;}
+.int-meta{padding:16px 20px;}
+.int-name{font-family:'Instrument Serif',serif;font-size:1.15rem;color:#120D1E;margin-bottom:4px;}
+.int-role{font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#7B6FDB;}
+.int-body{padding:18px 22px;}
+.int-desc{font-size:0.85rem;color:#3D3358;line-height:1.7;margin-bottom:14px;}
+
+.code-block{background:#120D1E;border-radius:10px;padding:16px 20px;margin:10px 0;overflow-x:auto;}
+.code-block pre{font-family:monospace;font-size:0.78rem;color:#C4BCFF;line-height:1.6;white-space:pre;}
+.code-block .cm{color:#9B91E8;}
+.code-block .ck{color:#A78BFA;}
+.code-block .cv{color:#EAE7FF;}
+.code-block .cn{color:#C4401A;}
+
+.field-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:8px;}
+.field-table th{text-align:left;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7B6FDB;padding:7px 10px;border-bottom:2px solid rgba(123,111,219,0.22);}
+.field-table td{padding:8px 10px;border-bottom:1px solid rgba(123,111,219,0.12);color:#3D3358;vertical-align:top;}
+.field-table td:first-child{font-family:monospace;color:#7B6FDB;}
+.badge{display:inline-block;font-size:0.6rem;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(123,111,219,0.12);border:1px solid rgba(123,111,219,0.30);color:#7B6FDB;margin-right:4px;}
+.badge-red{background:rgba(196,64,26,0.10);border-color:rgba(196,64,26,0.30);color:#C4401A;}
+
+.warn{background:#FBF8FF;border:1px solid rgba(123,111,219,0.30);border-left:3px solid #7B6FDB;border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.8rem;color:#3D3358;line-height:1.6;margin-top:12px;}
+</style>
+
+<div class="wrap">
+
+<nav class="nav">
+  <div class="nav-logo">
+    <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
+      <ellipse cx="20" cy="26" rx="13" ry="9" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1.2"/>
+      <circle cx="20" cy="18" r="7" fill="#A78BFA"/>
+      <circle cx="17.5" cy="17" r="1.2" fill="#120D1E"/>
+      <circle cx="22.5" cy="17" r="1.2" fill="#120D1E"/>
+      <path d="M19 19.5 L21 19.5 L20 21 Z" fill="#C4401A"/>
+      <path d="M8 23 Q10 14 20 12 Q14 15 12 22 Z" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1"/>
+      <path d="M32 23 Q30 14 20 12 Q26 15 28 22 Z" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1"/>
+    </svg>
+    Chick<span>.</span>
+  </div>
+  <div class="nav-tag">API & Integrations</div>
+</nav>
+
+<div class="eyebrow">Engineering — v0.1 — Hackathon Build</div>
+<h1>API integrations<br>& <i>service contracts.</i></h1>
+<p class="intro">Every third-party service Chick depends on — what it does, how we call it, what it returns, and what breaks if it's down.</p>
+
+<!-- FASTINO -->
+<div class="section">
+  <h2>Fastino — Intake Structuring</h2>
+  <div class="integration-card">
+    <div class="int-header">
+      <div class="int-icon">⚡</div>
+      <div class="int-meta">
+        <div class="int-name">Fastino text-to-JSON</div>
+        <div class="int-role">Step 1 — converts raw founder brief into structured ICP hypothesis</div>
+      </div>
+    </div>
+    <div class="int-body">
+      <div class="int-desc">The founder types their idea in plain language. Fastino extracts structured fields: audience hypothesis, product category, stage, and tone signal. The output is treated as a hypothesis — Chick challenges and refines it, never accepts it as fact.</div>
+
+      <h3>Request</h3>
+      <div class="code-block"><pre><span class="cm">POST</span> <span class="cv">https://api.fastino.ai/v1/extract</span>
+<span class="cm">Authorization:</span> <span class="cv">Bearer {FASTINO_API_KEY}</span>
+<span class="cm">Content-Type:</span> <span class="cv">application/json</span>
+
+{
+  <span class="ck">"input"</span>: <span class="cv">"I'm building a tool for solo founders..."</span>,
+  <span class="ck">"schema"</span>: {
+    <span class="ck">"audience_hypothesis"</span>: <span class="cv">"string"</span>,
+    <span class="ck">"product_category"</span>: <span class="cv">"string"</span>,
+    <span class="ck">"stage"</span>: <span class="cv">"idea|pre-launch|launched"</span>,
+    <span class="ck">"tone_signal"</span>: <span class="cv">"casual|professional|technical"</span>,
+    <span class="ck">"pain_points"</span>: <span class="cv">["string"]</span>
+  }
+}</pre></div>
+
+      <h3>Response fields</h3>
+      <table class="field-table">
+        <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+        <tr><td>audience_hypothesis</td><td>string</td><td>Best-guess ICP from the brief</td></tr>
+        <tr><td>product_category</td><td>string</td><td>e.g. "B2B SaaS", "Consumer app"</td></tr>
+        <tr><td>stage</td><td>enum</td><td>idea · pre-launch · launched</td></tr>
+        <tr><td>tone_signal</td><td>enum</td><td>Drives outreach copy tone</td></tr>
+        <tr><td>pain_points</td><td>string[]</td><td>Extracted problems the product solves</td></tr>
+        <tr><td>confidence</td><td>0–1 float</td><td>Fastino's extraction confidence — flag if &lt;0.6</td></tr>
+      </table>
+      <div class="warn"><strong>Fallback:</strong> If confidence &lt; 0.6, surface a clarifying question to the founder before proceeding to discovery. Never pass a low-confidence brief to Cala.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CALA -->
+<div class="section">
+  <h2>Cala — Community & Market Data</h2>
+  <div class="integration-card">
+    <div class="int-header">
+      <div class="int-icon">🔍</div>
+      <div class="int-meta">
+        <div class="int-name">Cala Knowledge Search</div>
+        <div class="int-role">Step 2 — verified community and company data across verticals</div>
+      </div>
+    </div>
+    <div class="int-body">
+      <div class="int-desc">Cala supplies verified, sourced company and community data across Agro, Finance, HR, and other verticals. No hallucinated names, no stale lists. Real communities with real member counts and activity signals.</div>
+
+      <h3>Request — Community Search</h3>
+      <div class="code-block"><pre><span class="cm">POST</span> <span class="cv">https://api.cala.ai/v1/search</span>
+<span class="cm">Authorization:</span> <span class="cv">Bearer {CALA_API_KEY}</span>
+
+{
+  <span class="ck">"query"</span>: <span class="cv">"solo founders productivity tools"</span>,
+  <span class="ck">"sources"</span>: [<span class="cv">"reddit"</span>, <span class="cv">"discord"</span>, <span class="cv">"facebook"</span>],
+  <span class="ck">"verified_only"</span>: <span class="cn">true</span>,
+  <span class="ck">"min_members"</span>: <span class="cn">500</span>,
+  <span class="ck">"limit"</span>: <span class="cn">30</span>
+}</pre></div>
+
+      <h3>Response fields (per community)</h3>
+      <table class="field-table">
+        <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+        <tr><td>id</td><td>string</td><td>Stable Cala community ID</td></tr>
+        <tr><td>name</td><td>string</td><td>Community display name</td></tr>
+        <tr><td>platform</td><td>enum</td><td>reddit · discord · facebook · linkedin</td></tr>
+        <tr><td>member_count</td><td>integer</td><td>Verified at last crawl</td></tr>
+        <tr><td>activity_score</td><td>0–100</td><td>Posts/week normalised score</td></tr>
+        <tr><td>promo_rules</td><td>string</td><td>Extracted mod rules re: self-promo</td></tr>
+        <tr><td>verified_at</td><td>ISO date</td><td>When Cala last confirmed this community exists</td></tr>
+        <tr><td>url</td><td>string</td><td>Direct link to community</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- INTERNAL API -->
+<div class="section">
+  <h2>Chick Internal API</h2>
+  <p style="font-size:0.85rem;color:#3D3358;line-height:1.7;margin-bottom:1rem;">Base URL: <code style="background:#F2EFFF;padding:2px 6px;border-radius:4px;font-size:0.8rem;">https://api.chick.app/v1</code></p>
+  <table class="field-table">
+    <tr><th>Method + Path</th><th>Name</th><th>Description</th></tr>
+    <tr><td>POST /briefs</td><td>Create Brief</td><td>Accepts raw text, triggers Fastino structuring, returns brief_id</td></tr>
+    <tr><td>GET /briefs/:id</td><td>Get Brief</td><td>Returns structured brief + structured_json</td></tr>
+    <tr><td>POST /briefs/:id/discover</td><td>Run Discovery</td><td>Calls Cala, scores results, returns ranked communities</td></tr>
+    <tr><td>GET /communities/:id/kit</td><td>Get Kit</td><td>Returns 7-day plan + copy for one community</td></tr>
+    <tr><td>POST /track</td><td>Log Event</td><td>Records attempt outcome (yes/no/silence/interested)</td></tr>
+    <tr><td>POST /briefs/:id/refine</td><td>Refine Loop</td><td>Re-runs scoring with tracking data, returns updated rankings</td></tr>
+  </table>
+</div>
+
+<!-- ERROR HANDLING -->
+<div class="section">
+  <h2>Error Handling & Resilience</h2>
+  <table class="field-table">
+    <tr><th>Service</th><th>Failure mode</th><th>Fallback</th></tr>
+    <tr><td>Fastino</td><td>Timeout / 5xx</td><td>Retry ×2 with 500ms backoff → show manual brief form</td></tr>
+    <tr><td>Fastino</td><td>confidence &lt; 0.6</td><td>Ask founder 3 follow-up questions, re-submit</td></tr>
+    <tr><td>Cala</td><td>Timeout / 5xx</td><td>Retry ×2 → return cached results if &lt;24h old</td></tr>
+    <tr><td>Cala</td><td>No results</td><td>Broaden query (remove min_members filter), notify founder</td></tr>
+    <tr><td>Database</td><td>Connection lost</td><td>Circuit-breaker → 503 with Retry-After header</td></tr>
+  </table>
+</div>
+
+</div>

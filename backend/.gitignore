@@ -1,7 +1,3 @@
 # Created by venv; see https://docs.python.org/3/library/venv.html
-*
-!.gitignore
-!Dockerfile
-!Caddyfile
-!entrypoint.sh
-!.dockerignore
+.venv/*
+.env

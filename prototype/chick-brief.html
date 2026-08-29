@@ -1,0 +1,398 @@
+<title>Chick — Design & Content Brief</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --cream: #FBF8FF;
+    --cream2: #F2EFFF;
+    --ink: #120D1E;
+    --ink2: #3D3358;
+    --gold: #7B6FDB;
+    --gold2: #9B91E8;
+    --gold3: #C4BCFF;
+    --gold4: #EAE7FF;
+    --bd: rgba(123,111,219,0.22);
+    --red: #C4401A;
+  }
+
+  @keyframes crack-wobble{0%,100%{transform:rotate(0deg);}20%{transform:rotate(-4deg);}40%{transform:rotate(4deg);}60%{transform:rotate(-3deg);}80%{transform:rotate(2deg);}}
+  @keyframes crack-appear{0%,30%{opacity:0;stroke-dashoffset:80;}100%{opacity:1;stroke-dashoffset:0;}}
+  @keyframes chick-rise{0%,40%{transform:translateY(16px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+  @keyframes top-lift{0%,50%{transform:translateY(0) rotate(0);}100%{transform:translateY(-14px) rotate(-12deg);}}
+  .egg-anim-brief{animation:crack-wobble 2.5s ease-in-out infinite;}
+  .egg-crack-brief{stroke-dasharray:80;stroke-dashoffset:80;animation:crack-appear 1s ease-out 0.5s forwards;}
+  .chick-body-brief{animation:chick-rise 0.7s ease-out 1.2s both;}
+  .egg-top-brief{transform-origin:40px 36px;animation:top-lift 0.5s ease-out 1.5s both;}
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 3rem 1.5rem 6rem;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; }
+
+  /* header */
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 0.25rem;
+  }
+  .logo-sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--bd);
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 99px;
+    margin-bottom: 3rem;
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+  h1 i { color: var(--gold); }
+
+  .intro {
+    color: var(--ink2);
+    max-width: 560px;
+    margin-bottom: 4rem;
+    font-size: 1rem;
+  }
+
+  /* section */
+  section {
+    border-top: 1px solid var(--bd);
+    padding-top: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+
+  h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+
+  /* colour swatches */
+  .swatches { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .swatch {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    background: var(--cream2);
+  }
+  .swatch-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .swatch-label { font-size: 0.75rem; line-height: 1.4; }
+  .swatch-name { font-weight: 600; display: block; }
+  .swatch-hex { color: var(--ink2); font-family: monospace; }
+
+  /* type specimen */
+  .type-row {
+    display: flex; align-items: baseline; gap: 1rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--bd);
+  }
+  .type-role { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); width: 120px; flex-shrink: 0; }
+  .type-sample { flex: 1; }
+  .t-hero { font-family: 'Instrument Serif', serif; font-size: 2.5rem; font-weight: 400; line-height: 1.1; }
+  .t-h2 { font-family: 'Instrument Serif', serif; font-size: 1.5rem; font-weight: 400; }
+  .t-eyebrow { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+  .t-body { font-size: 0.95rem; color: var(--ink2); }
+  .type-spec { font-size: 0.7rem; color: var(--ink2); font-family: monospace; }
+
+  /* copy blocks */
+  .copy-block {
+    background: var(--cream2);
+    border: 1px solid var(--bd);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .copy-block .label {
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.5rem;
+  }
+  .copy-block p { color: var(--ink); font-size: 0.95rem; line-height: 1.6; }
+  .copy-block p em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--gold); }
+  .copy-block p strong { font-weight: 600; }
+  .copy-btn {
+    position: absolute; top: 1rem; right: 1rem;
+    font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--gold4); border: 1px solid var(--bd);
+    color: var(--ink2); padding: 0.25rem 0.6rem; border-radius: 6px;
+    cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .copy-btn:hover { background: var(--gold3); }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+  .step {
+    background: var(--cream2); border: 1px solid var(--bd);
+    border-radius: 10px; padding: 1.25rem;
+  }
+  .step-num { font-family: 'Instrument Serif', serif; font-size: 2rem; color: var(--gold3); line-height: 1; margin-bottom: 0.5rem; }
+  .step h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .step p { font-size: 0.8rem; color: var(--ink2); line-height: 1.5; }
+
+  /* pricing */
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .plan {
+    background: var(--cream2); border: 1px solid var(--bd);
+    border-radius: 10px; padding: 1.5rem;
+  }
+  .plan.pro { border-color: var(--gold); background: var(--gold4); }
+  .plan-name { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); margin-bottom: 0.5rem; }
+  .plan-price { font-family: 'Instrument Serif', serif; font-size: 2rem; color: var(--ink); margin-bottom: 0.75rem; }
+  .plan-price span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; color: var(--ink2); }
+  .plan ul { list-style: none; }
+  .plan ul li { font-size: 0.8rem; color: var(--ink2); padding: 0.25rem 0; border-bottom: 1px solid var(--bd); }
+  .plan ul li:last-child { border: none; }
+  .plan ul li::before { content: "→ "; color: var(--gold); }
+
+  /* moat */
+  .moat {
+    background: var(--ink); color: var(--cream);
+    border-radius: 12px; padding: 2rem;
+    margin-bottom: 1rem;
+  }
+  .moat p { font-family: 'Instrument Serif', serif; font-size: 1.2rem; font-weight: 400; line-height: 1.5; }
+  .moat p em { color: var(--gold2); font-style: italic; }
+
+  /* footer */
+  .footer-line {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.1rem; font-style: italic;
+    color: var(--ink2); text-align: center;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--bd);
+  }
+</style>
+
+<div class="wrap">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:0.5rem;">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:42px;height:42px;flex-shrink:0;">
+      <ellipse cx="20" cy="26" rx="13" ry="9" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1.2"/>
+      <path d="M7 24 Q12 20 15 23 Q18 26 20 22 Q22 18 25 21 Q28 24 33 22" stroke="#7B6FDB" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <circle cx="20" cy="18" r="7" fill="#A78BFA"/>
+      <circle cx="17.5" cy="17" r="1.2" fill="#120D1E"/>
+      <circle cx="22.5" cy="17" r="1.2" fill="#120D1E"/>
+      <path d="M19 19.5 L21 19.5 L20 21 Z" fill="#C4401A"/>
+    </svg>
+    <div class="logo">Chick<span style="color:var(--gold);">.</span></div>
+  </div>
+  <div style="font-family:'Instrument Serif',serif;font-size:clamp(1.8rem,4.5vw,3.2rem);font-weight:400;color:var(--gold);margin-bottom:1rem;line-height:1.15;">Your GTM Co-Founder for Founders</div>
+  <div class="logo-sub">Design & Content Brief — Pre-launch Founders</div>
+
+  <h1>From idea<br>to <i>first user.</i></h1>
+  <p class="intro">Everything needed to build, pitch, or hand off Chick's visual identity and product copy.</p>
+
+  <!-- POSITIONING -->
+  <section>
+    <div class="eyebrow">Positioning</div>
+    <h2>Who it's for & what it does</h2>
+    <div class="moat">
+      <p>Apollo, Clay, and Apify assume you know your ICP.<br><em>Chick is built for the part before that.</em></p>
+    </div>
+    <div class="copy-block">
+      <div class="label">Tagline</div>
+      <p><strong>Your GTM Co-Founder for Founders</strong></p>
+      <button class="copy-btn" onclick="cp(this,'Your GTM Co-Founder for Founders')">Copy</button>
+    </div>
+    <div class="copy-block">
+      <div class="label">One-liner</div>
+      <p>Describe what you're building. Chick finds every community where your customer lives, ranks them, and drafts the outreach. You send. It learns.</p>
+      <button class="copy-btn" onclick="cp(this,'Describe what you\'re building. Chick finds every community where your customer lives, ranks them, and drafts the outreach. You send. It learns.')">Copy</button>
+    </div>
+    <div class="copy-block">
+      <div class="label">Closer</div>
+      <p><em>The finding is ours. The conversation is yours.</em></p>
+      <button class="copy-btn" onclick="cp(this,'The finding is ours. The conversation is yours.')">Copy</button>
+    </div>
+  </section>
+
+  <!-- HERO COPY -->
+  <section>
+    <div class="eyebrow">Hero Copy</div>
+    <h2>Landing page hero</h2>
+    <div class="copy-block">
+      <div class="label">H1</div>
+      <p style="font-family:'Instrument Serif',serif;font-size:2rem;line-height:1.2;">From idea<br>to <em>first user.</em></p>
+      <button class="copy-btn" onclick="cp(this,'From idea\nto first user.')">Copy</button>
+    </div>
+    <div class="copy-block">
+      <div class="label">Hero subheading</div>
+      <p>Describe what you're building. Chick asks the right questions, finds every community where your customer lives, ranks them, and drafts the outreach. You send. It learns. Every reply and every silence makes the next suggestion sharper.</p>
+      <button class="copy-btn" onclick="cp(this,'Describe what you\'re building. Chick asks the right questions, finds every community where your customer lives, ranks them, and drafts the outreach. You send. It learns. Every reply and every silence makes the next suggestion sharper.')">Copy</button>
+    </div>
+  </section>
+
+  <!-- PRODUCT JOURNEY -->
+  <section>
+    <div class="eyebrow">Product Journey</div>
+    <h2>4-step flow</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Describe</h3>
+        <p>You explain what you're building. Chick asks 3 sharper follow-up questions to pin your ICP.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Discover</h3>
+        <p>Ranked community list. Each scored on Reach, Receptiveness, and Warmth.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Draft</h3>
+        <p>Copy-paste post, written in that community's tone. Ready to send.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Refine</h3>
+        <p>Every reply and silence logs. AI re-ranks. Suggestions get sharper every pass.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLOUR -->
+  <section>
+    <div class="eyebrow">Brand Colours</div>
+    <h2>Palette</h2>
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#FBF8FF;"></div>
+        <div class="swatch-label"><span class="swatch-name">Lavender White</span><span class="swatch-hex">#FBF8FF</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#F2EFFF;"></div>
+        <div class="swatch-label"><span class="swatch-name">Soft Lilac</span><span class="swatch-hex">#F2EFFF</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#120D1E;"></div>
+        <div class="swatch-label"><span class="swatch-name">Ink</span><span class="swatch-hex">#120D1E</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#3D3358;"></div>
+        <div class="swatch-label"><span class="swatch-name">Ink 2</span><span class="swatch-hex">#3D3358</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#7B6FDB;"></div>
+        <div class="swatch-label"><span class="swatch-name">Lilac</span><span class="swatch-hex">#7B6FDB</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#9B91E8;"></div>
+        <div class="swatch-label"><span class="swatch-name">Lilac 2</span><span class="swatch-hex">#9B91E8</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#C4BCFF;"></div>
+        <div class="swatch-label"><span class="swatch-name">Lilac 3</span><span class="swatch-hex">#C4BCFF</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#C4401A;"></div>
+        <div class="swatch-label"><span class="swatch-name">Signal Red</span><span class="swatch-hex">#C4401A</span></div>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--ink2);">Rule: no grey text. All text must be ink, ink2, or gold — never rgba-muted.</p>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section>
+    <div class="eyebrow">Typography</div>
+    <h2>Type system</h2>
+    <div class="type-row">
+      <span class="type-role">Hero / H1</span>
+      <span class="type-sample t-hero">From idea to <i>first user.</i></span>
+      <span class="type-spec">Instrument Serif, 400, clamp(3rem,7vw,5.5rem)</span>
+    </div>
+    <div class="type-row">
+      <span class="type-role">Section H2</span>
+      <span class="type-sample t-h2">Your GTM Co-Founder</span>
+      <span class="type-spec">Instrument Serif, 400, 1.6rem</span>
+    </div>
+    <div class="type-row">
+      <span class="type-role">Eyebrow</span>
+      <span class="type-sample t-eyebrow">Pre-launch founders</span>
+      <span class="type-spec">Plus Jakarta Sans, 0.65rem, ls 0.18em, uppercase</span>
+    </div>
+    <div class="type-row">
+      <span class="type-role">Body</span>
+      <span class="type-sample t-body">Describe what you're building. Chick asks the right questions…</span>
+      <span class="type-spec">Plus Jakarta Sans, 400, 0.95–1rem</span>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section>
+    <div class="eyebrow">Pricing</div>
+    <h2>Plans</h2>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">£0</div>
+        <ul>
+          <li>3 ICP searches/month</li>
+          <li>5 community picks</li>
+          <li>Basic post drafts</li>
+        </ul>
+      </div>
+      <div class="plan pro">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">£49<span>/mo</span></div>
+        <ul>
+          <li>Unlimited searches</li>
+          <li>All communities</li>
+          <li>Full outreach kit</li>
+        </ul>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Agency</div>
+        <div class="plan-price">£199<span>/mo</span></div>
+        <ul>
+          <li>10 client workspaces</li>
+          <li>White-label exports</li>
+          <li>Priority support</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer-line">The finding is ours. The conversation is yours.</p>
+</div>
+
+<script>
+function cp(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+</script>

@@ -1,0 +1,1098 @@
+<title>Chick — Your GTM Co-Founder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:  #090705;
+  --dark:   #100D09;
+  --s1:     #181410;
+  --s2:     #221D17;
+  --s3:     #2E281F;
+  --terra:  #C4401A;
+  --terra2: #D95525;
+  --terra3: #F07050;
+  --stone:  #E8E0D4;
+  --stone2: #F4EFE7;
+  --stone3: rgba(232,224,212,0.6);
+  --stone4: rgba(232,224,212,0.25);
+  --stone5: rgba(232,224,212,0.08);
+  --b:      rgba(232,224,212,0.08);
+  --b2:     rgba(232,224,212,0.14);
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--black);
+  color: var(--stone);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── LANDING ─── */
+#landing { min-height: 100vh; display: flex; flex-direction: column; }
+
+.land-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 48px;
+  border-bottom: 1px solid var(--b);
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--terra);
+}
+
+.nav-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone3);
+  border: 1px solid var(--b2);
+  border-radius: 100px;
+  padding: 5px 14px;
+}
+
+.land-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 48px 48px;
+  text-align: center;
+  max-width: 880px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--terra);
+  margin-bottom: 22px;
+}
+
+.hero-h1 {
+  font-size: clamp(46px, 7vw, 80px);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -2.5px;
+  color: var(--stone2);
+  margin-bottom: 20px;
+  text-wrap: balance;
+}
+
+.hero-h1 em {
+  font-style: normal;
+  color: var(--terra);
+}
+
+.hero-sub {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--stone3);
+  line-height: 1.65;
+  max-width: 540px;
+  margin: 0 auto 44px;
+}
+
+/* ── INPUT CARD ── */
+.input-card {
+  width: 100%;
+  max-width: 700px;
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.input-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.input-main {
+  flex: 1;
+  padding: 24px 28px;
+}
+
+.input-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone4);
+  margin-bottom: 8px;
+}
+
+.input-ta {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--stone);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  resize: none;
+}
+.input-ta::placeholder { color: var(--stone4); }
+
+.input-divider { width: 1px; background: var(--b2); }
+
+.input-side {
+  padding: 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 190px;
+}
+
+.side-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone4);
+  margin-bottom: 6px;
+}
+
+.side-select {
+  background: var(--s2);
+  border: 1px solid var(--b2);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--stone);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+.side-select option { background: #181410; }
+
+.cta-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--terra);
+  border: none;
+  border-radius: 10px;
+  color: var(--stone2);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.cta-btn:hover { background: var(--terra2); }
+.cta-btn:active { transform: scale(0.99); }
+
+.input-footer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 28px;
+  border-top: 1px solid var(--b);
+}
+
+.foot-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--stone3);
+}
+
+.foot-item strong { color: var(--stone); font-weight: 700; }
+
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--terra);
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+
+/* ─── APP ─── */
+#app {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+}
+
+/* Top bar */
+.app-bar {
+  display: flex;
+  align-items: center;
+  height: 54px;
+  border-bottom: 1px solid var(--b);
+  flex-shrink: 0;
+}
+
+.bar-logo {
+  padding: 0 24px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--terra);
+  border-right: 1px solid var(--b);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  min-width: 180px;
+}
+
+.bar-context {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  height: 100%;
+  border-right: 1px solid var(--b);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.bar-context:hover { background: var(--s1); }
+
+.bar-name { font-size: 14px; font-weight: 700; color: var(--stone); }
+.bar-desc { font-size: 12px; color: var(--stone3); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.bar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 0 20px; }
+
+.btn-ghost {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--b2);
+  background: transparent;
+  color: var(--stone);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.btn-ghost:hover { border-color: var(--stone3); }
+
+.btn-terra {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--terra);
+  color: var(--stone2);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-terra:hover { background: var(--terra2); }
+
+/* Stats */
+.stats-strip {
+  display: flex;
+  border-bottom: 1px solid var(--b);
+  flex-shrink: 0;
+}
+
+.stat-block {
+  flex: 1;
+  padding: 12px 24px;
+  border-right: 1px solid var(--b);
+}
+.stat-block:last-child { border-right: none; }
+
+.stat-n {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--terra);
+  line-height: 1;
+}
+
+.stat-l {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--stone4);
+  margin-top: 3px;
+}
+
+/* Body */
+.app-body {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Communities */
+.comm-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--b);
+  overflow: hidden;
+}
+
+.comm-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--b);
+  height: 44px;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+.f-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--stone3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.f-btn.on { background: var(--s2); color: var(--stone); font-weight: 700; }
+
+.sort-sel {
+  margin-left: auto;
+  margin-right: 8px;
+  background: transparent;
+  border: 1px solid var(--b);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--stone3);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  outline: none;
+}
+.sort-sel option { background: #181410; }
+
+.comm-list { overflow-y: auto; flex: 1; }
+.comm-list::-webkit-scrollbar { width: 4px; }
+.comm-list::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 4px; }
+
+/* Card */
+.c-card {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--b);
+  cursor: default;
+  transition: background 0.15s;
+}
+.c-card:hover { background: var(--dark); }
+.c-card.on { background: var(--dark); border-left: 2px solid var(--terra); }
+
+.c-score-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 20px 16px;
+  border-right: 1px solid var(--b);
+  flex-shrink: 0;
+}
+
+.c-score-n {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  color: var(--terra);
+  line-height: 1;
+}
+
+.c-score-l {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--stone4);
+  margin-top: 4px;
+}
+
+.c-info { flex: 1; padding: 16px 18px; }
+
+.c-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 6px;
+}
+
+.c-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--stone);
+  letter-spacing: -0.2px;
+}
+
+.c-plat {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  background: var(--s2);
+  border: 1px solid var(--b2);
+  color: var(--stone3);
+}
+
+.c-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--stone3);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+.c-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--stone4);
+}
+.c-meta strong { color: var(--stone3); font-weight: 600; }
+
+.c-cta-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 14px;
+  flex-shrink: 0;
+}
+
+.pb-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 7px;
+  border: 1px solid rgba(196,64,26,0.4);
+  background: rgba(196,64,26,0.1);
+  color: var(--terra3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.pb-btn:hover { background: rgba(196,64,26,0.2); border-color: var(--terra); color: var(--terra2); }
+
+/* Spinner */
+.spin-wrap {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex: 1;
+  padding: 60px;
+}
+.spin-wrap.on { display: flex; }
+.spin-ring {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--s3);
+  border-top-color: var(--terra);
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-msg { font-size: 13px; font-weight: 400; color: var(--stone3); text-align: center; max-width: 260px; line-height: 1.6; }
+
+/* Signal bar */
+.signal-bar {
+  border-top: 1px solid var(--b);
+  padding: 14px 20px;
+  flex-shrink: 0;
+}
+
+.sig-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terra);
+  margin-bottom: 10px;
+}
+
+.sig-rows { display: flex; flex-direction: column; gap: 5px; }
+.sig-row { display: flex; justify-content: space-between; font-size: 11px; }
+.sig-row span:first-child { color: var(--stone3); }
+.sig-val { font-weight: 700; color: var(--terra3); }
+
+/* ─── PLAYBOOK PANEL ─── */
+.play-panel {
+  overflow-y: auto;
+  background: var(--dark);
+}
+.play-panel::-webkit-scrollbar { width: 4px; }
+.play-panel::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 4px; }
+
+.play-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.play-empty-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.play-empty-h { font-size: 15px; font-weight: 700; color: var(--stone); margin-bottom: 8px; }
+.play-empty-p { font-size: 13px; color: var(--stone3); line-height: 1.6; max-width: 230px; }
+
+/* Playbook filled */
+.pb-head {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--b);
+}
+
+.pb-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terra);
+  margin-bottom: 6px;
+}
+
+.pb-h {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: var(--stone2);
+  margin-bottom: 4px;
+}
+
+.pb-meta { font-size: 12px; color: var(--stone3); }
+
+.pb-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 22px; }
+
+.sec-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone4);
+  margin-bottom: 10px;
+}
+
+/* Week */
+.day-row { display: flex; gap: 12px; margin-bottom: 7px; }
+.day-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--terra);
+  min-width: 32px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.day-act { font-size: 12px; color: var(--stone3); line-height: 1.55; }
+
+/* Post box */
+.post-block {
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  border-radius: 11px;
+  overflow: hidden;
+}
+.post-hd {
+  padding: 7px 14px;
+  background: var(--s2);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--stone4);
+  border-bottom: 1px solid var(--b);
+}
+.post-ti {
+  padding: 12px 14px 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--stone);
+  line-height: 1.4;
+  border-bottom: 1px solid var(--b);
+}
+.post-bd {
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--stone3);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+.copy-btn {
+  display: block;
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--b);
+  color: var(--stone4);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+}
+.copy-btn:hover { background: var(--s2); color: var(--stone); }
+.copy-btn.copied { color: var(--terra); }
+
+/* Do/Don't */
+.dd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dd-box { background: var(--s1); border: 1px solid var(--b); border-radius: 10px; padding: 12px 14px; }
+.dd-hd { font-size: 9px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+.dd-hd.do { color: var(--terra); }
+.dd-hd.dont { color: #c0505a; }
+.dd-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.dd-list li { font-size: 11px; color: var(--stone3); line-height: 1.45; padding-left: 14px; position: relative; }
+.dd-list.dos li::before { content:'✓'; position:absolute; left:0; color:var(--terra); font-size:10px; font-weight:800; }
+.dd-list.donts li::before { content:'×'; position:absolute; left:0; color:#c0505a; font-size:12px; line-height:1.2; }
+
+/* KPIs */
+.kpi-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.kpi-tag { font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 100px; background: var(--s2); border: 1px solid var(--b2); color: var(--stone3); }
+
+/* Tip */
+.tip-block {
+  background: var(--s1);
+  border-left: 2px solid var(--terra);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 14px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--stone3);
+  line-height: 1.65;
+}
+
+.hidden { display: none !important; }
+</style>
+
+<!-- LANDING -->
+<div id="landing">
+  <nav class="land-nav">
+    <div class="logo">Chick.</div>
+    <div class="nav-tag">GTM Co-Founder · AI</div>
+  </nav>
+
+  <div class="land-hero">
+    <div class="hero-kicker">For pre-launch founders</div>
+    <h1 class="hero-h1">Find your<br>first <em>100 customers.</em><br>Days, not months.</h1>
+    <p class="hero-sub">Tell Chick what you're building. It maps every community where your customers actually live — then writes your exact day-one entry playbook.</p>
+
+    <div class="input-card">
+      <div class="input-row">
+        <div class="input-main">
+          <div class="input-lbl">What are you building?</div>
+          <textarea class="input-ta" id="desc" rows="3" placeholder="Describe your product in one sentence...">AI tool that automatically writes session notes for therapists after each client call, saving 2+ hours per day</textarea>
+          <div style="margin-top:14px">
+            <div class="input-lbl">Who is your exact customer?</div>
+            <textarea class="input-ta" id="customer" rows="1" style="font-size:14px" placeholder="Be specific...">Independent therapists in private practice</textarea>
+          </div>
+        </div>
+        <div class="input-divider"></div>
+        <div class="input-side">
+          <div>
+            <div class="side-lbl">Category</div>
+            <select class="side-select" id="category">
+              <option value="healthtech" selected>Healthtech</option>
+              <option value="b2b-saas">B2B SaaS</option>
+              <option value="fintech">Fintech</option>
+              <option value="edtech">Edtech</option>
+              <option value="developer-tools">Dev Tools</option>
+              <option value="hr-tech">HR Tech</option>
+              <option value="consumer">Consumer</option>
+              <option value="ai">AI / Automation</option>
+            </select>
+          </div>
+          <button class="cta-btn" onclick="launch()">Find My 100 →</button>
+        </div>
+      </div>
+      <div class="input-footer">
+        <div class="foot-item"><div class="live-dot"></div><span><strong>2,847</strong> communities mapped</span></div>
+        <div class="foot-item"><span><strong>312</strong> founders helped</span></div>
+        <div class="foot-item"><span>First customer avg. <strong>6 days</strong></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="app-bar">
+    <div class="bar-logo">Chick.</div>
+    <div class="bar-context" onclick="goBack()">
+      <div>
+        <div class="bar-name" id="bar-name">NoteAI</div>
+        <div class="bar-desc" id="bar-desc">AI session notes for therapists</div>
+      </div>
+      <span style="color:var(--stone4);font-size:11px;margin-left:8px;">↗ edit</span>
+    </div>
+    <div class="bar-right">
+      <button class="btn-ghost" onclick="goBack()">New Startup</button>
+      <button class="btn-terra">Export Playbook</button>
+    </div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat-block">
+      <div class="stat-n">2,847</div>
+      <div class="stat-l">Communities Mapped</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-n" id="match-count">10</div>
+      <div class="stat-l">Your Matches</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-n">6 days</div>
+      <div class="stat-l">Avg. Time to First Customer</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-n">94%</div>
+      <div class="stat-l">Match Accuracy</div>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <!-- Communities -->
+    <div class="comm-panel">
+      <div class="comm-toolbar">
+        <button class="f-btn on" onclick="filt(this,'all')">All</button>
+        <button class="f-btn" onclick="filt(this,'Reddit')">Reddit</button>
+        <button class="f-btn" onclick="filt(this,'Facebook')">Facebook</button>
+        <button class="f-btn" onclick="filt(this,'Slack')">Slack</button>
+        <button class="f-btn" onclick="filt(this,'other')">Other</button>
+        <select class="sort-sel" onchange="sortBy(this.value)">
+          <option value="score">↓ Match Score</option>
+          <option value="size">↓ Community Size</option>
+          <option value="speed">↑ Fastest First</option>
+        </select>
+      </div>
+
+      <div class="spin-wrap" id="spinner">
+        <div class="spin-ring"></div>
+        <div class="spin-msg">Scanning 2,847 communities for your exact ICP…</div>
+      </div>
+
+      <div class="comm-list hidden" id="comm-list"></div>
+
+      <div class="signal-bar">
+        <div class="sig-head"><div class="live-dot"></div>Pattern Intelligence</div>
+        <div class="sig-rows">
+          <div class="sig-row"><span>Niche communities outperform broad ones</span><span class="sig-val">3.2×</span></div>
+          <div class="sig-row"><span>Reddit → Facebook converts best</span><span class="sig-val">61%</span></div>
+          <div class="sig-row"><span>Avg reply rate on first post</span><span class="sig-val">34%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Playbook -->
+    <div class="play-panel" id="play-panel">
+      <div class="play-empty">
+        <div class="play-empty-icon">🗺️</div>
+        <div class="play-empty-h">Generate your playbook</div>
+        <div class="play-empty-p">Click any community card to get your copy-paste-ready day-by-day entry strategy.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DB = {
+  healthtech:[
+    {name:"r/therapists",platform:"Reddit",size:"180K",score:96,icp:"Direct match",speed:"3-5 days",desc:"Active therapists sharing practice pain — your ICP, vocal about admin overhead."},
+    {name:"SimplePractice Community",platform:"Forum",size:"65K",score:91,icp:"Very high",speed:"2-4 days",desc:"Therapists already paying for practice software — perfect upgrade audience."},
+    {name:"r/psychotherapy",platform:"Reddit",size:"92K",score:89,icp:"High",speed:"4-7 days",desc:"Clinical discussion, high trust. Best for value-first posts about efficiency."},
+    {name:"Private Practice Therapists",platform:"Facebook",size:"47K",score:87,icp:"Very high",speed:"2-4 days",desc:"Practice owners comparing tools. Warm audience ready for live demos."},
+    {name:"Therapy Business Network",platform:"Facebook",size:"31K",score:84,icp:"High",speed:"3-5 days",desc:"Business-minded therapists. ROI and time-saving angles perform strongest."},
+    {name:"Mental Health Tech Slack",platform:"Slack",size:"8K",score:81,icp:"High",speed:"5-8 days",desc:"Early-adopter therapists who already experiment with tech tools."},
+    {name:"r/mentalhealth_professionals",platform:"Reddit",size:"28K",score:77,icp:"Medium",speed:"6-10 days",desc:"Broader professional community. Useful for brand building and awareness."},
+    {name:"Therapy Tech Podcast Discord",platform:"Discord",size:"4K",score:73,icp:"Medium",speed:"7-12 days",desc:"Tech-forward therapists. High engagement per post despite smaller size."},
+    {name:"Healthcare Founders Newsletter",platform:"Newsletter",size:"22K",score:71,icp:"Medium",speed:"10-14 days",desc:"Reaches practice owners via email. Good for a sponsored slot with demo access."},
+    {name:"Psychology Today Community",platform:"Forum",size:"120K",score:68,icp:"High",speed:"8-12 days",desc:"Large credentialed audience. Slower to convert but exceptionally high trust."},
+  ],
+  "b2b-saas":[
+    {name:"r/SaaS",platform:"Reddit",size:"145K",score:94,icp:"High",speed:"3-5 days",desc:"Founders sharing growth stories. Value-first posts with real metrics land well."},
+    {name:"Indie Hackers",platform:"Forum",size:"70K",score:91,icp:"High",speed:"3-6 days",desc:"Self-funded founders. Transparent revenue sharing drives massive engagement."},
+    {name:"B2B SaaS Founders Slack",platform:"Slack",size:"6K",score:89,icp:"Very high",speed:"2-4 days",desc:"Curated, high-signal community of revenue-stage founders."},
+    {name:"r/startups",platform:"Reddit",size:"890K",score:85,icp:"Medium",speed:"4-7 days",desc:"Broad but active. Great for Show HN-style launches and early feedback."},
+    {name:"SaaS Growth Hacking",platform:"Facebook",size:"38K",score:83,icp:"High",speed:"3-6 days",desc:"Operators focused on metrics. Respond well to ROI case studies."},
+    {name:"Product Hunt Makers",platform:"Discord",size:"12K",score:80,icp:"Medium",speed:"5-8 days",desc:"Launch-focused builders. Good for beta tester recruitment."},
+  ],
+};
+
+const PB = {
+  Reddit:{
+    week1:[
+      {day:"D1",action:"Lurk for 2 hours. Read the top 20 all-time posts. Note 3 recurring pain phrases — use their exact words later."},
+      {day:"D2",action:"Comment genuinely on 5 posts. No promotion — add real value, empathy, or a specific data point."},
+      {day:"D3-4",action:"Reply to 10 more comments. Build karma and make your username recognisable in the community."},
+      {day:"D5",action:"Post your value-first question. Use the template below — it asks, doesn't pitch."},
+      {day:"D6",action:"Reply to every comment within 2 hours. DM the most engaged responders."},
+      {day:"D7",action:"Tally: who replied, who DM'd back. These are your first 10 real prospects."},
+    ],
+    firstPost:{title:"Therapists — how do you handle session notes right now?",body:"I've been talking to a lot of therapists about the admin side of private practice and session notes keep coming up as a massive time drain.\n\nSome people handwrite after sessions. Some do voice memos in the car. Some switched to dictation software.\n\nWhat's your current system? And honestly — how many hours a week does it take you?\n\nNot selling anything. Just trying to understand the real workflow before we build something that actually helps."},
+    dmTemplate:"Hey [name] — saw your reply on the notes thread. You mentioned spending [X hours] on documentation after sessions — that's exactly what we're building a fix for. Would you be open to a 15-min call? No pitch. Mostly want your feedback on whether this would actually help.",
+    dos:["Build karma for 2–3 days first","Post questions, not answers","Reply to every single comment","DM warm responders within 24h"],
+    donts:["Mention your product in the first post","Cross-post to multiple subreddits","Use any marketing language","Drop links before you have karma"],
+    kpis:["5–12 comments on first post","3–6 DM conversations","1–2 beta testers from week 1"],
+    tip:"Mods are strict on self-promotion. Your username is your brand — make it founder-y, not product-y. The genuine question always outperforms the promotion."
+  },
+  Facebook:{
+    week1:[
+      {day:"D1",action:"Request to join. Answer admin questions honestly — say you're building for this audience."},
+      {day:"D2",action:"Introduce yourself as a founder doing research. Ask one specific, curious question."},
+      {day:"D3",action:"Comment on 5 existing posts with useful, specific responses. Zero self-promotion."},
+      {day:"D4-5",action:"Post your research question. Offer something in return — a resource, a waitlist spot, a free month."},
+      {day:"D6",action:"Reply to every comment. DM anyone who engages with depth or enthusiasm."},
+      {day:"D7",action:"Follow up DM threads. Book demo calls. Aim for 3 calls this week."},
+    ],
+    firstPost:{title:"Quick question for private practice owners here 🙏",body:"Hi all — I'm a founder building an AI tool specifically for therapists, and I'm deep in research mode before we build anything.\n\nOne question: after a 50-minute session, how long does it typically take you to write your notes?\n\nAnd what's your biggest frustration with how you're currently doing it?\n\nJust trying to understand the real problem before I build the wrong solution. Even a one-liner helps a lot. Thank you!"},
+    dmTemplate:"Hi [name] — thanks for your reply in the group. What you said about [specific thing] really stuck with me — that's exactly the problem we're building a solution for. Would love to show you a demo — 10 minutes, genuinely just want your honest opinion. Would that work?",
+    dos:["Lead with your founder story","Offer value before asking for time","Use their language — no tech jargon","Follow up within 24 hours"],
+    donts:["Drop product links without context","Post in multiple groups at once","Over-promote in any post","Ignore comments"],
+    kpis:["20–40 replies on first post","8–15 DM conversations","3–5 demo calls booked"],
+    tip:"Facebook groups are warmer than Reddit. Founders who are transparent and curious get massive goodwill here — the community will root for you if you're genuine."
+  },
+  Slack:{
+    week1:[
+      {day:"D1",action:"Find #introductions. Write a founder intro — what you're building and who you need to talk to."},
+      {day:"D2-3",action:"Answer 3–5 questions in relevant channels. Be specific and concretely useful."},
+      {day:"D4",action:"Post in #show-and-tell or equivalent — early prototype, landing page, or problem framing."},
+      {day:"D5-6",action:"DM everyone who reacted to your posts. Invite to a 15-min research call."},
+      {day:"D7",action:"Ask the community manager if there's a #founders or #tools channel for next week."},
+    ],
+    firstPost:{title:"Founders who've sold into healthcare — how did you find your first 10 customers?",body:"Hey all 👋 Building an AI documentation tool for therapists, pre-launch, figuring out GTM.\n\nWould love to hear from anyone who's sold into healthcare before — where do therapists actually hang out online? What actually worked?\n\nHappy to share back what we're learning too."},
+    dmTemplate:"Hey [name] — loved your take in [channel]. We're building something that directly addresses what you described and I think you'd have a strong opinion on whether we're solving it right. 15 min this week?",
+    dos:["Find the right sub-channels first","Give before you ask","DM after positive reactions","Respect the community culture"],
+    donts:["Post in #general as your first move","Pitch without context","Drop links without explanation","Mass-DM the channel"],
+    kpis:["5–10 genuine DM conversations","2–3 warm intros from members","1–2 beta testers"],
+    tip:"Slack is relationship-first. The more you give in week one, the more permission you earn to share your work in week two."
+  },
+  Forum:{
+    week1:[
+      {day:"D1",action:"Read the 20 most recent threads. Map recurring pain points — write them in their exact language."},
+      {day:"D2",action:"Create an account. Fill your profile completely — include your founder status."},
+      {day:"D3",action:"Reply to 5 threads with specific, helpful answers. No agenda."},
+      {day:"D4-5",action:"Start a thread asking about the pain point — not your solution. The problem only."},
+      {day:"D6",action:"Follow up with every person who replied. DM the most thoughtful ones."},
+      {day:"D7",action:"Offer early access or a free month in exchange for a 20-minute call."},
+    ],
+    firstPost:{title:"How long do session notes actually take you? What's your system?",body:"Running a quick informal survey for a project I'm working on.\n\nFor those running private practices: what does your session documentation workflow look like? Handwritten? EHR templates? Voice memos?\n\nAnd roughly how much time does it add to your day?\n\nAppreciate any answers — even a rough estimate!"},
+    dmTemplate:"Hi [name] — your reply on the notes thread was really helpful. You mentioned [specific thing] — that's exactly the gap we're building for. Would love to show you what we have and get your honest opinion. 15 minutes this week?",
+    dos:["Read thoroughly before posting","Quote specific pain in your posts","Be a consistent presence","Offer something genuinely useful"],
+    donts:["Self-promote in your first post","Use marketing language","Post and disappear","Ignore replies"],
+    kpis:["20–35 replies on first thread","5–10 DM conversations","3+ beta calls booked"],
+    tip:"Forum posts are evergreen — they keep pulling in leads for weeks. Invest in quality. A great thread title is worth 10 mediocre posts."
+  },
+  Newsletter:{
+    week1:[
+      {day:"D1-2",action:"Subscribe. Read 3+ back issues. Find the author's email, Twitter, or LinkedIn."},
+      {day:"D3",action:"Send a genuine fan email referencing a specific piece. Zero ask."},
+      {day:"D4-5",action:"Reply to their next email or tweet with a specific, useful observation."},
+      {day:"D6",action:"Pitch a sponsored slot or founder feature — you have personal context now."},
+      {day:"D7",action:"If no reply, try LinkedIn or Twitter DM with the same personalised framing."},
+    ],
+    firstPost:{title:"Hi [Author] — longtime reader, quick question",body:"Hi [name] — I've been reading [Newsletter] for a while and your piece on [specific topic] really stayed with me.\n\nI'm building an AI documentation tool for private practice therapists and your audience is exactly who I need to reach.\n\nWould you be open to a sponsored mention or founder story feature? Happy to offer your readers something exclusive — early access, a free month, or a resource that genuinely helps them.\n\nNo pressure — even a 'not right now' is appreciated."},
+    dmTemplate:"Hey [name] — sent you an email last week about a potential collab. Totally understand if timing's off. Just following up here. The tool is specific to therapists and I genuinely think it'd land well with your readers.",
+    dos:["Personalise every single outreach","Offer real value to readers","Follow up once only","Make it easy to say yes or no"],
+    donts:["Mass-pitch without reading the newsletter","Offer a generic promo slot","Ask for free coverage as an opener","Follow up more than twice"],
+    kpis:["2–3 replies from newsletter authors","1 placement secured","20–50 signups from placement"],
+    tip:"One great newsletter placement often leads to referrals from other authors in the same niche. Invest in the relationship, not the transaction."
+  },
+  Discord:{
+    week1:[
+      {day:"D1",action:"Read #rules and #announcements. DM the community manager to introduce yourself as a founder."},
+      {day:"D2-3",action:"Engage in 3+ conversations. Ask questions — don't pitch your product."},
+      {day:"D4",action:"Post something genuinely useful in #resources or the most relevant channel."},
+      {day:"D5-6",action:"Ask your research question conversationally. Keep it short and curious."},
+      {day:"D7",action:"Follow up individually with everyone who engaged. Voice chat closes faster than text."},
+    ],
+    firstPost:{title:"Quick question — how do you all handle documentation after sessions?",body:"Hey everyone 👋 Just joined last week and already loving the conversations here.\n\nQuick question: for those running therapy or healthcare practices, what's your note-taking setup? Handwriting? EHR templates? Dictation?\n\nAsking because we're building something in this space and want to make sure we're solving the right problem first. Happy to share what we're learning!"},
+    dmTemplate:"Hey [name] — you mentioned in #general that [specific pain]. That's literally the exact problem we're building for. Would love to show you what we have — could be 10 minutes on a voice call. Let me know?",
+    dos:["Join voice channels when active","Use the right channel for each topic","React genuinely to others' posts","DM after positive interactions"],
+    donts:["Spam multiple channels","Join and immediately pitch","Ignore community norms","Over-message"],
+    kpis:["5–10 DM conversations","2–4 beta testers","1 community manager as an ally"],
+    tip:"Discord has a higher trust ceiling than Reddit. Voice conversations close faster than text — if someone's open to it, hop on a quick call."
+  },
+};
+
+let all=[];
+
+function launch() {
+  const cat = document.getElementById('category').value;
+  const desc = document.getElementById('desc').value.trim();
+  const cust = document.getElementById('customer').value.trim();
+
+  document.getElementById('bar-name').textContent = cat.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  document.getElementById('bar-desc').textContent = (desc||'').substring(0,65)+'…';
+
+  document.getElementById('landing').style.display='none';
+  document.getElementById('app').style.display='flex';
+
+  all = (DB[cat]||DB.healthtech).slice();
+  document.getElementById('match-count').textContent=all.length;
+
+  const spinner=document.getElementById('spinner');
+  const list=document.getElementById('comm-list');
+  spinner.classList.add('on');
+  list.classList.add('hidden');
+
+  setTimeout(()=>{
+    spinner.classList.remove('on');
+    list.classList.remove('hidden');
+    renderCards(all);
+  },1600);
+}
+
+function renderCards(cards) {
+  const list=document.getElementById('comm-list');
+  list.innerHTML='';
+  cards.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='c-card';
+    d.id='cc'+i;
+    d.innerHTML=`
+      <div class="c-score-col">
+        <div class="c-score-n">${c.score}</div>
+        <div class="c-score-l">Match</div>
+      </div>
+      <div class="c-info">
+        <div class="c-top">
+          <div class="c-name">${c.name}</div>
+          <span class="c-plat">${c.platform}</span>
+        </div>
+        <div class="c-desc">${c.desc}</div>
+        <div class="c-meta">
+          <span><strong>${c.size}</strong> members</span>
+          <span>·</span>
+          <span>ICP: <strong>${c.icp}</strong></span>
+          <span>·</span>
+          <span>First customer: <strong>${c.speed}</strong></span>
+        </div>
+      </div>
+      <div class="c-cta-col">
+        <button class="pb-btn" onclick="genPB(${i},event)">Playbook →</button>
+      </div>
+    `;
+    list.appendChild(d);
+  });
+}
+
+function genPB(i,e) {
+  e.stopPropagation();
+  document.querySelectorAll('.c-card').forEach(c=>c.classList.remove('on'));
+  document.getElementById('cc'+i).classList.add('on');
+  const c=all[i];
+  const pb=PB[c.platform]||PB.Forum;
+  const panel=document.getElementById('play-panel');
+
+  panel.innerHTML=`
+    <div class="pb-head">
+      <div class="pb-eyebrow">Activation Playbook</div>
+      <div class="pb-h">${c.name}</div>
+      <div class="pb-meta">${c.platform} · ${c.size} members · Score <strong>${c.score}</strong> · ${c.speed} to first customer</div>
+    </div>
+    <div class="pb-body">
+      <div>
+        <div class="sec-lbl">Week 1 — Day by Day</div>
+        ${pb.week1.map(d=>`<div class="day-row"><div class="day-tag">${d.day}</div><div class="day-act">${d.action}</div></div>`).join('')}
+      </div>
+      <div>
+        <div class="sec-lbl">Your First Post</div>
+        <div class="post-block">
+          <div class="post-hd">Title</div>
+          <div class="post-ti">${pb.firstPost.title}</div>
+          <div class="post-hd" style="border-top:1px solid var(--b)">Body</div>
+          <div class="post-bd">${pb.firstPost.body}</div>
+          <button class="copy-btn" id="cp1" onclick="cp('${encodeURIComponent(pb.firstPost.title+'\\n\\n'+pb.firstPost.body)}','cp1')">📋 Copy post</button>
+        </div>
+      </div>
+      <div>
+        <div class="sec-lbl">DM Template</div>
+        <div class="post-block">
+          <div class="post-bd">${pb.dmTemplate}</div>
+          <button class="copy-btn" id="cp2" onclick="cp('${encodeURIComponent(pb.dmTemplate)}','cp2')">📋 Copy DM</button>
+        </div>
+      </div>
+      <div>
+        <div class="sec-lbl">Do's &amp; Don'ts</div>
+        <div class="dd-grid">
+          <div class="dd-box"><div class="dd-hd do">Do</div><ul class="dd-list dos">${pb.dos.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+          <div class="dd-box"><div class="dd-hd dont">Don't</div><ul class="dd-list donts">${pb.donts.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-lbl">Week 1 KPIs</div>
+        <div class="kpi-wrap">${pb.kpis.map(k=>`<span class="kpi-tag">${k}</span>`).join('')}</div>
+      </div>
+      <div>
+        <div class="sec-lbl">Insider Tip</div>
+        <div class="tip-block">${pb.tip}</div>
+      </div>
+    </div>
+  `;
+}
+
+function cp(encoded,btnId) {
+  navigator.clipboard.writeText(decodeURIComponent(encoded)).catch(()=>{});
+  const b=document.getElementById(btnId);
+  if(b){b.textContent='✓ Copied';b.classList.add('copied');setTimeout(()=>{b.textContent='📋 Copy';b.classList.remove('copied');},2000);}
+}
+
+function filt(btn,plat) {
+  document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const f=plat==='all'?all:plat==='other'?all.filter(c=>!['Reddit','Facebook','Slack'].includes(c.platform)):all.filter(c=>c.platform===plat);
+  renderCards(f);
+}
+
+function sortBy(val) {
+  const s=[...all];
+  if(val==='score')s.sort((a,b)=>b.score-a.score);
+  if(val==='size')s.sort((a,b)=>parseInt(b.size)-parseInt(a.size));
+  if(val==='speed')s.sort((a,b)=>parseInt(a.speed)-parseInt(b.speed));
+  renderCards(s);
+}
+
+function goBack() {
+  document.getElementById('landing').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+</script>

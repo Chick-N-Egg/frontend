@@ -1,0 +1,320 @@
+<title>Chick — Cost & Scenario Sim</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:#FBF8FF;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:#120D1E;
+  min-height:100vh;
+  padding:48px 48px 80px;
+  -webkit-font-smoothing:antialiased;
+}
+
+.hd-label{font-size:0.65rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;border:1px solid rgba(123,111,219,0.35);display:inline-block;padding:0.2rem 0.7rem;border-radius:99px;margin-bottom:1rem;}
+.hd-title{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.15;color:#120D1E;margin-bottom:0.5rem;}
+.hd-title i{color:#7B6FDB;font-style:italic;}
+.hd-sub{font-size:0.95rem;color:#3D3358;margin-bottom:3rem;max-width:640px;line-height:1.7;}
+
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:20px;border-bottom:1px solid rgba(123,111,219,0.22);padding-bottom:12px;}
+.sec-num{width:28px;height:28px;border-radius:50%;background:#7B6FDB;font-size:0.75rem;font-weight:700;color:#FBF8FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec-title{font-family:'Instrument Serif',serif;font-size:1.2rem;font-weight:400;color:#120D1E;}
+.sec-wrap{margin-bottom:48px;}
+
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.cost-card{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:14px;padding:20px 24px;}
+.cost-card.full{grid-column:1/-1;}
+.cost-card-label{font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;margin-bottom:14px;}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(123,111,219,0.10);font-size:0.8rem;}
+.cost-row:last-child{border-bottom:none;}
+.cost-row-label{color:#3D3358;}
+.cost-row-val{font-weight:700;color:#120D1E;font-variant-numeric:tabular-nums;}
+.cost-row-val.terra{color:#C4401A;}
+.cost-row-val.green{color:#2E7D4F;}
+.cost-total{display:flex;justify-content:space-between;align-items:center;padding:12px 0 0;margin-top:4px;border-top:1.5px solid rgba(123,111,219,0.30);font-size:0.9rem;font-weight:700;}
+.cost-total-label{color:#120D1E;}
+.cost-total-val{color:#7B6FDB;font-size:1.25rem;font-variant-numeric:tabular-nums;}
+
+.tier-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.tier{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:14px;padding:22px 20px;position:relative;}
+.tier.hot{border-color:rgba(200,155,60,0.6);background:#EAE7FF;}
+.tier-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#7B6FDB;color:#FBF8FF;font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 12px;border-radius:100px;white-space:nowrap;}
+.tier-name{font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#7B6FDB;margin-bottom:6px;}
+.tier-price{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:400;color:#120D1E;line-height:1;}
+.tier-price span{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:500;color:#3D3358;}
+.tier-margin{font-size:0.7rem;font-weight:600;color:#2E7D4F;margin:6px 0 14px;}
+.tier-feat{font-size:0.78rem;color:#3D3358;line-height:1.8;margin-top:10px;}
+.tier-feat li{list-style:none;display:flex;gap:8px;align-items:flex-start;}
+.tier-feat li::before{content:'→';color:#7B6FDB;font-weight:700;flex-shrink:0;}
+
+.tab-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:8px 20px;border-radius:8px;font-size:0.75rem;font-weight:600;cursor:pointer;border:1px solid rgba(123,111,219,0.30);color:#3D3358;background:#F2EFFF;transition:all 0.15s;}
+.tab.active{background:#7B6FDB;border-color:#7B6FDB;color:#FBF8FF;}
+
+.sim-wrap{display:none;}
+.sim-wrap.active{display:block;}
+
+.sim-grid{display:grid;grid-template-columns:220px repeat(12,1fr);gap:0;border:1px solid rgba(123,111,219,0.22);border-radius:14px;overflow:hidden;overflow-x:auto;}
+.sim-hd{background:#F2EFFF;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#7B6FDB;padding:10px 8px;white-space:nowrap;border-bottom:1px solid rgba(123,111,219,0.15);}
+.sim-label{background:#FBF8FF;font-size:0.75rem;font-weight:500;color:#3D3358;padding:9px 12px;border-bottom:1px solid rgba(200,155,60,0.08);white-space:nowrap;}
+.sim-label.group{background:#F2EFFF;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#7B6FDB;border-bottom:1px solid rgba(123,111,219,0.15);}
+.sim-cell{background:#FBF8FF;font-size:0.75rem;font-weight:600;color:#120D1E;padding:9px 8px;text-align:right;border-bottom:1px solid rgba(200,155,60,0.08);border-left:1px solid rgba(200,155,60,0.06);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.sim-cell.group{background:#F2EFFF;border-bottom:1px solid rgba(123,111,219,0.15);}
+.sim-cell.pos{color:#2E7D4F;}
+.sim-cell.neg{color:#C4401A;}
+.sim-cell.bold{font-weight:700;}
+
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;}
+.sum-card{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:14px;padding:18px 20px;}
+.sum-label{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7B6FDB;margin-bottom:6px;}
+.sum-val{font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:400;color:#120D1E;font-variant-numeric:tabular-nums;}
+.sum-sub{font-size:0.7rem;color:#3D3358;margin-top:3px;}
+
+.gp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.gp-card{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:14px;overflow:hidden;}
+.gp-head{padding:16px 20px;background:rgba(123,111,219,0.10);border-bottom:1px solid rgba(123,111,219,0.22);display:flex;align-items:center;gap:10px;}
+.gp-icon{font-size:20px;}
+.gp-name{font-family:'Instrument Serif',serif;font-size:1rem;font-weight:400;color:#120D1E;}
+.gp-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#7B6FDB;margin-top:1px;}
+.gp-body{padding:18px 20px;display:flex;flex-direction:column;gap:10px;}
+.gp-row{font-size:0.78rem;color:#3D3358;display:flex;justify-content:space-between;align-items:center;}
+.gp-row-key{color:#3D3358;}
+.gp-row-val{font-weight:600;color:#120D1E;}
+.gp-row-val.g{color:#2E7D4F;}
+.gp-row-val.r{color:#C4401A;}
+.gp-divider{border:none;border-top:1px solid rgba(123,111,219,0.15);}
+.gp-verdict{margin-top:4px;padding:10px 12px;background:#FBF8FF;border:1px solid rgba(123,111,219,0.22);border-left:3px solid #7B6FDB;border-radius:0 8px 8px 0;font-size:0.75rem;color:#3D3358;line-height:1.6;}
+
+.assume-box{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:14px;padding:20px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.assume-item{font-size:0.78rem;color:#3D3358;line-height:1.7;}
+.assume-item strong{display:block;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7B6FDB;margin-bottom:4px;}
+</style>
+
+<div class="hd-label">Chick · Financial Intelligence</div>
+<div class="hd-title">Cost Analysis &<br><i>Scenario Simulations</i></div>
+<div class="hd-sub">Unit economics, pricing tiers, and 12-month revenue projections across three game plans. Built for the pitch — built on real numbers.</div>
+
+<div class="sec-wrap">
+  <div class="sec-head"><div class="sec-num">1</div><div class="sec-title">Monthly Operating Cost Structure</div></div>
+  <div class="cost-grid">
+    <div class="cost-card">
+      <div class="cost-card-label">Infrastructure & AI</div>
+      <div class="cost-row"><span class="cost-row-label">OpenAI GPT-4o API (community ranking + playbook gen)</span><span class="cost-row-val terra">£320/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">Cala — GTM knowledge search + community seed data</span><span class="cost-row-val terra">£150/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">fal.ai — TTS audio playbooks</span><span class="cost-row-val terra">£40/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">Entire — session logging + usage analytics</span><span class="cost-row-val terra">£30/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">FastAPI hosting (Railway / Render)</span><span class="cost-row-val terra">£25/mo</span></div>
+      <div class="cost-total"><span class="cost-total-label">AI + Infra Total</span><span class="cost-total-val">£565/mo</span></div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-label">Team & Operations (Lean Hackathon Mode)</div>
+      <div class="cost-row"><span class="cost-row-label">Domain + DNS + SSL</span><span class="cost-row-val terra">£12/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">GitHub (team plan)</span><span class="cost-row-val terra">£8/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">Notion workspace</span><span class="cost-row-val terra">£16/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">Email (Resend / Postmark)</span><span class="cost-row-val terra">£10/mo</span></div>
+      <div class="cost-row"><span class="cost-row-label">Community data crawl / scraping quota</span><span class="cost-row-val terra">£60/mo</span></div>
+      <div class="cost-total"><span class="cost-total-label">Ops Total</span><span class="cost-total-val">£106/mo</span></div>
+    </div>
+    <div class="cost-card full">
+      <div class="cost-card-label">Total Fixed Burn (Pre-Revenue, Lean Team)</div>
+      <div class="cost-row"><span class="cost-row-label">AI + Infrastructure</span><span class="cost-row-val">£565</span></div>
+      <div class="cost-row"><span class="cost-row-label">Operations & Tools</span><span class="cost-row-val">£106</span></div>
+      <div class="cost-row"><span class="cost-row-label">Founder salaries (pre-revenue: £0 — founders working for equity)</span><span class="cost-row-val">£0</span></div>
+      <div class="cost-row"><span class="cost-row-label">Marketing (organic-first — Chick markets Chick)</span><span class="cost-row-val">£0</span></div>
+      <div class="cost-total"><span class="cost-total-label">Monthly Burn Rate (MVP Phase)</span><span class="cost-total-val">£671/mo</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec-wrap">
+  <div class="sec-head"><div class="sec-num">2</div><div class="sec-title">Pricing Tiers & Unit Economics</div></div>
+  <div class="tier-row">
+    <div class="tier">
+      <div class="tier-name">Free</div>
+      <div class="tier-price">£0<span>/mo</span></div>
+      <div class="tier-margin">Hook only — cost per user ~£0.40/mo</div>
+      <ul class="tier-feat">
+        <li>3 community searches/month</li>
+        <li>Basic match score</li>
+        <li>Top 3 communities only</li>
+        <li>No playbook</li>
+      </ul>
+    </div>
+    <div class="tier hot">
+      <div class="tier-badge">★ Core Revenue Driver</div>
+      <div class="tier-name">Pro</div>
+      <div class="tier-price">£49<span>/mo</span></div>
+      <div class="tier-margin">Gross margin: ~82% · Cost per user: ~£8.80/mo</div>
+      <ul class="tier-feat">
+        <li>Unlimited community searches</li>
+        <li>Full 10-community ranked list</li>
+        <li>Complete activation playbook</li>
+        <li>DM templates + day-by-day plan</li>
+        <li>Refine loop — all iterations</li>
+        <li>Pattern intelligence updates</li>
+      </ul>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Agency</div>
+      <div class="tier-price">£199<span>/mo</span></div>
+      <div class="tier-margin">Gross margin: ~90% · Cost per seat: ~£20/mo</div>
+      <ul class="tier-feat">
+        <li>Up to 10 startup profiles</li>
+        <li>White-label playbook export</li>
+        <li>Client dashboard</li>
+        <li>Priority pattern data</li>
+        <li>Accelerator cohort ready</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cost-card full">
+    <div class="cost-card-label">Accelerator Deals (B2B)</div>
+    <div class="cost-row"><span class="cost-row-label">YC / EF / Antler batch (30 startups)</span><span class="cost-row-val green">£1,200 one-off + £29/startup/mo</span></div>
+    <div class="cost-row"><span class="cost-row-label">Estimated margin on accelerator deal</span><span class="cost-row-val green">~88%</span></div>
+    <div class="cost-row"><span class="cost-row-label">Annual accelerator contract value (1 batch)</span><span class="cost-row-val">£1,200 setup + £10,440 ARR</span></div>
+  </div>
+</div>
+
+<div class="sec-wrap">
+  <div class="sec-head"><div class="sec-num">3</div><div class="sec-title">12-Month Revenue Simulations</div></div>
+  <div class="assume-box">
+    <div class="assume-item"><strong>CAC assumption</strong>£0 paid — organic-first. Chick markets Chick via r/startups, IndieHackers, Product Hunt. Founder DMs.</div>
+    <div class="assume-item"><strong>Conversion rate</strong>Free → Pro: 8–15% depending on scenario. Agency: 2–4% of Pro base.</div>
+    <div class="assume-item"><strong>Churn</strong>Monthly churn 5% (cons) → 3% (base) → 2% (opt). Founders churn when PMF found.</div>
+    <div class="assume-item"><strong>Growth driver</strong>Word of mouth + pattern intelligence loop. Each founder's success recruits 1.2–2 new founders.</div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="switchTab(event,'cons')">🧊 Conservative</div>
+    <div class="tab active" onclick="switchTab(event,'base')">📈 Base Case</div>
+    <div class="tab" onclick="switchTab(event,'opt')">🚀 Optimistic</div>
+  </div>
+
+  <div class="sim-wrap" id="sim-cons">
+    <div style="overflow-x:auto;">
+    <div class="sim-grid" style="min-width:900px;">
+      <div class="sim-hd">Metric</div>
+      <div class="sim-hd">M1</div><div class="sim-hd">M2</div><div class="sim-hd">M3</div><div class="sim-hd">M4</div><div class="sim-hd">M5</div><div class="sim-hd">M6</div><div class="sim-hd">M7</div><div class="sim-hd">M8</div><div class="sim-hd">M9</div><div class="sim-hd">M10</div><div class="sim-hd">M11</div><div class="sim-hd">M12</div>
+      <div class="sim-label group">USERS</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Free signups</div><div class="sim-cell">30</div><div class="sim-cell">55</div><div class="sim-cell">90</div><div class="sim-cell">130</div><div class="sim-cell">175</div><div class="sim-cell">225</div><div class="sim-cell">280</div><div class="sim-cell">340</div><div class="sim-cell">405</div><div class="sim-cell">475</div><div class="sim-cell">550</div><div class="sim-cell">630</div>
+      <div class="sim-label">Pro subscribers</div><div class="sim-cell">2</div><div class="sim-cell">5</div><div class="sim-cell">9</div><div class="sim-cell">13</div><div class="sim-cell">18</div><div class="sim-cell">24</div><div class="sim-cell">30</div><div class="sim-cell">37</div><div class="sim-cell">45</div><div class="sim-cell">54</div><div class="sim-cell">63</div><div class="sim-cell">73</div>
+      <div class="sim-label">Agency accounts</div><div class="sim-cell">0</div><div class="sim-cell">0</div><div class="sim-cell">0</div><div class="sim-cell">1</div><div class="sim-cell">1</div><div class="sim-cell">2</div><div class="sim-cell">2</div><div class="sim-cell">3</div><div class="sim-cell">3</div><div class="sim-cell">4</div><div class="sim-cell">4</div><div class="sim-cell">5</div>
+      <div class="sim-label group">REVENUE</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Pro MRR (£49)</div><div class="sim-cell">£98</div><div class="sim-cell">£245</div><div class="sim-cell">£441</div><div class="sim-cell">£637</div><div class="sim-cell">£882</div><div class="sim-cell">£1,176</div><div class="sim-cell">£1,470</div><div class="sim-cell">£1,813</div><div class="sim-cell">£2,205</div><div class="sim-cell">£2,646</div><div class="sim-cell">£3,087</div><div class="sim-cell">£3,577</div>
+      <div class="sim-label">Agency MRR (£199)</div><div class="sim-cell">£0</div><div class="sim-cell">£0</div><div class="sim-cell">£0</div><div class="sim-cell">£199</div><div class="sim-cell">£199</div><div class="sim-cell">£398</div><div class="sim-cell">£398</div><div class="sim-cell">£597</div><div class="sim-cell">£597</div><div class="sim-cell">£796</div><div class="sim-cell">£796</div><div class="sim-cell">£995</div>
+      <div class="sim-label bold">Total MRR</div><div class="sim-cell bold">£98</div><div class="sim-cell bold">£245</div><div class="sim-cell bold">£441</div><div class="sim-cell bold">£836</div><div class="sim-cell bold">£1,081</div><div class="sim-cell bold">£1,574</div><div class="sim-cell bold">£1,868</div><div class="sim-cell bold">£2,410</div><div class="sim-cell bold">£2,802</div><div class="sim-cell bold">£3,442</div><div class="sim-cell bold">£3,883</div><div class="sim-cell bold">£4,572</div>
+      <div class="sim-label group">BURN & PROFIT</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Monthly burn</div><div class="sim-cell">£671</div><div class="sim-cell">£711</div><div class="sim-cell">£760</div><div class="sim-cell">£800</div><div class="sim-cell">£840</div><div class="sim-cell">£890</div><div class="sim-cell">£930</div><div class="sim-cell">£980</div><div class="sim-cell">£1,020</div><div class="sim-cell">£1,060</div><div class="sim-cell">£1,100</div><div class="sim-cell">£1,150</div>
+      <div class="sim-label bold">Net (MRR − Burn)</div><div class="sim-cell neg bold">-£573</div><div class="sim-cell neg bold">-£466</div><div class="sim-cell neg bold">-£319</div><div class="sim-cell pos bold">+£36</div><div class="sim-cell pos bold">+£241</div><div class="sim-cell pos bold">+£684</div><div class="sim-cell pos bold">+£938</div><div class="sim-cell pos bold">+£1,430</div><div class="sim-cell pos bold">+£1,782</div><div class="sim-cell pos bold">+£2,382</div><div class="sim-cell pos bold">+£2,783</div><div class="sim-cell pos bold">+£3,422</div>
+    </div></div>
+    <div class="summary-row">
+      <div class="sum-card"><div class="sum-label">12-Month ARR</div><div class="sum-val">£54.9K</div><div class="sum-sub">Conservative ceiling</div></div>
+      <div class="sum-card"><div class="sum-label">Break-even</div><div class="sum-val">Month 4</div><div class="sum-sub">17 Pro + 1 Agency</div></div>
+      <div class="sum-card"><div class="sum-label">Total burn (M1–M3)</div><div class="sum-val">£2,142</div><div class="sum-sub">Before profitability</div></div>
+      <div class="sum-card"><div class="sum-label">Year-end Pro subs</div><div class="sum-val">73</div><div class="sum-sub">+ 5 Agency accounts</div></div>
+    </div>
+  </div>
+
+  <div class="sim-wrap active" id="sim-base">
+    <div style="overflow-x:auto;">
+    <div class="sim-grid" style="min-width:900px;">
+      <div class="sim-hd">Metric</div>
+      <div class="sim-hd">M1</div><div class="sim-hd">M2</div><div class="sim-hd">M3</div><div class="sim-hd">M4</div><div class="sim-hd">M5</div><div class="sim-hd">M6</div><div class="sim-hd">M7</div><div class="sim-hd">M8</div><div class="sim-hd">M9</div><div class="sim-hd">M10</div><div class="sim-hd">M11</div><div class="sim-hd">M12</div>
+      <div class="sim-label group">USERS</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Free signups</div><div class="sim-cell">80</div><div class="sim-cell">160</div><div class="sim-cell">280</div><div class="sim-cell">430</div><div class="sim-cell">610</div><div class="sim-cell">820</div><div class="sim-cell">1,060</div><div class="sim-cell">1,330</div><div class="sim-cell">1,630</div><div class="sim-cell">1,960</div><div class="sim-cell">2,320</div><div class="sim-cell">2,710</div>
+      <div class="sim-label">Pro subscribers</div><div class="sim-cell">8</div><div class="sim-cell">18</div><div class="sim-cell">34</div><div class="sim-cell">55</div><div class="sim-cell">80</div><div class="sim-cell">110</div><div class="sim-cell">145</div><div class="sim-cell">185</div><div class="sim-cell">230</div><div class="sim-cell">280</div><div class="sim-cell">335</div><div class="sim-cell">395</div>
+      <div class="sim-label">Agency accounts</div><div class="sim-cell">0</div><div class="sim-cell">1</div><div class="sim-cell">2</div><div class="sim-cell">4</div><div class="sim-cell">6</div><div class="sim-cell">8</div><div class="sim-cell">10</div><div class="sim-cell">13</div><div class="sim-cell">16</div><div class="sim-cell">19</div><div class="sim-cell">22</div><div class="sim-cell">26</div>
+      <div class="sim-label group">REVENUE</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Pro MRR (£49)</div><div class="sim-cell">£392</div><div class="sim-cell">£882</div><div class="sim-cell">£1,666</div><div class="sim-cell">£2,695</div><div class="sim-cell">£3,920</div><div class="sim-cell">£5,390</div><div class="sim-cell">£7,105</div><div class="sim-cell">£9,065</div><div class="sim-cell">£11,270</div><div class="sim-cell">£13,720</div><div class="sim-cell">£16,415</div><div class="sim-cell">£19,355</div>
+      <div class="sim-label">Agency MRR (£199)</div><div class="sim-cell">£0</div><div class="sim-cell">£199</div><div class="sim-cell">£398</div><div class="sim-cell">£796</div><div class="sim-cell">£1,194</div><div class="sim-cell">£1,592</div><div class="sim-cell">£1,990</div><div class="sim-cell">£2,587</div><div class="sim-cell">£3,184</div><div class="sim-cell">£3,781</div><div class="sim-cell">£4,378</div><div class="sim-cell">£5,174</div>
+      <div class="sim-label bold">Total MRR</div><div class="sim-cell bold">£392</div><div class="sim-cell bold">£1,081</div><div class="sim-cell bold">£2,064</div><div class="sim-cell bold">£3,491</div><div class="sim-cell bold">£5,114</div><div class="sim-cell bold">£6,982</div><div class="sim-cell bold">£9,095</div><div class="sim-cell bold">£11,652</div><div class="sim-cell bold">£14,454</div><div class="sim-cell bold">£17,501</div><div class="sim-cell bold">£20,793</div><div class="sim-cell bold">£24,529</div>
+      <div class="sim-label group">BURN & PROFIT</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Monthly burn</div><div class="sim-cell">£671</div><div class="sim-cell">£750</div><div class="sim-cell">£850</div><div class="sim-cell">£980</div><div class="sim-cell">£1,100</div><div class="sim-cell">£1,250</div><div class="sim-cell">£1,400</div><div class="sim-cell">£1,600</div><div class="sim-cell">£1,800</div><div class="sim-cell">£2,000</div><div class="sim-cell">£2,200</div><div class="sim-cell">£2,500</div>
+      <div class="sim-label bold">Net (MRR − Burn)</div><div class="sim-cell neg bold">-£279</div><div class="sim-cell pos bold">+£331</div><div class="sim-cell pos bold">+£1,214</div><div class="sim-cell pos bold">+£2,511</div><div class="sim-cell pos bold">+£4,014</div><div class="sim-cell pos bold">+£5,732</div><div class="sim-cell pos bold">+£7,695</div><div class="sim-cell pos bold">+£10,052</div><div class="sim-cell pos bold">+£12,654</div><div class="sim-cell pos bold">+£15,501</div><div class="sim-cell pos bold">+£18,593</div><div class="sim-cell pos bold">+£22,029</div>
+    </div></div>
+    <div class="summary-row">
+      <div class="sum-card"><div class="sum-label">12-Month ARR</div><div class="sum-val">£294K</div><div class="sum-sub">Base case ceiling</div></div>
+      <div class="sum-card"><div class="sum-label">Break-even</div><div class="sum-val">Month 2</div><div class="sum-sub">18 Pro + 1 Agency</div></div>
+      <div class="sum-card"><div class="sum-label">Total burn (M1 only)</div><div class="sum-val">£671</div><div class="sum-sub">One month to profitable</div></div>
+      <div class="sum-card"><div class="sum-label">Year-end Pro subs</div><div class="sum-val">395</div><div class="sum-sub">+ 26 Agency accounts</div></div>
+    </div>
+  </div>
+
+  <div class="sim-wrap" id="sim-opt">
+    <div style="overflow-x:auto;">
+    <div class="sim-grid" style="min-width:900px;">
+      <div class="sim-hd">Metric</div>
+      <div class="sim-hd">M1</div><div class="sim-hd">M2</div><div class="sim-hd">M3</div><div class="sim-hd">M4</div><div class="sim-hd">M5</div><div class="sim-hd">M6</div><div class="sim-hd">M7</div><div class="sim-hd">M8</div><div class="sim-hd">M9</div><div class="sim-hd">M10</div><div class="sim-hd">M11</div><div class="sim-hd">M12</div>
+      <div class="sim-label group">USERS</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Free signups (Product Hunt spike)</div><div class="sim-cell">400</div><div class="sim-cell">680</div><div class="sim-cell">1,100</div><div class="sim-cell">1,650</div><div class="sim-cell">2,300</div><div class="sim-cell">3,050</div><div class="sim-cell">3,900</div><div class="sim-cell">4,850</div><div class="sim-cell">5,900</div><div class="sim-cell">7,050</div><div class="sim-cell">8,300</div><div class="sim-cell">9,650</div>
+      <div class="sim-label">Pro subscribers (15% conv)</div><div class="sim-cell">45</div><div class="sim-cell">95</div><div class="sim-cell">175</div><div class="sim-cell">280</div><div class="sim-cell">410</div><div class="sim-cell">560</div><div class="sim-cell">730</div><div class="sim-cell">920</div><div class="sim-cell">1,130</div><div class="sim-cell">1,360</div><div class="sim-cell">1,610</div><div class="sim-cell">1,880</div>
+      <div class="sim-label">Agency + accelerator accounts</div><div class="sim-cell">1</div><div class="sim-cell">3</div><div class="sim-cell">6</div><div class="sim-cell">10</div><div class="sim-cell">15</div><div class="sim-cell">21</div><div class="sim-cell">28</div><div class="sim-cell">36</div><div class="sim-cell">45</div><div class="sim-cell">55</div><div class="sim-cell">66</div><div class="sim-cell">78</div>
+      <div class="sim-label group">REVENUE</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Pro MRR (£49)</div><div class="sim-cell">£2,205</div><div class="sim-cell">£4,655</div><div class="sim-cell">£8,575</div><div class="sim-cell">£13,720</div><div class="sim-cell">£20,090</div><div class="sim-cell">£27,440</div><div class="sim-cell">£35,770</div><div class="sim-cell">£45,080</div><div class="sim-cell">£55,370</div><div class="sim-cell">£66,640</div><div class="sim-cell">£78,890</div><div class="sim-cell">£92,120</div>
+      <div class="sim-label">Agency/Accel MRR (avg £250)</div><div class="sim-cell">£250</div><div class="sim-cell">£750</div><div class="sim-cell">£1,500</div><div class="sim-cell">£2,500</div><div class="sim-cell">£3,750</div><div class="sim-cell">£5,250</div><div class="sim-cell">£7,000</div><div class="sim-cell">£9,000</div><div class="sim-cell">£11,250</div><div class="sim-cell">£13,750</div><div class="sim-cell">£16,500</div><div class="sim-cell">£19,500</div>
+      <div class="sim-label bold">Total MRR</div><div class="sim-cell bold">£2,455</div><div class="sim-cell bold">£5,405</div><div class="sim-cell bold">£10,075</div><div class="sim-cell bold">£16,220</div><div class="sim-cell bold">£23,840</div><div class="sim-cell bold">£32,690</div><div class="sim-cell bold">£42,770</div><div class="sim-cell bold">£54,080</div><div class="sim-cell bold">£66,620</div><div class="sim-cell bold">£80,390</div><div class="sim-cell bold">£95,390</div><div class="sim-cell bold">£111,620</div>
+      <div class="sim-label group">BURN & PROFIT</div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div><div class="sim-cell group"></div>
+      <div class="sim-label">Monthly burn (team hiring M4+)</div><div class="sim-cell">£671</div><div class="sim-cell">£800</div><div class="sim-cell">£1,000</div><div class="sim-cell">£4,500</div><div class="sim-cell">£5,500</div><div class="sim-cell">£6,500</div><div class="sim-cell">£8,000</div><div class="sim-cell">£10,000</div><div class="sim-cell">£12,000</div><div class="sim-cell">£14,000</div><div class="sim-cell">£16,000</div><div class="sim-cell">£18,000</div>
+      <div class="sim-label bold">Net (MRR − Burn)</div><div class="sim-cell pos bold">+£1,784</div><div class="sim-cell pos bold">+£4,605</div><div class="sim-cell pos bold">+£9,075</div><div class="sim-cell pos bold">+£11,720</div><div class="sim-cell pos bold">+£18,340</div><div class="sim-cell pos bold">+£26,190</div><div class="sim-cell pos bold">+£34,770</div><div class="sim-cell pos bold">+£44,080</div><div class="sim-cell pos bold">+£54,620</div><div class="sim-cell pos bold">+£66,390</div><div class="sim-cell pos bold">+£79,390</div><div class="sim-cell pos bold">+£93,620</div>
+    </div></div>
+    <div class="summary-row">
+      <div class="sum-card"><div class="sum-label">12-Month ARR</div><div class="sum-val">£1.34M</div><div class="sum-sub">Post Product Hunt spike</div></div>
+      <div class="sum-card"><div class="sum-label">Break-even</div><div class="sum-val">Month 1</div><div class="sum-sub">Profitable from day 30</div></div>
+      <div class="sum-card"><div class="sum-label">M12 Pro subs</div><div class="sum-val">1,880</div><div class="sum-sub">+ 78 Agency/Accel</div></div>
+      <div class="sum-card"><div class="sum-label">M12 net profit</div><div class="sum-val">£93.6K</div><div class="sum-sub">Single month</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec-wrap">
+  <div class="sec-head"><div class="sec-num">4</div><div class="sec-title">Three Game Plans — Strategic Paths Forward</div></div>
+  <div class="gp-grid">
+    <div class="gp-card">
+      <div class="gp-head"><div class="gp-icon">🌱</div><div><div class="gp-name">Bootstrapped Grind</div><div class="gp-tag">Default / Conservative</div></div></div>
+      <div class="gp-body">
+        <div class="gp-row"><span class="gp-row-key">Capital required</span><span class="gp-row-val">£0 — founder-funded</span></div>
+        <div class="gp-row"><span class="gp-row-key">GTM motion</span><span class="gp-row-val">Organic-only</span></div>
+        <div class="gp-row"><span class="gp-row-key">Break-even</span><span class="gp-row-val g">Month 4</span></div>
+        <div class="gp-row"><span class="gp-row-key">Year 1 ARR</span><span class="gp-row-val">£55K</span></div>
+        <hr class="gp-divider">
+        <div class="gp-row"><span class="gp-row-key">Upside</span><span class="gp-row-val g">Full founder control</span></div>
+        <div class="gp-row"><span class="gp-row-key">Risk</span><span class="gp-row-val r">Slow — competitors may catch up</span></div>
+        <div class="gp-verdict">Post to r/startups, IndieHackers, Product Hunt. DM every founder you can find. Let the tool market itself.</div>
+      </div>
+    </div>
+    <div class="gp-card">
+      <div class="gp-head"><div class="gp-icon">⚡</div><div><div class="gp-name">Accelerator-First</div><div class="gp-tag">Recommended / Base Case</div></div></div>
+      <div class="gp-body">
+        <div class="gp-row"><span class="gp-row-key">Capital required</span><span class="gp-row-val">£15–25K (pre-seed)</span></div>
+        <div class="gp-row"><span class="gp-row-key">GTM motion</span><span class="gp-row-val">Accelerator partnerships</span></div>
+        <div class="gp-row"><span class="gp-row-key">Break-even</span><span class="gp-row-val g">Month 2</span></div>
+        <div class="gp-row"><span class="gp-row-key">Year 1 ARR</span><span class="gp-row-val">£294K</span></div>
+        <hr class="gp-divider">
+        <div class="gp-row"><span class="gp-row-key">Upside</span><span class="gp-row-val g">Captive audience, high LTV</span></div>
+        <div class="gp-row"><span class="gp-row-key">Risk</span><span class="gp-row-val r">Dependency on batch cycles</span></div>
+        <div class="gp-verdict">Offer Chick free to 1 accelerator cohort. Get 30 case studies. Use those to land 3 more accelerators. 120 paying startups, zero CAC.</div>
+      </div>
+    </div>
+    <div class="gp-card">
+      <div class="gp-head"><div class="gp-icon">🚀</div><div><div class="gp-name">Raise & Dominate</div><div class="gp-tag">Optimistic / Post-Traction</div></div></div>
+      <div class="gp-body">
+        <div class="gp-row"><span class="gp-row-key">Capital required</span><span class="gp-row-val">£150–300K (seed)</span></div>
+        <div class="gp-row"><span class="gp-row-key">GTM motion</span><span class="gp-row-val">Product Hunt + BD hires</span></div>
+        <div class="gp-row"><span class="gp-row-key">Break-even</span><span class="gp-row-val g">Month 1</span></div>
+        <div class="gp-row"><span class="gp-row-key">Year 1 ARR</span><span class="gp-row-val">£1.34M</span></div>
+        <hr class="gp-divider">
+        <div class="gp-row"><span class="gp-row-key">Upside</span><span class="gp-row-val g">Category-defining speed</span></div>
+        <div class="gp-row"><span class="gp-row-key">Risk</span><span class="gp-row-val r">Dilution + execution pressure</span></div>
+        <div class="gp-verdict">Win the hackathon → use prize + press to close £200K pre-seed → Product Hunt launch → lock 3 accelerator deals → raise seed at £3M val by month 6.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(e,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sim-wrap').forEach(s=>s.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('sim-'+id).classList.add('active');
+}
+</script>

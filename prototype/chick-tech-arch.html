@@ -1,0 +1,213 @@
+<title>Chick — Technical Architecture</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#FBF8FF;font-family:'Plus Jakarta Sans',sans-serif;color:#120D1E;padding:48px 48px 80px;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:900px;margin:0 auto;}
+
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:48px;}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:20px;color:#120D1E;display:flex;align-items:center;gap:8px;}
+.nav-logo span{color:#7B6FDB;}
+.nav-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;border:1px solid rgba(123,111,219,0.35);padding:0.2rem 0.7rem;border-radius:99px;margin-left:auto;}
+
+.eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;margin-bottom:0.75rem;}
+h1{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.15;margin-bottom:0.5rem;}
+h1 i{color:#7B6FDB;font-style:italic;}
+.intro{font-size:0.95rem;color:#3D3358;margin-bottom:3rem;max-width:600px;line-height:1.7;}
+
+/* sections */
+.section{margin-bottom:3rem;padding-top:2.5rem;border-top:1px solid rgba(123,111,219,0.22);}
+h2{font-family:'Instrument Serif',serif;font-size:1.5rem;font-weight:400;margin-bottom:1.25rem;}
+h3{font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#7B6FDB;margin-bottom:0.75rem;margin-top:1.5rem;}
+
+/* stack grid */
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:1.5rem;}
+.stack-card{background:#F2EFFF;border:1px solid rgba(123,111,219,0.22);border-radius:12px;padding:20px 22px;}
+.stack-card-label{font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;margin-bottom:8px;}
+.stack-card-title{font-family:'Instrument Serif',serif;font-size:1.1rem;font-weight:400;color:#120D1E;margin-bottom:8px;}
+.stack-card-desc{font-size:0.8rem;color:#3D3358;line-height:1.6;}
+.badge{display:inline-block;font-size:0.6rem;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(123,111,219,0.12);border:1px solid rgba(123,111,219,0.30);color:#7B6FDB;margin-right:4px;margin-top:6px;}
+
+/* flow diagram */
+.flow{display:flex;flex-wrap:wrap;gap:0;margin:1rem 0;}
+.flow-step{background:#F2EFFF;border:1px solid rgba(123,111,219,0.30);padding:12px 18px;font-size:0.75rem;font-weight:600;color:#120D1E;position:relative;}
+.flow-step:first-child{border-radius:10px 0 0 10px;}
+.flow-step:last-child{border-radius:0 10px 10px 0;}
+.flow-arrow{display:flex;align-items:center;padding:0 6px;font-size:11px;color:#7B6FDB;background:#FBF8FF;border-top:1px solid rgba(123,111,219,0.22);border-bottom:1px solid rgba(123,111,219,0.22);}
+.flow-sub{font-size:0.65rem;color:#3D3358;font-weight:400;display:block;margin-top:2px;}
+
+/* data model */
+.model-row{display:grid;grid-template-columns:160px 1fr;gap:0;margin-bottom:8px;border:1px solid rgba(123,111,219,0.22);border-radius:8px;overflow:hidden;}
+.model-entity{background:rgba(123,111,219,0.10);padding:12px 14px;font-size:0.75rem;font-weight:700;color:#7B6FDB;display:flex;align-items:center;}
+.model-fields{padding:12px 16px;font-size:0.75rem;color:#3D3358;line-height:1.7;font-family:monospace;}
+
+/* dark card */
+.dark-card{background:#120D1E;border-radius:16px;padding:28px 32px;margin-top:1rem;}
+.dark-card h3{color:#C4BCFF;}
+.dark-card p{font-size:0.85rem;color:#9B91E8;line-height:1.7;margin-top:0.5rem;}
+.dark-card code{background:rgba(123,111,219,0.20);padding:2px 6px;border-radius:4px;font-size:0.8rem;color:#C4BCFF;}
+
+/* endpoint table */
+table{width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:0.75rem;}
+th{text-align:left;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7B6FDB;padding:8px 12px;border-bottom:2px solid rgba(123,111,219,0.22);}
+td{padding:10px 12px;border-bottom:1px solid rgba(123,111,219,0.12);color:#3D3358;vertical-align:top;}
+td:first-child{font-family:monospace;color:#7B6FDB;white-space:nowrap;}
+td:nth-child(2){font-weight:600;color:#120D1E;}
+</style>
+
+<div class="wrap">
+
+<nav class="nav">
+  <div class="nav-logo">
+    <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
+      <ellipse cx="20" cy="26" rx="13" ry="9" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1.2"/>
+      <path d="M7 24 Q12 20 15 23 Q18 26 20 22 Q22 18 25 21 Q28 24 33 22" stroke="#7B6FDB" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <circle cx="20" cy="18" r="7" fill="#A78BFA"/>
+      <circle cx="17.5" cy="17" r="1.2" fill="#120D1E"/>
+      <circle cx="22.5" cy="17" r="1.2" fill="#120D1E"/>
+      <path d="M19 19.5 L21 19.5 L20 21 Z" fill="#C4401A"/>
+      <path d="M8 23 Q10 14 20 12 Q14 15 12 22 Z" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1"/>
+      <path d="M32 23 Q30 14 20 12 Q26 15 28 22 Z" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1"/>
+    </svg>
+    Chick<span>.</span>
+  </div>
+  <div class="nav-tag">Technical Architecture</div>
+</nav>
+
+<div class="eyebrow">Engineering — v0.1 — Hackathon Build</div>
+<h1>System architecture<br>& <i>infrastructure.</i></h1>
+<p class="intro">This document covers the full technical stack, service boundaries, data model, API surface, and deployment topology for Chick — the GTM co-founder for pre-launch founders.</p>
+
+<!-- OVERVIEW -->
+<div class="section">
+  <h2>Architecture Overview</h2>
+  <div class="flow">
+    <div class="flow-step">Client<span class="flow-sub">Browser / Web App</span></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">API Gateway<span class="flow-sub">REST / JSON</span></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Orchestrator<span class="flow-sub">Node.js core</span></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Fastino<span class="flow-sub">text-to-JSON LLM</span></div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-step">Cala<span class="flow-sub">Knowledge search</span></div>
+  </div>
+  <p style="font-size:0.82rem;color:#3D3358;line-height:1.7;margin-top:12px;">The client sends a free-text founder brief. The API gateway routes it to the Orchestrator, which fans out to Fastino (intake structuring) and Cala (community + market data), merges results, scores them, and streams the ranked outreach kit back to the client. All state is persisted in the database for the refinement loop.</p>
+</div>
+
+<!-- FRONTEND -->
+<div class="section">
+  <h2>Frontend</h2>
+  <div class="stack-grid">
+    <div class="stack-card">
+      <div class="stack-card-label">Framework</div>
+      <div class="stack-card-title">React + Vite</div>
+      <div class="stack-card-desc">Single-page app. Vite for fast HMR in dev, static bundle for prod. TypeScript throughout.
+        <div><span class="badge">React 18</span><span class="badge">Vite 5</span><span class="badge">TypeScript</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-label">Styling</div>
+      <div class="stack-card-title">Tailwind CSS</div>
+      <div class="stack-card-desc">Utility-first. Custom token layer maps Chick's design system (lilac palette, Instrument Serif) onto Tailwind's config.
+        <div><span class="badge">Tailwind v3</span><span class="badge">PostCSS</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-label">State</div>
+      <div class="stack-card-title">Zustand</div>
+      <div class="stack-card-desc">Lightweight global store for session state — brief, ranked communities, outreach kit, tracking data.
+        <div><span class="badge">Zustand</span><span class="badge">React Query</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-label">Hosting</div>
+      <div class="stack-card-title">Vercel / Netlify</div>
+      <div class="stack-card-desc">Static deployment from GitHub. Preview URLs on every PR. Edge CDN for global latency.
+        <div><span class="badge">Edge CDN</span><span class="badge">CI/CD</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Key Frontend Routes</h3>
+  <table>
+    <tr><th>Route</th><th>Page</th><th>Description</th></tr>
+    <tr><td>/</td><td>Landing</td><td>Marketing page — value prop, CTA</td></tr>
+    <tr><td>/app</td><td>Intake</td><td>Founder types free-text brief</td></tr>
+    <tr><td>/app/discover</td><td>Discovery</td><td>Ranked community shortlist with scores</td></tr>
+    <tr><td>/app/kit/:id</td><td>Outreach Kit</td><td>7-day plan + copy-paste content per community</td></tr>
+    <tr><td>/app/track</td><td>Tracker</td><td>Log outcomes, view conversion data</td></tr>
+  </table>
+</div>
+
+<!-- BACKEND -->
+<div class="section">
+  <h2>Backend</h2>
+  <div class="stack-grid">
+    <div class="stack-card">
+      <div class="stack-card-label">Runtime</div>
+      <div class="stack-card-title">Node.js 20 + Express</div>
+      <div class="stack-card-desc">REST API server. Async/await throughout. Modular route handlers per domain.
+        <div><span class="badge">Node 20</span><span class="badge">Express 5</span><span class="badge">Zod</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-label">Database</div>
+      <div class="stack-card-title">PostgreSQL + Prisma</div>
+      <div class="stack-card-desc">Relational store for briefs, communities, outreach kits, and tracking events. Prisma ORM for type-safe queries.
+        <div><span class="badge">PostgreSQL 16</span><span class="badge">Prisma</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-label">Auth</div>
+      <div class="stack-card-title">JWT + Sessions</div>
+      <div class="stack-card-desc">Stateless JWT for API requests. Optional OAuth (Google) for quick sign-in. No passwords stored.
+        <div><span class="badge">JWT</span><span class="badge">OAuth 2.0</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-label">Hosting</div>
+      <div class="stack-card-title">Railway / Render</div>
+      <div class="stack-card-desc">Containerised Node service. Managed Postgres. Auto-deploys from main branch.
+        <div><span class="badge">Docker</span><span class="badge">Railway</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DATA MODEL -->
+<div class="section">
+  <h2>Core Data Model</h2>
+  <div class="model-row">
+    <div class="model-entity">Brief</div>
+    <div class="model-fields">id · founder_id · raw_text · structured_json (Fastino output) · stage · tone · created_at</div>
+  </div>
+  <div class="model-row">
+    <div class="model-entity">Community</div>
+    <div class="model-fields">id · platform (reddit|discord|facebook) · name · member_count · activity_score · receptiveness_score · reach_score · warmth_score</div>
+  </div>
+  <div class="model-row">
+    <div class="model-entity">OutreachKit</div>
+    <div class="model-fields">id · brief_id · community_id · day_plan (JSON) · post_copy · dm_template · dos_donts · kpis · created_at</div>
+  </div>
+  <div class="model-row">
+    <div class="model-entity">TrackingEvent</div>
+    <div class="model-fields">id · kit_id · channel · message_variant · outcome (yes|no|interested|silence) · response_time_h · logged_at</div>
+  </div>
+  <div class="model-row">
+    <div class="model-entity">RefinementRun</div>
+    <div class="model-fields">id · brief_id · pattern_signals (JSON) · re_ranked_communities (JSON) · created_at</div>
+  </div>
+</div>
+
+<!-- SECURITY -->
+<div class="section">
+  <div class="dark-card">
+    <h3>Security & Environment</h3>
+    <p>All API keys stored as environment variables — never committed. Keys needed at runtime:<br><br>
+    <code>FASTINO_API_KEY</code> · <code>CALA_API_KEY</code> · <code>DATABASE_URL</code> · <code>JWT_SECRET</code> · <code>GOOGLE_CLIENT_ID</code> / <code>GOOGLE_CLIENT_SECRET</code><br><br>
+    HTTPS enforced in production. CORS locked to known frontend origin. Input validated with Zod at every endpoint boundary. Rate-limiting on intake and discovery routes (10 req / min per user).</p>
+  </div>
+</div>
+
+</div>

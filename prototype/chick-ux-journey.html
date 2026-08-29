@@ -1,0 +1,339 @@
+<title>Chick — User Journey</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:#FBF8FF;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:#120D1E;
+  min-height:100vh;
+  padding:48px 48px 80px;
+  -webkit-font-smoothing:antialiased;
+}
+
+.hd-label{font-size:0.65rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#7B6FDB;border:1px solid rgba(123,111,219,0.35);display:inline-block;padding:0.2rem 0.7rem;border-radius:99px;margin-bottom:1rem;}
+.hd-title{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.15;color:#120D1E;margin-bottom:0.5rem;}
+.hd-title i{color:#7B6FDB;font-style:italic;}
+.hd-sub{font-size:0.95rem;color:#3D3358;margin-bottom:3.5rem;max-width:600px;line-height:1.7;}
+
+/* STEP CARDS */
+.steps{display:flex;flex-direction:column;gap:16px;}
+
+.step-card{
+  background:#F2EFFF;
+  border:1px solid rgba(123,111,219,0.22);
+  border-radius:16px;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:80px 1fr;
+}
+
+.step-num-col{
+  background:rgba(123,111,219,0.10);
+  border-right:1px solid rgba(123,111,219,0.22);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:6px;padding:20px 10px;
+}
+
+.step-n{
+  font-family:'Instrument Serif',serif;
+  font-size:2.5rem;font-weight:400;
+  color:#7B6FDB;line-height:1;
+}
+
+.step-icon{font-size:18px;}
+
+.step-content{padding:22px 28px;}
+
+.step-tag{
+  font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  color:#7B6FDB;margin-bottom:6px;
+}
+
+.step-title{
+  font-family:'Instrument Serif',serif;
+  font-size:1.25rem;font-weight:400;
+  color:#120D1E;margin-bottom:10px;line-height:1.25;
+}
+
+.step-desc{
+  font-size:0.85rem;color:#3D3358;line-height:1.7;margin-bottom:14px;
+}
+
+.chick-does{
+  background:#FBF8FF;
+  border:1px solid rgba(123,111,219,0.30);
+  border-left:3px solid #7B6FDB;
+  border-radius:0 8px 8px 0;
+  padding:10px 14px;
+  font-size:0.8rem;
+  color:#3D3358;line-height:1.6;
+}
+
+.chick-does-label{
+  font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;
+  color:#7B6FDB;margin-bottom:4px;
+}
+
+.tech-badge{
+  display:inline-block;
+  font-size:0.65rem;font-weight:600;
+  padding:2px 9px;border-radius:100px;
+  background:rgba(123,111,219,0.12);
+  border:1px solid rgba(123,111,219,0.35);
+  color:#7B6FDB;
+  margin-right:4px;margin-bottom:2px;
+}
+
+.output-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+
+.output-pill{
+  font-size:0.7rem;font-weight:600;
+  padding:4px 12px;
+  border-radius:100px;
+  background:#FBF8FF;
+  border:1px solid rgba(123,111,219,0.30);
+  color:#3D3358;
+}
+
+.loop-divider{
+  display:flex;align-items:center;gap:12px;
+  padding:2px 0;
+  font-size:0.7rem;font-weight:600;
+  color:rgba(123,111,219,0.50);
+  letter-spacing:0.5px;
+}
+.loop-divider::before,.loop-divider::after{
+  content:'';flex:1;height:1px;
+  background:rgba(123,111,219,0.22);
+}
+
+.score-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;
+}
+.score-cell{
+  background:#FBF8FF;
+  border:1px solid rgba(123,111,219,0.22);
+  border-radius:8px;padding:10px 12px;
+}
+.score-cell-label{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7B6FDB;margin-bottom:4px;}
+.score-cell-desc{font-size:0.75rem;color:#3D3358;line-height:1.5;}
+
+.refine-card{
+  background:#120D1E;
+  border-radius:16px;padding:28px 32px;
+  display:flex;align-items:flex-start;gap:20px;
+  margin-top:8px;
+}
+
+.refine-icon{font-size:32px;flex-shrink:0;}
+.refine-h{font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400;color:#FBF8FF;margin-bottom:8px;}
+.refine-p{font-size:0.85rem;color:#9B91E8;line-height:1.7;}
+
+.refine-loop-steps{
+  display:flex;gap:0;margin-top:16px;flex-wrap:wrap;
+}
+
+.rl-step{
+  display:flex;align-items:center;gap:6px;
+  font-size:0.7rem;font-weight:600;color:#FBF8FF;
+  padding:6px 14px;background:#1A1230;
+  border:1px solid rgba(123,111,219,0.22);
+}
+.rl-step:first-child{border-radius:8px 0 0 8px;}
+.rl-step:last-child{border-radius:0 8px 8px 0;}
+
+.rl-arrow{
+  font-size:12px;color:#7B6FDB;
+  background:#1A1230;
+  border-top:1px solid rgba(123,111,219,0.22);
+  border-bottom:1px solid rgba(123,111,219,0.22);
+  padding:6px 3px;
+}
+</style>
+
+<div class="hd-label">Chick · Product Flow</div>
+<div class="hd-title">From idea<br>to <i>first user.</i></div>
+<div class="hd-sub">Founder describes their idea → AI structures the brief → discovers where the audience lives → scores every path → writes the outreach kit → tracks what works → refines the loop.</div>
+
+<div class="steps">
+
+  <div class="step-card">
+    <div class="step-num-col">
+      <div class="step-n">1</div>
+      <div class="step-icon">✍️</div>
+    </div>
+    <div class="step-content">
+      <div class="step-tag">Idea Intake</div>
+      <div class="step-title">Founder describes the idea in plain language</div>
+      <div class="step-desc">No forms. No structured input. The founder types how they'd explain it to a friend — the idea, their best guess at who it's for, what stage they're at. Rambling is fine. That's the point.</div>
+      <div class="chick-does">
+        <div class="chick-does-label">What Chick does</div>
+        <span class="tech-badge">Fastino text-to-JSON</span> converts the description into a structured brief: audience hypothesis, product category, stage, tone. Treated as a hypothesis — not a fact — so the system can challenge and sharpen it.
+      </div>
+      <div class="output-row">
+        <div class="output-pill">Audience hypothesis</div>
+        <div class="output-pill">Product category</div>
+        <div class="output-pill">Stage tag</div>
+        <div class="output-pill">Tone signal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-divider">↓</div>
+
+  <div class="step-card">
+    <div class="step-num-col">
+      <div class="step-n">2</div>
+      <div class="step-icon">🔍</div>
+    </div>
+    <div class="step-content">
+      <div class="step-tag">Discovery</div>
+      <div class="step-title">Engine searches everywhere the audience actually lives</div>
+      <div class="step-desc">For each audience segment, Chick searches Discords, subreddits, Facebook groups, and company lists. Community activity is verified — not just indexed. Dead or low-quality communities are filtered before they reach the founder.</div>
+      <div class="chick-does">
+        <div class="chick-does-label">What Chick does</div>
+        <span class="tech-badge">Cala knowledge search</span> supplies verified, sourced company and market data across Agro, Finance, HR, and other verticals — no hallucinated names, no stale lists. Real communities, real member counts, real activity signals.
+      </div>
+      <div class="output-row">
+        <div class="output-pill">Subreddits mapped</div>
+        <div class="output-pill">Discord servers</div>
+        <div class="output-pill">Facebook groups</div>
+        <div class="output-pill">Company lists (Cala)</div>
+        <div class="output-pill">Activity verified</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-divider">↓</div>
+
+  <div class="step-card">
+    <div class="step-num-col">
+      <div class="step-n">3</div>
+      <div class="step-icon">📊</div>
+    </div>
+    <div class="step-content">
+      <div class="step-tag">Confidence Scoring</div>
+      <div class="step-title">Every path ranked on three axes — highest confidence surfaces first</div>
+      <div class="step-desc">Not every community is equal. Chick scores each one across three dimensions before showing the founder a single result. Highest-confidence paths come first — not biggest audiences.</div>
+      <div class="score-grid">
+        <div class="score-cell">
+          <div class="score-cell-label">📣 Reach</div>
+          <div class="score-cell-desc">How many relevant people match the ICP — not raw member count</div>
+        </div>
+        <div class="score-cell">
+          <div class="score-cell-label">🤝 Receptiveness</div>
+          <div class="score-cell-desc">Will self-promo get you banned or welcomed? Rules, mod culture, norms</div>
+        </div>
+        <div class="score-cell">
+          <div class="score-cell-label">🔥 Warmth</div>
+          <div class="score-cell-desc">Cold list vs. somewhere the founder already has a foothold</div>
+        </div>
+      </div>
+      <div class="output-row">
+        <div class="output-pill">Match score per community</div>
+        <div class="output-pill">Ranked shortlist (top 10)</div>
+        <div class="output-pill">Speed-to-first-customer estimate</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-divider">↓</div>
+
+  <div class="step-card">
+    <div class="step-num-col">
+      <div class="step-n">4</div>
+      <div class="step-icon">📋</div>
+    </div>
+    <div class="step-content">
+      <div class="step-tag">Outreach Kit</div>
+      <div class="step-title">The right move, for that specific place</div>
+      <div class="step-desc">The wrong approach in the right place wastes the shot. For each community, Chick drafts the move that matches the culture: lurk-and-comment for a subreddit, a direct DM for a Discord, an open post for a Facebook group. Not generic advice. The exact thing to say, in that format, for that community.</div>
+      <div class="chick-does">
+        <div class="chick-does-label">What Chick generates per community</div>
+        7-day day-by-day plan · First post (copy-paste ready) · DM template · Platform-specific Do's & Don'ts · Week 1 KPIs · Insider tip from pattern data
+      </div>
+      <div class="output-row">
+        <div class="output-pill">Copy-paste post</div>
+        <div class="output-pill">DM template</div>
+        <div class="output-pill">Comment script</div>
+        <div class="output-pill">Do's & Don'ts</div>
+        <div class="output-pill">Week 1 KPIs</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-divider">↓</div>
+
+  <div class="step-card">
+    <div class="step-num-col">
+      <div class="step-n">5</div>
+      <div class="step-icon">🚀</div>
+    </div>
+    <div class="step-content">
+      <div class="step-tag">Execute</div>
+      <div class="step-title">Founder runs it — copy, paste, post, DM</div>
+      <div class="step-desc">The founder follows the plan. Posts the question. Replies to every comment. DMs the warm leads. Books the calls. Chick gave them the script and the right place to use it. Now they run it.</div>
+      <div class="chick-does">
+        <div class="chick-does-label">What the founder does</div>
+        Day 1: lurk and observe. Day 2–4: comment and add value. Day 5: post. Day 6: DM warm contacts. Day 7: count conversations and calls booked.
+      </div>
+      <div class="output-row">
+        <div class="output-pill">5–12 post replies</div>
+        <div class="output-pill">3–6 DM conversations</div>
+        <div class="output-pill">1–3 beta calls booked</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-divider">↓</div>
+
+  <div class="step-card">
+    <div class="step-num-col">
+      <div class="step-n">6</div>
+      <div class="step-icon">📈</div>
+    </div>
+    <div class="step-content">
+      <div class="step-tag">Tracking</div>
+      <div class="step-title">Every attempt logged — outcome, channel, message</div>
+      <div class="step-desc">Every attempt gets logged: which channel, which message, which outcome (yes / no / interested / silence). This turns "I tried stuff and it didn't work" into structured data instead of a vague memory of failure.</div>
+      <div class="chick-does">
+        <div class="chick-does-label">What Chick tracks</div>
+        Which posts got replies · Which DMs got responses · Which communities converted · Message variant performance · Time-to-response per platform · Silence rate (a signal too)
+      </div>
+      <div class="output-row">
+        <div class="output-pill">Conversion data</div>
+        <div class="output-pill">Message performance</div>
+        <div class="output-pill">Silence rate</div>
+        <div class="output-pill">ICP refinement signals</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-divider">↓</div>
+
+  <div class="refine-card">
+    <div class="refine-icon">🔁</div>
+    <div>
+      <div class="refine-h">Refinement Loop — patterns emerge, confidence re-ranks</div>
+      <div class="refine-p">Every reply and every silence gets classified. Patterns emerge: the message tests well in Discords but dies in cold DMs. Or the audience guess was wrong entirely. This re-ranks confidence scoring for the next pass — and at scale becomes a cross-founder data moat. Every loop, the founder gets closer to product-market fit. Every loop, Chick's pattern intelligence gets sharper for every founder who comes after.</div>
+      <div class="refine-loop-steps">
+        <div class="rl-step">✍️ Intake</div>
+        <div class="rl-arrow">→</div>
+        <div class="rl-step">🔍 Discover</div>
+        <div class="rl-arrow">→</div>
+        <div class="rl-step">📊 Score</div>
+        <div class="rl-arrow">→</div>
+        <div class="rl-step">📋 Kit</div>
+        <div class="rl-arrow">→</div>
+        <div class="rl-step">🚀 Run</div>
+        <div class="rl-arrow">→</div>
+        <div class="rl-step">📈 Track</div>
+        <div class="rl-arrow">→</div>
+        <div class="rl-step">🔁 Refine</div>
+      </div>
+    </div>
+  </div>
+
+</div>

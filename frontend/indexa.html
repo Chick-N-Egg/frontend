@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chick – Find Your First 100 Customers</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c28;
+      --border: #2a2a3d;
+      --accent: #6c47ff;
+      --accent2: #ff4778;
+      --accent3: #00d4aa;
+      --text: #f0f0ff;
+      --text2: #9090b0;
+      --text3: #5a5a7a;
+      --green: #00d4aa;
+      --yellow: #ffd166;
+      --red: #ff4778;
+      --radius: 12px;
+      --font: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .header-stats {
+      display: flex;
+      gap: 32px;
+    }
+
+    .hstat {
+      text-align: center;
+    }
+
+    .hstat-num {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent3);
+    }
+
+    .hstat-label {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .app {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      min-height: calc(100vh - 77px);
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      border-right: 1px solid var(--border);
+      padding: 32px 28px;
+      overflow-y: auto;
+      background: var(--surface);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      padding: 12px 14px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    select option { background: var(--surface2); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Loader */
+    .loader {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loader-text { color: var(--text2); font-size: 14px; }
+    .loader-sub { color: var(--text3); font-size: 12px; }
+
+    /* Results list */
+    .results-section { margin-top: 28px; display: none; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .results-count strong { color: var(--accent3); }
+
+    .community-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.1s;
+      position: relative;
+    }
+
+    .community-card:hover {
+      border-color: var(--accent);
+      transform: translateX(2px);
+    }
+
+    .community-card.active {
+      border-color: var(--accent);
+      background: rgba(108,71,255,0.1);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .score-badge {
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(0,212,170,0.15);
+      color: var(--green);
+    }
+
+    .score-badge.medium { background: rgba(255,209,102,0.15); color: var(--yellow); }
+    .score-badge.low { background: rgba(255,71,120,0.15); color: var(--red); }
+
+    .card-platform {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .card-icp {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .meta-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: var(--surface);
+      color: var(--text3);
+      border: 1px solid var(--border);
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 60px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      opacity: 0.3;
+    }
+
+    .empty-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text2);
+    }
+
+    .empty-sub {
+      font-size: 15px;
+      color: var(--text3);
+      max-width: 380px;
+      line-height: 1.6;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-tile {
+      background: var(--surface);
+      padding: 20px 24px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .stat-value.green { color: var(--green); }
+    .stat-value.purple { color: var(--accent); }
+    .stat-value.pink { color: var(--accent2); }
+    .stat-value.yellow { color: var(--yellow); }
+
+    .stat-change {
+      font-size: 12px;
+      color: var(--green);
+      margin-top: 2px;
+    }
+
+    /* Playbook area */
+    .playbook-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 36px;
+      display: none;
+    }
+
+    .playbook-area.visible { display: block; }
+
+    .playbook-header {
+      margin-bottom: 28px;
+    }
+
+    .playbook-title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .playbook-platform-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(108,71,255,0.2);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .playbook-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .playbook-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .playbook-card.full { grid-column: 1 / -1; }
+
+    .card-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .action-list { list-style: none; }
+
+    .action-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.5;
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-list li:last-child { border-bottom: none; }
+
+    .action-list li::before {
+      content: '→';
+      color: var(--accent);
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    .post-preview {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .post-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .post-body {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .post-type-tag {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(0,212,170,0.1);
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .dm-template {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      padding: 14px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .dos-donts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .do-list, .dont-list { list-style: none; }
+
+    .do-list li, .dont-list li {
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--text2);
+      display: flex;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .do-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .dont-list li::before { content: '✗'; color: var(--red); font-weight: 700; flex-shrink: 0; }
+
+    .insider-tip {
+      background: linear-gradient(135deg, rgba(108,71,255,0.1), rgba(255,71,120,0.05));
+      border: 1px solid rgba(108,71,255,0.3);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .insider-tip::before {
+      content: '💡 Insider tip: ';
+      font-weight: 700;
+      color: var(--yellow);
+    }
+
+    .kpi-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .kpi-item {
+      flex: 1;
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent3);
+      line-height: 1.4;
+    }
+
+    .playbook-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 80px;
+      text-align: center;
+    }
+
+    .btn-generate-playbook {
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-generate-playbook:hover { opacity: 0.85; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Glow effects */
+    .glow { box-shadow: 0 0 30px rgba(108,71,255,0.15); }
+
+    /* Mobile responsiveness */
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .right-panel { border-top: 1px solid var(--border); }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .playbook-grid { grid-template-columns: 1fr; }
+      header { padding: 16px 20px; }
+      .header-stats { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🗺️</div>
+    Chick<span>.</span>
+  </div>
+  <div class="header-stats">
+    <div class="hstat">
+      <div class="hstat-num" id="stat-communities">2,847</div>
+      <div class="hstat-label">Communities Mapped</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-num" id="stat-startups">312</div>
+      <div class="hstat-label">Startups Helped</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-num" id="stat-days">6.3d</div>
+      <div class="hstat-label">Avg. Days to Customer</div>
+    </div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="left-panel">
+    <div class="panel-title">Your Startup</div>
+
+    <div class="form-group">
+      <label>Startup Name</label>
+      <input type="text" id="startup-name" placeholder="e.g. NoteAI, Chick, Yonder" />
+    </div>
+
+    <div class="form-group">
+      <label>What does it do?</label>
+      <textarea id="startup-desc" placeholder="e.g. AI that automatically writes session notes for therapists after each client call, saving 2 hours per day..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Who is your target customer?</label>
+      <input type="text" id="startup-customer" placeholder="e.g. Independent therapists in private practice" />
+    </div>
+
+    <div class="form-group">
+      <label>Stage</label>
+      <select id="startup-stage">
+        <option value="idea">💡 Idea stage</option>
+        <option value="pre-launch" selected>🚀 Pre-launch</option>
+        <option value="launched">🌱 Launched (0-100 users)</option>
+        <option value="growing">📈 Growing (100+ users)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Sector</label>
+      <select id="startup-category">
+        <option value="b2b-saas">B2B SaaS</option>
+        <option value="healthtech">Healthtech / Wellness</option>
+        <option value="fintech">Fintech</option>
+        <option value="edtech">Edtech</option>
+        <option value="developer-tools">Developer Tools</option>
+        <option value="productivity">Productivity</option>
+        <option value="hr-tech">HR Tech / Recruiting</option>
+        <option value="ecommerce">Ecommerce</option>
+        <option value="ai">AI / ML</option>
+        <option value="consumer">Consumer</option>
+        <option value="general-startup">Other / General</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" id="find-btn" onclick="findCommunities()">
+      🔍 Find My First 100 Customers
+    </button>
+
+    <!-- Loader -->
+    <div class="loader" id="find-loader">
+      <div class="spinner"></div>
+      <div class="loader-text">Scanning 2,847 communities...</div>
+      <div class="loader-sub">Matching your ICP across Reddit, Discord, Slack & more</div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="results-section">
+      <div class="results-header">
+        <div class="panel-title" style="margin:0">Top Matches</div>
+        <div class="results-count"><strong id="match-count">0</strong> communities found</div>
+      </div>
+      <div id="community-list"></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="right-panel">
+
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">🗺️</div>
+      <div class="empty-title">Your customer map lives here</div>
+      <div class="empty-sub">Enter your startup details and we'll find exactly where your first customers are hiding — with a step-by-step activation playbook for each community.</div>
+    </div>
+
+    <!-- Stats row (hidden until results) -->
+    <div class="stats-row" id="stats-row" style="display:none">
+      <div class="stat-tile">
+        <div class="stat-label">Communities Found</div>
+        <div class="stat-value purple" id="s1">—</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Est. Reachable Audience</div>
+        <div class="stat-value green" id="s2">—</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Fastest Path to Customer</div>
+        <div class="stat-value yellow" id="s3">—</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Top Platform</div>
+        <div class="stat-value pink" id="s4">—</div>
+      </div>
+    </div>
+
+    <!-- Playbook area -->
+    <div class="playbook-area" id="playbook-area">
+      <div id="playbook-content"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────────────────────
+  const API_BASE = '/api';
+  let selectedCommunity = null;
+  let allCommunities = [];
+  let currentStartup = null;
+
+  // ── FIND COMMUNITIES ─────────────────────────────────────────────────────
+  async function findCommunities() {
+    const name = document.getElementById('startup-name').value.trim();
+    const desc = document.getElementById('startup-desc').value.trim();
+    const customer = document.getElementById('startup-customer').value.trim();
+    const stage = document.getElementById('startup-stage').value;
+    const category = document.getElementById('startup-category').value;
+
+    if (!name || !desc || !customer) {
+      alert('Please fill in all fields to find your communities.');
+      return;
+    }
+
+    currentStartup = { name, description: desc, target_customer: customer, stage, category };
+
+    // Show loader
+    document.getElementById('find-btn').disabled = true;
+    document.getElementById('find-loader').style.display = 'flex';
+    document.getElementById('results-section').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('stats-row').style.display = 'none';
+    document.getElementById('playbook-area').classList.remove('visible');
+
+    try {
+      const res = await fetch(`${API_BASE}/find-communities`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentStartup)
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      allCommunities = data.communities;
+
+      renderCommunities(allCommunities);
+      renderStats(allCommunities);
+
+    } catch (err) {
+      console.error(err);
+      alert('Error connecting to API.\n\n' + err.message);
+    } finally {
+      document.getElementById('find-btn').disabled = false;
+      document.getElementById('find-loader').style.display = 'none';
+    }
+  }
+
+  // ── RENDER COMMUNITY LIST ────────────────────────────────────────────────
+  function renderCommunities(communities) {
+    const list = document.getElementById('community-list');
+    document.getElementById('match-count').textContent = communities.length;
+    list.innerHTML = '';
+
+    communities.forEach((c, i) => {
+      const score = c.relevance_score || 85;
+      const scoreClass = score >= 80 ? '' : score >= 60 ? 'medium' : 'low';
+
+      const card = document.createElement('div');
+      card.className = 'community-card';
+      card.dataset.index = i;
+      card.innerHTML = `
+        <div class="card-top">
+          <div>
+            <div class="card-platform">${c.platform}</div>
+            <div class="card-name">${c.name}</div>
+          </div>
+          <div class="score-badge ${scoreClass}">${score}%</div>
+        </div>
+        <div class="card-icp">${c.icp_match || c.approach || ''}</div>
+        <div class="card-meta">
+          <div class="meta-pill">👥 ${c.size || 'Unknown'}</div>
+          <div class="meta-pill">⚡ ${c.engagement_level || 'High'}</div>
+          <div class="meta-pill">⏱ ${c.time_to_first_customer || '3-7 days'}</div>
+        </div>
+        <button class="btn-generate-playbook" onclick="generatePlaybook(${i}, event)">
+          Generate Activation Playbook →
+        </button>
+      `;
+      card.addEventListener('click', () => selectCommunity(i, card));
+      list.appendChild(card);
+    });
+
+    document.getElementById('results-section').style.display = 'block';
+  }
+
+  // ── RENDER STATS ROW ─────────────────────────────────────────────────────
+  function renderStats(communities) {
+    const statsRow = document.getElementById('stats-row');
+    statsRow.style.display = 'grid';
+
+    document.getElementById('s1').textContent = communities.length;
+
+    // Estimate total audience
+    let totalM = communities.length * 180;
+    document.getElementById('s2').textContent = totalM > 1000 ? `${(totalM/1000).toFixed(1)}M+` : `${totalM}K+`;
+
+    // Fastest
+    const fastest = communities
+      .map(c => c.time_to_first_customer || '7 days')
+      .sort((a,b) => parseInt(a) - parseInt(b))[0];
+    document.getElementById('s3').textContent = fastest || '3-5 days';
+
+    // Top platform
+    const platforms = communities.map(c => c.platform);
+    const topPlatform = platforms.sort((a,b) =>
+      platforms.filter(v => v===b).length - platforms.filter(v => v===a).length
+    )[0];
+    document.getElementById('s4').textContent = topPlatform || 'Reddit';
+  }
+
+  // ── SELECT COMMUNITY ─────────────────────────────────────────────────────
+  function selectCommunity(index, cardEl) {
+    document.querySelectorAll('.community-card').forEach(c => c.classList.remove('active'));
+    cardEl.classList.add('active');
+    selectedCommunity = allCommunities[index];
+
+    // Show preview in playbook area without generating
+    const playbook = document.getElementById('playbook-area');
+    const content = document.getElementById('playbook-content');
+    playbook.classList.add('visible');
+
+    content.innerHTML = `
+      <div class="playbook-header">
+        <div class="playbook-title">${selectedCommunity.name}</div>
+        <span class="playbook-platform-tag">${selectedCommunity.platform}</span>
+      </div>
+      <p style="color:var(--text2); margin-bottom:20px; font-size:15px; line-height:1.6;">
+        ${selectedCommunity.icp_match || selectedCommunity.approach || 'This community matches your target audience.'}
+      </p>
+      <p style="color:var(--text3); font-size:14px;">
+        Click <strong style="color:var(--accent)">Generate Activation Playbook</strong> on the community card to get your step-by-step GTM plan for this channel.
+      </p>
+    `;
+  }
+
+  // ── GENERATE PLAYBOOK ────────────────────────────────────────────────────
+  async function generatePlaybook(index, event) {
+    event.stopPropagation();
+    if (!currentStartup) return;
+
+    const community = allCommunities[index];
+    selectedCommunity = community;
+
+    // Mark active
+    document.querySelectorAll('.community-card').forEach((c, i) => {
+      c.classList.toggle('active', i === index);
+    });
+
+    const playbook = document.getElementById('playbook-area');
+    const content = document.getElementById('playbook-content');
+    playbook.classList.add('visible');
+
+    content.innerHTML = `
+      <div class="playbook-loader">
+        <div class="spinner"></div>
+        <div class="loader-text">Generating your playbook for ${community.name}...</div>
+        <div class="loader-sub">Crafting your first post, DM templates and weekly action plan</div>
+      </div>
+    `;
+
+    try {
+      const res = await fetch(`${API_BASE}/generate-playbook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          startup: currentStartup,
+          community_name: community.name,
+          community_platform: community.platform,
+          community_description: community.icp_match || ''
+        })
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      renderPlaybook(data, community);
+
+    } catch (err) {
+      content.innerHTML = `<div style="padding:40px;color:var(--red);">Error generating playbook: ${err.message}</div>`;
+    }
+  }
+
+  // ── RENDER PLAYBOOK ──────────────────────────────────────────────────────
+  function renderPlaybook(p, community) {
+    const content = document.getElementById('playbook-content');
+
+    const week1Html = (p.week1_actions || []).map(a =>
+      `<li>${a}</li>`
+    ).join('');
+
+    const dosHtml = (p.dos || []).map(d => `<li>${d}</li>`).join('');
+    const dontsHtml = (p.donts || []).map(d => `<li>${d}</li>`).join('');
+
+    content.innerHTML = `
+      <div class="playbook-header">
+        <div class="playbook-title">${p.community || community.name}</div>
+        <span class="playbook-platform-tag">${p.platform || community.platform}</span>
+      </div>
+
+      <div class="playbook-grid">
+
+        <!-- Week 1 Actions -->
+        <div class="playbook-card">
+          <div class="card-header">📅 Week 1 Action Plan</div>
+          <ul class="action-list">${week1Html}</ul>
+        </div>
+
+        <!-- KPIs -->
+        <div class="playbook-card">
+          <div class="card-header">🎯 Targets</div>
+          <div class="kpi-row">
+            <div class="kpi-item">
+              <div class="kpi-label">Week 1 Goal</div>
+              <div class="kpi-value">${p.kpis?.week1_target || '10 replies, 3 DMs'}</div>
+            </div>
+            <div class="kpi-item">
+              <div class="kpi-label">Conversion Goal</div>
+              <div class="kpi-value">${p.kpis?.conversion_goal || '5 beta signups'}</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div class="card-header">Do's & Don'ts</div>
+            <div class="dos-donts">
+              <ul class="do-list">${dosHtml}</ul>
+              <ul class="dont-list">${dontsHtml}</ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- First Post -->
+        <div class="playbook-card full">
+          <div class="card-header">📝 Your First Post (Copy & Paste Ready)</div>
+          <div class="post-preview">
+            <div class="post-title">${p.first_post?.title || 'Post title'}</div>
+            <div class="post-body">${p.first_post?.body || ''}</div>
+            <span class="post-type-tag">${p.first_post?.post_type || 'discussion'}</span>
+          </div>
+        </div>
+
+        <!-- DM Template -->
+        <div class="playbook-card full">
+          <div class="card-header">💬 DM Template (For Engaged Members)</div>
+          <div class="dm-template">${p.first_dm_template || ''}</div>
+        </div>
+
+        <!-- Insider Tip -->
+        <div class="playbook-card full">
+          <div class="insider-tip">${p.insider_tip || ''}</div>
+        </div>
+
+      </div>
+    `;
+  }
+
+  // ── INIT: load stats ─────────────────────────────────────────────────────
+  fetch(`${API_BASE}/dashboard-stats`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('stat-communities').textContent = d.communities_mapped?.toLocaleString() || '2,847';
+      document.getElementById('stat-startups').textContent = d.startups_helped || '312';
+      document.getElementById('stat-days').textContent = (d.avg_days_to_first_customer || 6.3) + 'd';
+    })
+    .catch(() => {}); // Silently ignore if backend not running yet
+</script>
+
+</body>
+</html>
