@@ -33,7 +33,7 @@ body{
 nav{
   position:fixed;top:41px;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:20px 56px;
+  padding:8px 56px;
   background:rgba(251,248,243,0.92);
   backdrop-filter:blur(12px);
   border-bottom:1px solid var(--bd2);
@@ -41,7 +41,7 @@ nav{
 .nav-logo{
   display:flex;align-items:center;gap:9px;
   font-family:'Instrument Serif',serif;
-  font-size:22px;color:var(--ink);letter-spacing:-0.3px;
+  font-size:28px;color:var(--ink);letter-spacing:-0.3px;
   text-decoration:none;
 }
 .nav-logo span{color:var(--gold);}
@@ -556,14 +556,7 @@ footer{
 
 <nav>
   <a class="nav-logo" href="#">
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
-      <ellipse cx="20" cy="26" rx="13" ry="9" fill="#F2EFFF" stroke="#7B6FDB" stroke-width="1.2"/>
-      <path d="M7 24 Q12 20 15 23 Q18 26 20 22 Q22 18 25 21 Q28 24 33 22" stroke="#7B6FDB" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-      <circle cx="20" cy="18" r="7" fill="#A78BFA"/>
-      <circle cx="17.5" cy="17" r="1.2" fill="#120D1E"/>
-      <circle cx="22.5" cy="17" r="1.2" fill="#120D1E"/>
-      <path d="M19 19.5 L21 19.5 L20 21 Z" fill="#C4401A"/>
-    </svg>
+    <img src="logo.png" alt="Chick" style="width:80px;height:80px;object-fit:contain;">
     Chick<span>.</span>
   </a>
   <div class="nav-right">
@@ -575,25 +568,8 @@ footer{
 
 <!-- HERO -->
 <section class="hero">
-  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:clamp(100px,12vw,140px);height:auto;margin-bottom:28px;">
-    <!-- egg body -->
-    <ellipse cx="60" cy="78" rx="39" ry="27" fill="#EAE7FF" stroke="#7B6FDB" stroke-width="1.8"/>
-    <!-- crack line across the egg -->
-    <path d="M21 72 Q30 62 37 68 Q44 74 54 64 Q64 54 72 62 Q80 70 90 64 Q98 60 99 72" stroke="#7B6FDB" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- chick head -->
-    <circle cx="60" cy="52" r="22" fill="#A78BFA"/>
-    <!-- eyes — open round dots -->
-    <circle cx="52" cy="49" r="3.5" fill="#120D1E"/>
-    <circle cx="68" cy="49" r="3.5" fill="#120D1E"/>
-    <!-- eye shine -->
-    <circle cx="53.5" cy="47.5" r="1.2" fill="#fff"/>
-    <circle cx="69.5" cy="47.5" r="1.2" fill="#fff"/>
-    <!-- beak -->
-    <path d="M56 56 L64 56 L60 62 Z" fill="#C4401A"/>
-    <!-- rosy cheeks -->
-    <ellipse cx="46" cy="55" rx="5" ry="3" fill="#C4BCFF" opacity="0.6"/>
-    <ellipse cx="74" cy="55" rx="5" ry="3" fill="#C4BCFF" opacity="0.6"/>
-  </svg>
+  <img src="logo.png" alt="Chick" style="width:clamp(180px,22vw,260px);height:auto;margin:0 auto 20px;display:block;">
+  
   <div class="hero-eyebrow">Your GTM Co-Founder</div>
   <h1 class="hero-h1">
     From idea<br>to <i>first user.</i>
