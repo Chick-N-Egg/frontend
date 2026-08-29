@@ -1,4 +1,4 @@
-# LaunchMap
+# Chick
 
 Find Your First 100 Customers — AI-powered community GTM intelligence.
 

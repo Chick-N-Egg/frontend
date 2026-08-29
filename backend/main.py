@@ -12,7 +12,7 @@ load_dotenv()
 
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-app = FastAPI(title="LaunchMap API")
+app = FastAPI(title="Chick API")
 
 app.add_middleware(
     CORSMiddleware,
