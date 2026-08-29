@@ -730,7 +730,7 @@
 
 <script>
   // ── CONFIG ──────────────────────────────────────────────────────────────
-  const API_BASE = 'http://localhost:8000';
+  const API_BASE = '/api';
   let selectedCommunity = null;
   let allCommunities = [];
   let currentStartup = null;
@@ -774,7 +774,7 @@
 
     } catch (err) {
       console.error(err);
-      alert('Error connecting to API. Make sure the backend is running on port 8000.\n\n' + err.message);
+      alert('Error connecting to API.\n\n' + err.message);
     } finally {
       document.getElementById('find-btn').disabled = false;
       document.getElementById('find-loader').style.display = 'none';
