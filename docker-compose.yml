@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    expose:
+      - "80"
+
+  frontend:
+    build: ./frontend
+    environment:
+      - BACKEND_UPSTREAM=backend:80
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend

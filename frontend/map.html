@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -347,7 +348,7 @@
 </div>
 
 <script>
-const API_BASE = 'http://localhost:8000';
+const API_BASE = '/api';
 let currentStartup = null;
 let currentCommunities = [];
 
@@ -396,7 +397,7 @@ async function findCommunities() {
     renderMap(currentCommunities);
     goToScreen('screen-map');
   } catch (err) {
-    alert('Error connecting to API. Is the backend running on port 8000?\n\n' + err.message);
+    alert('Error connecting to API.\n\n' + err.message);
   } finally {
     btn.disabled = false;
     btn.textContent = 'Map My Network →';
@@ -561,3 +562,4 @@ function renderPlaybook(p) {
 </script>
 </body>
 </html>
+
