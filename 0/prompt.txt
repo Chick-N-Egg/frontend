@@ -381,3 +381,7 @@ Adicionalmente, verificar que **no se rompe nada existente**: `curl http://local
 - `/home/adrian/projects/frontend/backend-nest/src/channel-catalog/seed/seed-channel-catalog.ts` — migración del catálogo estático `backend/communities.json`, con la limitación "no hay Cala real" documentada inline</result>
 <usage><subagent_tokens>35112</subagent_tokens><tool_uses>8</tool_uses><duration_ms>111379</duration_ms></usage>
 </task-notification>
+
+---
+
+commit and push backend-nest
