@@ -4,6 +4,9 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": ["channel-catalog/seed/*.json"],
-    "watchAssets": true
+    "watchAssets": true,
+    "plugins": [
+      { "name": "@nestjs/swagger", "options": { "introspectComments": true } }
+    ]
   }
 }

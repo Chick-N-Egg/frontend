@@ -1,24 +1,34 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BriefService } from './brief.service';
 import { CreateBriefDto } from './dto/create-brief.dto';
 import { UpdateBriefDto } from './dto/update-brief.dto';
 
+@ApiTags('briefs')
 @Controller('briefs')
 export class BriefController {
   constructor(private readonly briefService: BriefService) {}
 
   @Post()
+  @ApiOperation({
+    summary: 'Extract a structured brief from free-text intake',
+    description:
+      'Runs OpenAI extraction on rawInput and persists the resulting Brief. ' +
+      'clarifyingQuestion is only present in this response, never on GET/PATCH.',
+  })
   async create(@Body() dto: CreateBriefDto) {
     const { brief, clarifyingQuestion } = await this.briefService.create(dto.rawInput);
     return { ...brief, clarifyingQuestion };
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Fetch a Brief by id' })
   findOne(@Param('id') id: string) {
     return this.briefService.findById(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Edit the extracted chips before confirming discovery' })
   update(@Param('id') id: string, @Body() dto: UpdateBriefDto) {
     return this.briefService.update(id, dto);
   }

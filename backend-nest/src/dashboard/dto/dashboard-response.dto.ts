@@ -1,18 +1,21 @@
 import { ChannelType } from '../../discovery/enums/channel-type.enum';
 import { AttemptOutcome } from '../../attempt/enums/attempt-outcome.enum';
 
-export interface DailyGrowthPoint {
+// Plain classes (not interfaces) so @nestjs/swagger's CLI plugin can
+// introspect them at runtime — interfaces are erased and produce no schema.
+
+export class DailyGrowthPoint {
   date: string;
   signups: number;
   revenue: number;
 }
 
-export interface FunnelStage {
+export class FunnelStage {
   stage: 'attempts' | 'interested' | 'signed_up' | 'paying';
   count: number;
 }
 
-export interface ChannelPerformance {
+export class ChannelPerformance {
   channelType: ChannelType;
   attempts: number;
   responseRate: number;
@@ -20,7 +23,7 @@ export interface ChannelPerformance {
   revenue: number;
 }
 
-export interface RecentAttempt {
+export class RecentAttempt {
   id: string;
   resultId: string;
   channelType: ChannelType;
@@ -28,7 +31,7 @@ export interface RecentAttempt {
   loggedAt: Date;
 }
 
-export interface DashboardResponseDto {
+export class DashboardResponseDto {
   totalAttempts: number;
   responseRate: number;
   signUps: number;
@@ -37,5 +40,6 @@ export interface DashboardResponseDto {
   funnel: FunnelStage[];
   performanceByChannel: ChannelPerformance[];
   recentAttempts: RecentAttempt[];
+  /** null until 3+ attempts are logged (PRODUCT_SPEC.md AC). */
   refinementInsight: string | null;
 }
