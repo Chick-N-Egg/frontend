@@ -1,3 +1,8 @@
+networks:
+  nginxnet:
+    external: true
+    name: nginxnet
+
 services:
   backend:
     build: ./backend
@@ -5,15 +10,23 @@ services:
       - ./backend/.env
     expose:
       - "80"
+    networks:
+      - default
 
   frontend:
     build: ./frontend
+    container_name: frontend-chick
+    volumes:
+      - ./frontend:/usr/share/caddy
     environment:
       - BACKEND_UPSTREAM=backend:80
     ports:
-      - "8080:80"
+      - "9080:80"
     depends_on:
       - backend
+    networks:
+      - default
+      - nginxnet
 
   # --- NestJS backend (parallel rewrite, not wired into the frontend yet) ---
   postgres-nest:
