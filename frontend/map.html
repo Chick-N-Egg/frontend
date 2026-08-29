@@ -6,21 +6,28 @@
 <title>LaunchMap – Network Map Prototype</title>
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c28;
-    --border: #2a2a3d;
-    --accent: #6c47ff;
-    --accent2: #ff4778;
-    --accent3: #00d4aa;
-    --text: #f0f0ff;
-    --text2: #9090b0;
-    --text3: #5a5a7a;
-    --font: 'Inter', system-ui, -apple-system, sans-serif;
+    --bg: #f4ecd9;
+    --surface: #fffbf2;
+    --surface2: #f1e6cf;
+    --border: #ddcda8;
+    --accent: #b5451b;
+    --accent2: #6f7d4a;
+    --accent3: #c98a3a;
+    --text: #2b2418;
+    --text2: #6b5f4d;
+    --text3: #a8987a;
+    --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'SF Mono', Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent, transparent 30px,
+      rgba(43,36,24,0.05) 31px
+    );
     color: var(--text);
     font-family: var(--font);
     height: 100vh;
@@ -43,12 +50,16 @@
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 32px;
+    box-shadow: 0 10px 30px rgba(43,36,24,0.08);
   }
   .logo {
-    font-size: 22px;
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
     margin-bottom: 24px;
     text-align: center;
+    color: var(--text);
+    letter-spacing: -0.3px;
   }
   .logo span { color: var(--accent); }
   label {
@@ -56,7 +67,7 @@
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     color: var(--text2);
     margin: 14px 0 6px;
   }
@@ -71,27 +82,31 @@
     padding: 11px 13px;
     outline: none;
   }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
   textarea { min-height: 70px; resize: vertical; }
   .btn {
     width: 100%;
     padding: 14px;
     margin-top: 20px;
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    background: linear-gradient(135deg, var(--accent), #8f3313);
     border: none;
     border-radius: 10px;
-    color: white;
+    color: #fff8ee;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 6px 18px rgba(181,69,27,0.3);
   }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-ghost {
-    background: transparent;
+    background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text2);
     width: auto;
-    padding: 8px 16px;
+    padding: 9px 18px;
     font-size: 13px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(43,36,24,0.06);
   }
 
   /* ── SCREEN 2: MAP ── */
@@ -105,6 +120,27 @@
     justify-content: space-between;
     align-items: center;
     z-index: 10;
+  }
+  .map-ruler {
+    position: absolute;
+    top: 96px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 4;
+  }
+  .map-ruler-line {
+    width: 260px;
+    height: 1px;
+    background: var(--text3);
+    margin: 0 auto 8px;
+  }
+  .map-ruler-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--text2);
+    text-transform: uppercase;
   }
   .map-hint {
     position: absolute;
@@ -123,23 +159,20 @@
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 160px; height: 160px;
+    width: 170px; height: 170px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background: radial-gradient(ellipse at 38% 32%, #e08a5c 0%, #c1502e 45%, #8f3313 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-weight: 800;
-    font-size: 15px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff8ee;
     padding: 12px;
-    box-shadow: 0 0 60px rgba(108,71,255,0.5);
+    box-shadow: 0 20px 50px rgba(143,51,19,0.35), inset 0 -8px 20px rgba(0,0,0,0.15);
     z-index: 5;
-    animation: pulse 3s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 60px rgba(108,71,255,0.5); }
-    50% { box-shadow: 0 0 90px rgba(108,71,255,0.75); }
   }
   .orbit-node {
     position: absolute;
@@ -151,18 +184,18 @@
     text-align: center;
     font-size: 12px;
     font-weight: 700;
-    color: white;
+    color: #fff8ee;
     cursor: pointer;
     padding: 8px;
     line-height: 1.3;
-    border: 2px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 20px rgba(43,36,24,0.18);
     transition: transform 0.2s, box-shadow 0.2s;
     opacity: 0;
     animation: nodeIn 0.5s ease forwards;
   }
   .orbit-node:hover {
-    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.12) !important;
-    box-shadow: 0 0 30px rgba(255,255,255,0.25);
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.1) !important;
+    box-shadow: 0 12px 28px rgba(43,36,24,0.28);
     z-index: 8;
   }
   @keyframes nodeIn {
@@ -173,21 +206,21 @@
     position: absolute;
     top: 50%; left: 50%;
     height: 1px;
-    background: linear-gradient(90deg, rgba(108,71,255,0.4), transparent);
+    background: linear-gradient(90deg, rgba(181,69,27,0.35), transparent);
     transform-origin: left center;
     z-index: 1;
   }
 
-  /* platform colors */
-  .plat-Reddit       { background: #ff4500; }
-  .plat-Discord      { background: #5865f2; }
-  .plat-Slack        { background: #6c47ff; }
-  .plat-Facebook     { background: #1877f2; }
-  .plat-LinkedIn     { background: #0a66c2; }
-  .plat-Forum        { background: #00897b; }
-  .plat-Newsletter   { background: #00d4aa; color: #06251f; }
-  .plat-Meetup       { background: #ff4778; }
-  .plat-Twitter\/X   { background: #14171a; }
+  /* platform colors — muted, earthy */
+  .plat-Reddit       { background: #c1502e; }
+  .plat-Discord      { background: #5b7c8c; }
+  .plat-Slack        { background: #8a6b8f; }
+  .plat-Facebook     { background: #4a6b8a; }
+  .plat-LinkedIn     { background: #3a6b6b; }
+  .plat-Forum        { background: #6f7d4a; }
+  .plat-Newsletter   { background: #c98a3a; color: #2b2418; }
+  .plat-Meetup       { background: #a8452f; }
+  .plat-Twitter\/X   { background: #4a453d; }
 
   /* ── SCREEN 3: PLAYBOOK FULLSCREEN ── */
   #screen-playbook {
@@ -203,16 +236,16 @@
     align-items: center;
     margin-bottom: 28px;
   }
-  .playbook-title { font-size: 30px; font-weight: 900; }
+  .playbook-title { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--text); }
   .tag {
     display: inline-block;
     font-size: 12px;
     font-weight: 700;
     padding: 4px 12px;
     border-radius: 20px;
-    background: rgba(108,71,255,0.2);
+    background: rgba(181,69,27,0.12);
     color: var(--accent);
-    margin-top: 6px;
+    margin-top: 8px;
   }
   .pb-grid {
     display: grid;
@@ -227,6 +260,7 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 22px;
+    box-shadow: 0 6px 18px rgba(43,36,24,0.06);
   }
   .pb-card.full { grid-column: 1 / -1; }
   .pb-card h3 {
@@ -302,6 +336,10 @@
     <div class="logo">Launch<span>Map</span></div>
     <button class="btn btn-ghost" onclick="goToScreen('screen-input')">← Start over</button>
   </div>
+  <div class="map-ruler">
+    <div class="map-ruler-line"></div>
+    <div class="map-ruler-label" id="map-ruler-label">Communities found</div>
+  </div>
   <div class="map-stage" id="map-stage"></div>
   <div class="map-hint">Click a community to generate its activation playbook</div>
 </div>
@@ -367,6 +405,7 @@ async function findCommunities() {
 function renderMap(communities) {
   const stage = document.getElementById('map-stage');
   stage.innerHTML = '';
+  document.getElementById('map-ruler-label').textContent = communities.length + ' communities found';
 
   // center node
   const center = document.createElement('div');
@@ -380,7 +419,7 @@ function renderMap(communities) {
   const n = communities.length;
 
   communities.forEach((c, i) => {
-    const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + Math.PI / n;
     const x = radius * Math.cos(angle);
     const y = radius * Math.sin(angle);
     const score = c.relevance_score || 70;
@@ -404,7 +443,7 @@ function renderMap(communities) {
     node.style.setProperty('--tx', x + 'px');
     node.style.setProperty('--ty', y + 'px');
     node.style.animationDelay = (i * 0.06) + 's';
-    node.innerHTML = `${c.name}<br><span style="opacity:0.75;font-weight:600">${score}%</span>`;
+    node.innerHTML = `${c.name}<br><span style="opacity:0.85;font-weight:600">${score}%</span>`;
     node.onclick = () => generatePlaybook(c);
     stage.appendChild(node);
   });
@@ -436,7 +475,7 @@ async function generatePlaybook(community) {
     renderPlaybook(p);
   } catch (err) {
     document.getElementById('pb-body').innerHTML =
-      `<div style="color:var(--accent2);padding:40px;">Error: ${err.message}</div>`;
+      `<div style="color:var(--accent);padding:40px;">Error: ${err.message}</div>`;
   }
 }
 
