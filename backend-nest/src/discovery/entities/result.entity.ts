@@ -43,7 +43,18 @@ export class ResultEntity {
   @Column({ type: 'smallint', name: 'warmth_score' })
   warmthScore: number;
 
-  @Column({ type: 'numeric', precision: 4, scale: 2, name: 'confidence_total' })
+  // node-postgres returns NUMERIC columns as strings by default (to avoid
+  // silent precision loss); coerce back to a real JS number on read.
+  @Column({
+    type: 'numeric',
+    precision: 4,
+    scale: 2,
+    name: 'confidence_total',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string | null) => (value === null ? null : parseFloat(value)),
+    },
+  })
   confidenceTotal: number;
 
   @Column({ type: 'enum', enum: ResultSource })

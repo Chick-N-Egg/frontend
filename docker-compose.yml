@@ -47,5 +47,30 @@ services:
     ports:
       - "8081:80"
 
+  frontend-react:
+    build:
+      context: ./frontend-react
+      target: production
+    ports:
+      - "8083:80"
+    depends_on:
+      - backend-nest
+
+  # Vite dev server (HMR + real error overlay/source maps) instead of the
+  # minified production bundle above — use this one while debugging.
+  frontend-react-dev:
+    build:
+      context: ./frontend-react
+      target: dev
+    volumes:
+      - ./frontend-react:/app
+      - /app/node_modules
+    environment:
+      - API_PROXY_TARGET=http://backend-nest:80
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend-nest
+
 volumes:
   chick_postgres_data:

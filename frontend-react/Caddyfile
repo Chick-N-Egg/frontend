@@ -1,0 +1,13 @@
+:80 {
+	encode gzip
+
+	handle_path /api/* {
+		reverse_proxy backend-nest:80
+	}
+
+	handle {
+		root * /usr/share/caddy
+		try_files {path} /index.html
+		file_server
+	}
+}
