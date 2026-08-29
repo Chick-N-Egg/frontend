@@ -416,6 +416,10 @@ const PLATFORM_COLORS = {
   'Twitter/X': '#4a5568',
 };
 
+function displayName(name) {
+  return name.replace(/^r\//i, '');
+}
+
 function renderMap(communities) {
   const stage = document.getElementById('map-stage');
   stage.innerHTML = '';
@@ -432,9 +436,10 @@ function renderMap(communities) {
   const n = communities.length;
 
   // Base bubble size per community, tamed down as the count grows so a busy
-  // result set doesn't produce giant overlapping circles.
-  const sizeScale = n <= 6 ? 1 : Math.max(0.55, 6 / n);
-  let sizes = communities.map(c => (60 + (c.relevance_score || 70) * 0.55) * sizeScale);
+  // result set doesn't produce giant overlapping circles — but never so much
+  // that the label text has nowhere to go.
+  const sizeScale = n <= 6 ? 1 : Math.max(0.75, 6 / n);
+  let sizes = communities.map(c => (65 + (c.relevance_score || 70) * 0.6) * sizeScale);
 
   // Pick a radius large enough that adjacent bubbles (by circumference,
   // weighted by their own diameter) don't touch, then shrink everything
@@ -481,14 +486,15 @@ function renderMap(communities) {
     node.style.setProperty('--ty', y + 'px');
     node.style.animationDelay = (i * 0.06) + 's';
     node.style.fontSize = Math.max(8, Math.min(11, size * 0.1)) + 'px';
-    if (size < 70) {
+    const cleanName = displayName(c.name);
+    if (size < 46) {
       node.innerHTML = `<span style="white-space:nowrap;font-weight:700">${score}%</span>`;
     } else {
       const maxChars = Math.max(10, Math.round(size / 7));
-      const label = c.name.length > maxChars ? c.name.slice(0, maxChars - 1) + '…' : c.name;
+      const label = cleanName.length > maxChars ? cleanName.slice(0, maxChars - 1) + '…' : cleanName;
       node.innerHTML = `${label}<br><span style="opacity:0.85;font-weight:600;white-space:nowrap">${score}%</span>`;
     }
-    node.title = c.name;
+    node.title = cleanName;
     node.onclick = () => generatePlaybook(c);
     stage.appendChild(node);
   });
@@ -496,7 +502,7 @@ function renderMap(communities) {
 
 async function generatePlaybook(community) {
   goToScreen('screen-playbook');
-  document.getElementById('pb-title').textContent = community.name;
+  document.getElementById('pb-title').textContent = displayName(community.name);
   document.getElementById('pb-platform').textContent = community.platform;
   document.getElementById('pb-body').innerHTML = `
     <div class="center-loading">
