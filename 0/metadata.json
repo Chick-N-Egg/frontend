@@ -1,0 +1,54 @@
+{
+  "cli_version": "0.10.3",
+  "checkpoint_id": "01M16RFSD7R90RT7SMR7XDKNC6",
+  "session_id": "03e5c589-db62-4470-8c7b-6f72c81cf6ca",
+  "strategy": "manual-commit",
+  "created_at": "2026-08-29T12:39:08.527788091Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "frontend/map.html"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-5",
+  "turn_id": "db08297c3c8e",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 34497,
+    "cache_read_tokens": 136165,
+    "output_tokens": 603,
+    "api_call_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-08-29T12:39:08.520928082Z",
+    "agent_lines": 1,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1,
+    "total_lines_changed": 1,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 201,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.json": 95,
+        ".github/hooks/entire.json": 61,
+        ".idea/.gitignore": 5,
+        ".idea/frontend.iml": 14,
+        ".idea/inspectionProfiles/Project_Default.xml": 6,
+        ".idea/inspectionProfiles/profiles_settings.xml": 6,
+        ".idea/modules.xml": 8,
+        ".idea/vcs.xml": 6
+      }
+    }
+  ]
+}
