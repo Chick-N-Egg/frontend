@@ -1,0 +1,5 @@
+this is the repo https://github.com/Chick-N-Egg/frontend
+
+---
+
+commit npx skills add https://github.com/entireio/skills --all
