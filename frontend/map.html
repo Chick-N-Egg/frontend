@@ -104,8 +104,24 @@
     text-align: center;
     color: var(--text);
     letter-spacing: -0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   .logo span { color: var(--accent); }
+  .logo-icon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-image: url('logo_CHICK.jpeg');
+    background-size: 95px 95px;
+    background-position: -29px -14px;
+    background-repeat: no-repeat;
+    box-shadow: 0 2px 6px rgba(43,36,24,0.15);
+  }
+  .hero-copy .logo { justify-content: flex-start; }
   label {
     display: block;
     font-size: 11px;
@@ -154,7 +170,76 @@
   }
 
   /* ── SCREEN 2: MAP ── */
-  #screen-map { flex-direction: column; }
+  #screen-map { flex-direction: row; align-items: stretch; justify-content: flex-start; }
+  .side-panel {
+    width: 300px;
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 110px 18px 24px;
+    box-sizing: border-box;
+  }
+  .side-panel-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .side-panel-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 16px;
+  }
+  .panel-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .panel-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .panel-score {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .panel-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(123,111,219,0.12);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+  .panel-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .panel-meta {
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  #screen-map .map-stage-wrap {
+    flex: 1;
+    position: relative;
+    height: 100%;
+  }
   .map-header {
     position: absolute;
     top: 24px;
@@ -203,7 +288,7 @@
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 170px; height: 170px;
+    width: 110px; height: 110px;
     border-radius: 50%;
     background: radial-gradient(ellipse at 38% 32%, #c4bcff 0%, #a78bfa 50%, #7b6fdb 100%);
     display: flex;
@@ -212,10 +297,10 @@
     text-align: center;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 16px;
+    font-size: 13px;
     color: #fff8ee;
-    padding: 12px;
-    box-shadow: 0 20px 50px rgba(91,79,184,0.35), inset 0 -8px 20px rgba(0,0,0,0.15);
+    padding: 10px;
+    box-shadow: 0 16px 36px rgba(91,79,184,0.35), inset 0 -6px 16px rgba(0,0,0,0.15);
     z-index: 5;
   }
   .orbit-node {
@@ -223,19 +308,29 @@
     top: 50%; left: 50%;
     border-radius: 50%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
     text-align: center;
-    font-weight: 700;
     color: #fff8ee;
     cursor: pointer;
     padding: 8px;
-    line-height: 1.25;
+    line-height: 1.2;
     overflow: hidden;
     box-shadow: 0 14px 22px rgba(43,36,24,0.32), 0 2px 5px rgba(43,36,24,0.18);
     transition: transform 0.2s, box-shadow 0.2s;
     opacity: 0;
     animation: nodeIn 0.5s ease forwards;
+  }
+  .orbit-node .node-name {
+    font-weight: 700;
+    word-break: break-word;
+  }
+  .orbit-node .node-score {
+    font-weight: 600;
+    opacity: 0.85;
+    white-space: nowrap;
   }
   .orbit-node:hover {
     transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.1) !important;
@@ -336,7 +431,7 @@
 <div class="screen active" id="screen-input">
   <div class="input-layout">
     <div class="hero-copy">
-      <div class="logo">Chick<span>.</span></div>
+      <div class="logo"><span class="logo-icon"></span>Chick<span>.</span></div>
       <div class="hero-tagline">Your GTM Co-Founder for Founders</div>
       <div class="hero-headline">From idea<br>to <em>first user.</em></div>
     </div>
@@ -372,16 +467,23 @@
 
 <!-- SCREEN 2: MAP -->
 <div class="screen" id="screen-map">
-  <div class="map-header">
-    <div class="logo">Chick<span>.</span></div>
-    <button class="btn btn-ghost" onclick="goToScreen('screen-input')">← Start over</button>
+  <div class="side-panel">
+    <div class="side-panel-label">Top communities for your ICP</div>
+    <div class="side-panel-sub">Verified via Cala — no hallucinated names, no dead groups.</div>
+    <div id="side-panel-list"></div>
   </div>
-  <div class="map-ruler">
-    <div class="map-ruler-line"></div>
-    <div class="map-ruler-label" id="map-ruler-label">Communities found</div>
+  <div class="map-stage-wrap">
+    <div class="map-header">
+      <div class="logo"><span class="logo-icon"></span>Chick<span>.</span></div>
+      <button class="btn btn-ghost" onclick="goToScreen('screen-input')">← Start over</button>
+    </div>
+    <div class="map-ruler">
+      <div class="map-ruler-line"></div>
+      <div class="map-ruler-label" id="map-ruler-label">Communities found</div>
+    </div>
+    <div class="map-stage" id="map-stage"></div>
+    <div class="map-hint">Click a community to generate its activation playbook</div>
   </div>
-  <div class="map-stage" id="map-stage"></div>
-  <div class="map-hint">Click a community to generate its activation playbook</div>
 </div>
 
 <!-- SCREEN 3: PLAYBOOK -->
@@ -408,13 +510,13 @@ function goToScreen(id) {
 
 function loadDemoData() {
   currentStartup = {name:'NoteAI', description:'x', target_customer:'therapists', stage:'pre-launch', category:'healthtech'};
+  goToScreen('screen-map');
   renderMap([
     {name:'r/therapists', platform:'Reddit', relevance_score:92},
     {name:'Therapist Slack', platform:'Slack', relevance_score:85},
     {name:'r/HealthTech', platform:'Reddit', relevance_score:78},
     {name:'Build In Public Discord', platform:'Discord', relevance_score:65}
   ]);
-  goToScreen('screen-map');
 }
 
 async function findCommunities() {
@@ -432,7 +534,10 @@ async function findCommunities() {
 
   const btn = document.getElementById('find-btn');
   btn.disabled = true;
-  btn.textContent = 'Scanning 2,847 communities...';
+  btn.textContent = 'Searching 2,847 communities...';
+  const loadingStages = setTimeout(() => {
+    btn.textContent = 'Verifying via Cala — no hallucinated names, no dead groups...';
+  }, 1400);
 
   try {
     const res = await fetch(`${API_BASE}/find-communities`, {
@@ -443,11 +548,12 @@ async function findCommunities() {
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     currentCommunities = data.communities;
-    renderMap(currentCommunities);
     goToScreen('screen-map');
+    renderMap(currentCommunities);
   } catch (err) {
     alert('Error connecting to API. Is the backend running on port 8000?\n\n' + err.message);
   } finally {
+    clearTimeout(loadingStages);
     btn.disabled = false;
     btn.textContent = 'Map My Network →';
   }
@@ -469,10 +575,27 @@ function displayName(name) {
   return name.replace(/^r\//i, '');
 }
 
+function renderSidePanel(communities) {
+  const list = document.getElementById('side-panel-list');
+  list.innerHTML = communities.map((c, i) => {
+    const score = c.relevance_score || 70;
+    return `
+      <div class="panel-card">
+        <div class="panel-card-top">
+          <span class="panel-score">${score}</span>
+          <span class="panel-badge">#${i + 1} match</span>
+        </div>
+        <div class="panel-name">${displayName(c.name)}</div>
+        <div class="panel-meta">${c.size || 'Unknown size'} · ${c.platform} · ${c.engagement_level || c.engagement || 'High engagement'}</div>
+      </div>`;
+  }).join('');
+}
+
 function renderMap(communities) {
   const stage = document.getElementById('map-stage');
   stage.innerHTML = '';
   document.getElementById('map-ruler-label').textContent = communities.length + ' communities found';
+  renderSidePanel(communities);
 
   // center node
   const center = document.createElement('div');
@@ -534,14 +657,16 @@ function renderMap(communities) {
     node.style.setProperty('--tx', x + 'px');
     node.style.setProperty('--ty', y + 'px');
     node.style.animationDelay = (i * 0.06) + 's';
-    node.style.fontSize = Math.max(8, Math.min(11, size * 0.1)) + 'px';
     const cleanName = displayName(c.name);
     if (size < 46) {
-      node.innerHTML = `<span style="white-space:nowrap;font-weight:700">${score}%</span>`;
+      const scoreFont = Math.max(9, size * 0.22);
+      node.innerHTML = `<div class="node-score" style="font-size:${scoreFont}px">${score}%</div>`;
     } else {
-      const maxChars = Math.max(10, Math.round(size / 7));
-      const label = cleanName.length > maxChars ? cleanName.slice(0, maxChars - 1) + '…' : cleanName;
-      node.innerHTML = `${label}<br><span style="opacity:0.85;font-weight:600;white-space:nowrap">${score}%</span>`;
+      // Shrink the name to fit fully (wrapping across up to ~2 lines)
+      // rather than truncating with an ellipsis.
+      const nameFont = Math.max(7, Math.min(12, (size * 0.85) / Math.max(6, cleanName.length * 0.42)));
+      const scoreFont = Math.max(8, nameFont * 0.85);
+      node.innerHTML = `<div class="node-name" style="font-size:${nameFont}px">${cleanName}</div><div class="node-score" style="font-size:${scoreFont}px">${score}%</div>`;
     }
     node.title = cleanName;
     node.onclick = () => generatePlaybook(c);
