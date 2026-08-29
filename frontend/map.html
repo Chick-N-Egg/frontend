@@ -49,6 +49,19 @@
     overflow-y: auto;
     padding: 40px 0;
   }
+  .input-top-logo {
+    position: absolute;
+    top: 28px;
+    left: 36px;
+    z-index: 10;
+    font-size: 30px;
+  }
+  .input-top-logo .logo-icon {
+    width: 40px;
+    height: 40px;
+    background-size: 112px 112px;
+    background-position: -34px -16px;
+  }
 
   /* ── SCREEN 1: INPUT ── */
   .input-layout {
@@ -62,7 +75,6 @@
     max-width: 320px;
     flex-shrink: 0;
   }
-  .hero-copy .logo { text-align: left; margin-bottom: 18px; }
   .hero-tagline {
     font-family: var(--font-display);
     color: var(--accent);
@@ -94,7 +106,6 @@
   @media (max-width: 780px) {
     .input-layout { flex-direction: column; gap: 28px; }
     .hero-copy { text-align: center; max-width: 400px; }
-    .hero-copy .logo { text-align: center; }
   }
   .logo {
     font-family: var(--font-display);
@@ -121,7 +132,7 @@
     background-repeat: no-repeat;
     box-shadow: 0 2px 6px rgba(43,36,24,0.15);
   }
-  .hero-copy .logo { justify-content: flex-start; }
+  .input-top-logo { justify-content: flex-start; margin-bottom: 0; }
   label {
     display: block;
     font-size: 11px;
@@ -234,6 +245,20 @@
     font-size: 11px;
     color: var(--text2);
     line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .panel-scores {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .panel-scores span {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 2px 6px;
   }
   #screen-map .map-stage-wrap {
     flex: 1;
@@ -429,9 +454,9 @@
 
 <!-- SCREEN 1: INPUT -->
 <div class="screen active" id="screen-input">
+  <div class="logo input-top-logo"><span class="logo-icon"></span>Chick<span>.</span></div>
   <div class="input-layout">
     <div class="hero-copy">
-      <div class="logo"><span class="logo-icon"></span>Chick<span>.</span></div>
       <div class="hero-tagline">Your GTM Co-Founder for Founders</div>
       <div class="hero-headline">From idea<br>to <em>first user.</em></div>
     </div>
@@ -440,7 +465,7 @@
     <input id="s-name" placeholder="e.g. NoteAI" value="NoteAI" />
     <label>What does it do?</label>
     <textarea id="s-desc">AI tool that automatically writes session notes for therapists after each client call, saving 2+ hours per day</textarea>
-    <label>Target customer</label>
+    <label>Who do you think it's for? <span style="text-transform:none;font-weight:400;color:var(--text3)">(your best guess — we treat this as a hypothesis, not a fact)</span></label>
     <input id="s-customer" value="Independent therapists running private practices" />
     <label>Stage</label>
     <select id="s-stage">
@@ -499,7 +524,7 @@
 </div>
 
 <script>
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:8000';
 let currentStartup = null;
 let currentCommunities = [];
 
@@ -534,7 +559,7 @@ async function findCommunities() {
 
   const btn = document.getElementById('find-btn');
   btn.disabled = true;
-  btn.textContent = 'Searching 2,847 communities...';
+  btn.textContent = 'Searching Discords, subreddits & Facebook groups...';
   const loadingStages = setTimeout(() => {
     btn.textContent = 'Verifying via Cala — no hallucinated names, no dead groups...';
   }, 1400);
@@ -586,7 +611,12 @@ function renderSidePanel(communities) {
           <span class="panel-badge">#${i + 1} match</span>
         </div>
         <div class="panel-name">${displayName(c.name)}</div>
-        <div class="panel-meta">${c.size || 'Unknown size'} · ${c.platform} · ${c.engagement_level || c.engagement || 'High engagement'}</div>
+        <div class="panel-meta">${c.size || 'Unknown size'} · ${c.platform}</div>
+        <div class="panel-scores">
+          <span title="Reach">🎯 ${c.reach || '—'}</span>
+          <span title="Receptiveness">🤝 ${c.receptiveness || '—'}</span>
+          <span title="Warmth">🔥 ${c.warmth || '—'}</span>
+        </div>
       </div>`;
   }).join('');
 }

@@ -79,14 +79,21 @@ Startup:
 Community catalog (JSON array):
 {json.dumps(catalog)}
 
+Score each community on three independent axes, then combine them into relevance_score:
+- reach: how many relevant people are actually there (Low|Medium|High|Very High)
+- receptiveness: would self-promotion/testing be welcomed or get you banned (Low|Medium|High|Very High)
+- warmth: is this a cold list or somewhere the founder already has a natural foothold (Cold|Lukewarm|Warm|Existing foothold)
+
 Return strict JSON with this exact shape:
 {{
   "communities": [
     {{
       "id": "<id from catalog>",
-      "relevance_score": <int 0-100>,
+      "relevance_score": <int 0-100, combining reach/receptiveness/warmth>,
       "icp_match": "<one sentence on why this community matches their target customer>",
-      "engagement_level": "<Low|Medium|High|Very High>",
+      "reach": "<Low|Medium|High|Very High>",
+      "receptiveness": "<Low|Medium|High|Very High>",
+      "warmth": "<Cold|Lukewarm|Warm|Existing foothold>",
       "time_to_first_customer": "<e.g. '3-5 days'>"
     }}
   ]
