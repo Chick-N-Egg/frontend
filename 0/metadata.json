@@ -1,0 +1,183 @@
+{
+  "cli_version": "0.10.3",
+  "checkpoint_id": "01M174D80MFJ6TYE53WXAB18SC",
+  "session_id": "03e5c589-db62-4470-8c7b-6f72c81cf6ca",
+  "strategy": "manual-commit",
+  "created_at": "2026-08-29T16:07:28.020148853Z",
+  "branch": "main",
+  "checkpoints_count": 4,
+  "save_step_count": 5,
+  "files_touched": [
+    "backend/.gitignore"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-5",
+  "turn_id": "2633ccd9ea24",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 560,
+    "cache_creation_tokens": 481486,
+    "cache_read_tokens": 54853013,
+    "output_tokens": 165396,
+    "api_call_count": 280,
+    "subagent_tokens": {
+      "input_tokens": 48,
+      "cache_creation_tokens": 131919,
+      "cache_read_tokens": 871123,
+      "output_tokens": 960,
+      "api_call_count": 24
+    }
+  },
+  "session_metrics": {
+    "turn_count": 11
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-08-29T16:07:27.821947499Z",
+    "agent_lines": 2,
+    "agent_removed": 6,
+    "human_added": 18155,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 18157,
+    "total_lines_changed": 20448,
+    "agent_percentage": 0.03912363067292645,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 3757,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 6,
+      "user_added_per_file": {
+        ".claude/scheduled_tasks.lock": 1,
+        ".github/hooks/entire.json": 61,
+        ".idea/.gitignore": 5,
+        ".idea/frontend.iml": 14,
+        ".idea/inspectionProfiles/Project_Default.xml": 6,
+        ".idea/inspectionProfiles/profiles_settings.xml": 6,
+        ".idea/modules.xml": 8,
+        ".idea/php.xml": 19,
+        ".idea/vcs.xml": 6,
+        "docs/launchmap-domain-model.mmd": 114,
+        "prototype/chick-api-integrations.html": 182,
+        "prototype/chick-brief.html": 398,
+        "prototype/chick-cost-sim.html": 320,
+        "prototype/chick-dashboard.html": 1098,
+        "prototype/chick-landing.html": 796,
+        "prototype/chick-product-spec.html": 171,
+        "prototype/chick-tech-arch.html": 213,
+        "prototype/chick-ux-journey.html": 339
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 3757,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 6,
+      "user_added_per_file": {
+        ".claude/scheduled_tasks.lock": 1,
+        ".github/hooks/entire.json": 61,
+        ".idea/.gitignore": 5,
+        ".idea/frontend.iml": 14,
+        ".idea/inspectionProfiles/Project_Default.xml": 6,
+        ".idea/inspectionProfiles/profiles_settings.xml": 6,
+        ".idea/modules.xml": 8,
+        ".idea/php.xml": 19,
+        ".idea/vcs.xml": 6,
+        "docs/launchmap-domain-model.mmd": 114,
+        "prototype/chick-api-integrations.html": 182,
+        "prototype/chick-brief.html": 398,
+        "prototype/chick-cost-sim.html": 320,
+        "prototype/chick-dashboard.html": 1098,
+        "prototype/chick-landing.html": 796,
+        "prototype/chick-product-spec.html": 171,
+        "prototype/chick-tech-arch.html": 213,
+        "prototype/chick-ux-journey.html": 339
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 3757,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 6,
+      "user_added_per_file": {
+        ".claude/scheduled_tasks.lock": 1,
+        ".github/hooks/entire.json": 61,
+        ".idea/.gitignore": 5,
+        ".idea/frontend.iml": 14,
+        ".idea/inspectionProfiles/Project_Default.xml": 6,
+        ".idea/inspectionProfiles/profiles_settings.xml": 6,
+        ".idea/modules.xml": 8,
+        ".idea/php.xml": 19,
+        ".idea/vcs.xml": 6,
+        "docs/launchmap-domain-model.mmd": 114,
+        "prototype/chick-api-integrations.html": 182,
+        "prototype/chick-brief.html": 398,
+        "prototype/chick-cost-sim.html": 320,
+        "prototype/chick-dashboard.html": 1098,
+        "prototype/chick-landing.html": 796,
+        "prototype/chick-product-spec.html": 171,
+        "prototype/chick-tech-arch.html": 213,
+        "prototype/chick-ux-journey.html": 339
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 3757,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 6,
+      "user_added_per_file": {
+        ".claude/scheduled_tasks.lock": 1,
+        ".github/hooks/entire.json": 61,
+        ".idea/.gitignore": 5,
+        ".idea/frontend.iml": 14,
+        ".idea/inspectionProfiles/Project_Default.xml": 6,
+        ".idea/inspectionProfiles/profiles_settings.xml": 6,
+        ".idea/modules.xml": 8,
+        ".idea/php.xml": 19,
+        ".idea/vcs.xml": 6,
+        "docs/launchmap-domain-model.mmd": 114,
+        "prototype/chick-api-integrations.html": 182,
+        "prototype/chick-brief.html": 398,
+        "prototype/chick-cost-sim.html": 320,
+        "prototype/chick-dashboard.html": 1098,
+        "prototype/chick-landing.html": 796,
+        "prototype/chick-product-spec.html": 171,
+        "prototype/chick-tech-arch.html": 213,
+        "prototype/chick-ux-journey.html": 339
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 3757,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 6,
+      "user_added_per_file": {
+        ".claude/scheduled_tasks.lock": 1,
+        ".github/hooks/entire.json": 61,
+        ".idea/.gitignore": 5,
+        ".idea/frontend.iml": 14,
+        ".idea/inspectionProfiles/Project_Default.xml": 6,
+        ".idea/inspectionProfiles/profiles_settings.xml": 6,
+        ".idea/modules.xml": 8,
+        ".idea/php.xml": 19,
+        ".idea/vcs.xml": 6,
+        "docs/launchmap-domain-model.mmd": 114,
+        "prototype/chick-api-integrations.html": 182,
+        "prototype/chick-brief.html": 398,
+        "prototype/chick-cost-sim.html": 320,
+        "prototype/chick-dashboard.html": 1098,
+        "prototype/chick-landing.html": 796,
+        "prototype/chick-product-spec.html": 171,
+        "prototype/chick-tech-arch.html": 213,
+        "prototype/chick-ux-journey.html": 339
+      }
+    }
+  ]
+}

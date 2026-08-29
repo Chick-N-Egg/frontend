@@ -1,0 +1,814 @@
+basado en docs de modelaje, en la especificaciones, hay que recrear el backend en nestjs para crear un sistema que responda a la especificaciones PRODUCT_SPEC.md docs/launchmap-domain-model.mmd
+
+---
+
+<task-notification>
+<task-id>a5ab05884b18f62b2</task-id>
+<tool-use-id>toolu_01TBu18okEufFNXZSfWGWTtG</tool-use-id>
+<output-file>/tmp/claude-1000/-home-adrian-projects-frontend/03e5c589-db62-4470-8c7b-6f72c81cf6ca/tasks/a5ab05884b18f62b2.output</output-file>
+<status>completed</status>
+<summary>Agent "Design NestJS backend implementation plan" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>Ahora tengo todo el contexto necesario. Voy a presentar el plan de implementación completo.
+
+---
+
+# Plan: `backend-nest/` — servicio NestJS en paralelo al backend Python
+
+## 0. Resumen de la decisión de reconciliación de modelos
+
+Uso **PRODUCT_SPEC.md como fuente de nombres de entidades** (`Brief`, `Result`, `Attempt`) porque es el documento versionado en git con AC de producto, pero incorporo del `.mmd` los tres patrones arquitectónicos explícitos que pide:
+
+1. **Value objects para campos compuestos** (no solo strings sueltos) — ej. `ScoreBreakdown` como VO en vez de tres columnas sueltas sin cohesión.
+2. **Enums TypeScript reales** para todo campo cerrado (`Stage`, `ChannelType`, `Outcome`, `Source`), igual que el `.mmd` usa `Stage`/`Category`/`EngagementLevel`/`OutcomeStatus` como enums de primera clase.
+3. **Interfaces de repositorio explícitas** (`BriefRepository`, `DiscoveryRepository`/`ResultRepository`, `AttemptRepository`, `ChannelMatcher`) inyectadas por token, con la implementación TypeORM detrás — esto traduce directamente `PlaybookRepository`/`MatchResultRepository`/`CommunityMatcher` del `.mmd`.
+
+`Category` del `.mmd` (HEALTHTECH, B2B_SAAS, FINTECH, EDTECH, DEVELOPER_TOOLS, AI, GENERAL_STARTUP) **no se mantiene como enum rígido**: PRODUCT_SPEC.md pide `audience_segments` como array de strings libres extraídos por IA del texto natural del founder (más fiel al "no soy Apollo, no asumo ICP confirmado" que es el core insight del producto). Se pierde tipado fuerte de categoría, pero se gana fidelidad al spec oficial — trade-off explícito documentado en el modelo. `Stage` sí se mantiene como enum (`idea | mvp | early-traction`, valores de PRODUCT_SPEC, no los 4 del `.mmd` que son de otro naming más viejo del producto).
+
+`Playbook`/`MatchResult` del `.mmd` colapsan en `Result` de PRODUCT_SPEC (que ya incluye score + `suggested_approach` + `draft_message` en una sola entidad, en vez de separar matching y playbook en dos tablas). `Outcome`/`OutcomeStatus` del `.mmd` se traducen a `Attempt.outcome` (enum `no_response|declined|interested|signed_up|paying`, con `revenue` opcional) — más rico que el `OutcomeStatus` de 4 valores del `.mmd` porque el spec de producto pide el funnel completo.
+
+---
+
+## 1. Modelo de dominio final
+
+### `Brief`
+```
+id: uuid
+raw_input: text
+product_summary: text          // extraído por IA
+audience_segments: string[]    // extraído por IA (jsonb column)
+stage: Stage enum (idea | mvp | early_traction)
+created_at: timestamptz
+```
+
+### `Result`
+```
+id: uuid
+brief_id: fk -&gt; Brief
+channel_type: ChannelType enum (discord | reddit | facebook_group | company | individual)
+name: string
+url: string | null
+why_it_fits: text
+reach_score: int (1-5)
+receptiveness_score: int (1-5)
+warmth_score: int (1-5)
+confidence_total: numeric(4,2)   // persistido, no derivado en query — ver más abajo
+source: ResultSource enum (verified_data | web_search | manual)
+suggested_approach: text | null
+draft_message: text | null
+created_at: timestamptz
+```
+
+`confidence_total` se calcula server-side en el momento de creación/actualización del `Result` (no como columna generada de Postgres, para poder recalcularse cuando el "refinement loop" ajuste pesos en el futuro sin migración de esquema):
+
+```
+confidence_total = reach_score*0.3 + receptiveness_score*0.4 + warmth_score*0.3
+```
+
+Esta fórmula vive en **un único lugar**: `ScoringService.computeConfidence(scores: ScoreBreakdown): number`, un value object puro (sin dependencias de NestJS/DB) para que sea trivial testear con Jest y reemplazar cuando llegue el "refinement" real basado en `Attempt` histórico.
+
+### `Attempt`
+```
+id: uuid
+result_id: fk -&gt; Result
+message_sent: text
+outcome: AttemptOutcome enum (no_response | declined | interested | signed_up | paying)
+revenue: numeric(10,2) | null   // solo relevante si outcome = paying, validado en DTO
+notes: text | null
+logged_at: timestamptz
+```
+
+### Traducción del patrón repository-interface del `.mmd` a NestJS
+
+El `.mmd` pide interfaces explícitas (`PlaybookRepository`, `MatchResultRepository`, `CommunityMatcher`) en vez de acceso directo a ORM desde los servicios. En NestJS esto se hace con **tokens de inyección + interfaces TS + adaptador TypeORM**, patrón puertos-y-adaptadores:
+
+```typescript
+// domain/ports/brief.repository.ts
+export interface BriefRepository {
+  findById(id: string): Promise&lt;Brief | null&gt;;
+  save(brief: Brief): Promise&lt;Brief&gt;;
+}
+export const BRIEF_REPOSITORY = Symbol('BRIEF_REPOSITORY');
+
+// domain/ports/result.repository.ts
+export interface ResultRepository {
+  findById(id: string): Promise&lt;Result | null&gt;;
+  findByBriefId(briefId: string): Promise&lt;Result[]&gt;;
+  saveMany(results: Result[]): Promise&lt;Result[]&gt;;
+}
+export const RESULT_REPOSITORY = Symbol('RESULT_REPOSITORY');
+
+// domain/ports/attempt.repository.ts
+export interface AttemptRepository {
+  save(attempt: Attempt): Promise&lt;Attempt&gt;;
+  findAll(): Promise&lt;Attempt[]&gt;;         // usado por DashboardService
+  findByResultId(resultId: string): Promise&lt;Attempt[]&gt;;
+}
+export const ATTEMPT_REPOSITORY = Symbol('ATTEMPT_REPOSITORY');
+
+// domain/ports/channel-matcher.ts  (equivalente a CommunityMatcher del .mmd)
+export interface ChannelMatcher {
+  match(brief: Brief, catalog: ChannelCandidate[]): Promise&lt;ScoredCandidate[]&gt;;
+}
+export const CHANNEL_MATCHER = Symbol('CHANNEL_MATCHER');
+```
+
+Los adaptadores TypeORM (`TypeOrmBriefRepository`, `TypeOrmResultRepository`, `TypeOrmAttemptRepository`) implementan estas interfaces y se registran así en cada módulo:
+
+```typescript
+providers: [
+  { provide: BRIEF_REPOSITORY, useClass: TypeOrmBriefRepository },
+]
+```
+
+`OpenAiChannelMatcher implements ChannelMatcher` es el único punto donde se llama a OpenAI para discovery+scoring — reemplaza el "Cala" ficticio del prototipo. Los servicios de aplicación (`BriefService`, `DiscoveryService`, etc.) **solo dependen de las interfaces**, nunca de `Repository&lt;Entity&gt;` de TypeORM directamente ni del SDK de OpenAI directamente. Esto es justo lo que pide el `.mmd` y además hace testeable cada servicio con mocks triviales.
+
+---
+
+## 2. Stack técnico
+
+| Decisión | Elección | Justificación |
+|---|---|---|
+| NestJS | `^10.x` (última estable a la fecha) | LTS de Node 20 compatible, `@nestjs/cli` para scaffolding |
+| ORM | **TypeORM** (no Prisma) | El patrón repository-interface del `.mmd` encaja de forma nativa con `Repository&lt;T&gt;` de TypeORM inyectado dentro de un adaptador; Prisma genera un cliente global tipado que empuja hacia acceso directo desde servicios y hace más forzado ocultarlo detrás de una interfaz de dominio propia. TypeORM además tiene decoradores de entidad que mapean 1:1 con las clases del `.mmd` (`@Entity`, `@Column`, enums nativos de Postgres vía `enum:` en la columna). |
+| Base de datos | **PostgreSQL** | El prototipo (`REDACTED-tech-arch.html`) ya la sugiere, y el dashboard con funnel/agregaciones se beneficia de SQL real. Imagen Docker: **`postgres:16-bookworm`** (variante Debian explícita, no `postgres:16-alpine` ni el tag `postgres:16` a secas que en Docker Hub apunta a Debian pero sin dejarlo explícito) — consistente con el patrón de comentarios explícitos ya usado en `backend/Dockerfile` y `frontend/Dockerfile` ("X es Debian-based, no alpine"). |
+| Validación | **class-validator + class-transformer** | Es el paquete estándar/first-party de Nest (`ValidationPipe` global), se integra directo con DTOs decorados, evita añadir una dependencia de validación paralela (Zod) cuando Nest ya trae su propio patrón idiomático. |
+| Cliente OpenAI | paquete `openai` (Node SDK oficial) | Mismo proveedor y mismo patrón que `backend/main.py` (`response_format: { type: "json_object" }`), reutilizando la misma `OPENAI_API_KEY`. |
+| Config | `@nestjs/config` con `.env` propio (`backend-nest/.env`, gitignored igual que `backend/.env`) | Aislado del `.env` de Python; evita acoplar ciclos de vida de configuración entre los dos backends. |
+
+---
+
+## 3. Estructura de módulos y archivos
+
+```
+backend-nest/
+├── package.json
+├── tsconfig.json
+├── nest-cli.json
+├── .env.example
+├── .env                          (gitignored)
+├── .dockerignore
+├── Dockerfile
+├── Caddyfile
+├── entrypoint.sh
+├── src/
+│   ├── main.ts
+│   ├── app.module.ts
+│   │
+│   ├── config/
+│   │   └── typeorm.config.ts
+│   │
+│   ├── openai/
+│   │   ├── openai.module.ts
+│   │   └── openai.provider.ts          // OPENAI_CLIENT token
+│   │
+│   ├── brief/
+│   │   ├── brief.module.ts
+│   │   ├── brief.controller.ts
+│   │   ├── brief.service.ts
+│   │   ├── entities/brief.entity.ts
+│   │   ├── enums/stage.enum.ts
+│   │   ├── dto/create-brief.dto.ts
+│   │   ├── dto/brief-response.dto.ts
+│   │   ├── ports/brief.repository.ts
+│   │   ├── adapters/typeorm-brief.repository.ts
+│   │   └── ai/brief-extractor.ts        // llama a OpenAI: raw_input -&gt; product_summary + audience_segments + stage + follow-up question
+│   │
+│   ├── discovery/                       // = "Result" / matching+scoring
+│   │   ├── discovery.module.ts
+│   │   ├── discovery.controller.ts
+│   │   ├── discovery.service.ts
+│   │   ├── entities/result.entity.ts
+│   │   ├── enums/channel-type.enum.ts
+│   │   ├── enums/result-source.enum.ts
+│   │   ├── value-objects/score-breakdown.vo.ts
+│   │   ├── scoring/scoring.service.ts   // computeConfidence() puro
+│   │   ├── dto/generate-results.dto.ts
+│   │   ├── dto/result-response.dto.ts
+│   │   ├── ports/result.repository.ts
+│   │   ├── ports/channel-matcher.ts
+│   │   ├── adapters/typeorm-result.repository.ts
+│   │   └── adapters/openai-channel-matcher.ts   // reemplaza "Cala"
+│   │
+│   ├── outreach/                        // paso 4 del spec: suggested_approach + draft_message
+│   │   ├── outreach.module.ts
+│   │   ├── outreach.controller.ts
+│   │   ├── outreach.service.ts
+│   │   ├── dto/generate-outreach.dto.ts
+│   │   └── ai/outreach-drafter.ts       // reemplaza "Fastino" para generación de mensaje
+│   │
+│   ├── attempt/
+│   │   ├── attempt.module.ts
+│   │   ├── attempt.controller.ts
+│   │   ├── attempt.service.ts
+│   │   ├── entities/attempt.entity.ts
+│   │   ├── enums/attempt-outcome.enum.ts
+│   │   ├── dto/log-attempt.dto.ts
+│   │   ├── ports/attempt.repository.ts
+│   │   └── adapters/typeorm-attempt.repository.ts
+│   │
+│   ├── channel-catalog/                 // migración de communities.json
+│   │   ├── channel-catalog.module.ts
+│   │   ├── entities/channel-candidate.entity.ts
+│   │   ├── channel-catalog.service.ts   // findByAudienceSegments()
+│   │   └── seed/
+│   │       ├── communities.seed.json    // copia de backend/communities.json
+│   │       └── seed-channel-catalog.ts  // script ejecutado en entrypoint/CLI
+│   │
+│   └── dashboard/
+│       ├── dashboard.module.ts
+│       ├── dashboard.controller.ts
+│       ├── dashboard.service.ts         // agrega KPIs, funnel, performance-por-canal, refinement-insight
+│       └── dto/dashboard-response.dto.ts
+│
+└── test/
+    ├── scoring.service.spec.ts
+    └── dashboard.service.spec.ts
+```
+
+Nota de nomenclatura: mantengo `discovery/` como nombre de módulo (más descriptivo del paso 2-3 del flujo) pero la entidad TypeORM y el DTO se llaman `Result` (nombre de PRODUCT_SPEC.md), evitando el choque con el tipo TS builtin `Result` usando el prefijo `Result` con namespace de módulo (`discovery/entities/result.entity.ts`) — si en la práctica choca con imports, renombrar la clase a `DiscoveryResult` internamente mientras la tabla/DTO externo sigue exponiendo `result_*` en JSON tal cual pide el spec.
+
+### `channel-catalog` — nota sobre el catálogo estático
+
+`backend/communities.json` (37 entradas, campos `id, name, platform, url, size, tags, engagement, categories`) se copia tal cual a `backend-nest/src/channel-catalog/seed/communities.seed.json` y se siembra en una tabla `channel_candidate` al arrancar (migración TypeORM + script de seed idempotente, `ON CONFLICT (external_id) DO NOTHING`). Esto es una **limitación conocida y documentada explícitamente** en un comentario en `channel-catalog.service.ts` y en el `.env.example`: PRODUCT_SPEC.md pide "datos verificados/sourced" reales (el "Cala" ficticio), pero no existe integración real disponible, así que el MVP de NestJS usa el mismo catálogo estático que ya usa el backend Python, con `source = 'verified_data'` marcado honestamente solo para las entradas que vienen de este catálogo curado a mano, y `web_search`/`manual` reservados para cuando OpenAI complemente con candidatos fuera del catálogo (companies/individuals, que no existen en `communities.json`).
+
+---
+
+## 4. Endpoints
+
+| Método | Ruta | Body / Query | Descripción |
+|---|---|---|---|
+| `POST` | `/briefs` | `{ raw_input }` | Paso 1: llama a `brief-extractor` (OpenAI), devuelve `{ product_summary, audience_segments, stage, clarifying_question }` y persiste el `Brief` |
+| `PATCH` | `/briefs/:id` | `{ product_summary?, audience_segments?, stage? }` | Edición de los chips antes de confirmar (spec pide "editable chips") |
+| `GET` | `/briefs/:id` | — | Recuperar un brief |
+| `POST` | `/briefs/:id/discover` | `{}` | Pasos 2-3: `DiscoveryService` cruza `audience_segments` contra `channel_candidate` + completa con OpenAI, calcula `confidence_total` por `ScoringService`, persiste N `Result`, devuelve ordenado desc con el top marcado `is_best_shot: true` |
+| `GET` | `/briefs/:id/results` | — | Lista de resultados ya generados para un brief |
+| `POST` | `/results/:id/outreach` | `{}` | Paso 4: genera `suggested_approach` + `draft_message`, actualiza el `Result` |
+| `POST` | `/results/:id/attempts` | `{ message_sent, outcome, revenue?, notes? }` | Paso 5: loguea un `Attempt` |
+| `GET` | `/attempts` | `?resultId=` opcional | Listado (usado por "recent attempts log" del dashboard) |
+| `GET` | `/dashboard` | — | KPIs, growth over time, funnel, performance por channel_type, recent attempts, `refinement_insight` (null si &lt;3 attempts) |
+| `GET` | `/health` | — | Healthcheck simple para Docker/compose |
+
+Todos bajo un prefijo global `app.setGlobalPrefix('v1')` o sin prefijo pero **nunca `/api`**, para no chocar conceptualmente ni operativamente con el proxy `/api` del frontend actual (que sigue apuntando solo al backend Python).
+
+---
+
+## 5. Dockerfile + docker-compose
+
+### `backend-nest/Dockerfile` (multi-stage, Debian, mismo espíritu que `backend/Dockerfile`)
+
+```dockerfile
+# caddy:2 es Debian (bookworm) por defecto — se usa solo para copiar el binario.
+FROM caddy:2 AS caddy
+
+# node:20-bookworm-slim es Debian 12, no alpine — build stage con devDependencies.
+FROM node:20-bookworm-slim AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY tsconfig*.json nest-cli.json ./
+COPY src ./src
+RUN npm run build
+
+# node:20-bookworm-slim — runtime stage, solo deps de producción.
+FROM node:20-bookworm-slim
+RUN apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends ca-certificates \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=build /app/dist ./dist
+COPY src/channel-catalog/seed/communities.seed.json ./dist/channel-catalog/seed/communities.seed.json
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+EXPOSE 80
+ENTRYPOINT ["/entrypoint.sh"]
+```
+
+`Caddyfile` idéntico en espíritu al de `backend/`, reverse-proxeando `:80 -&gt; 127.0.0.1:3000` (puerto interno Nest). `entrypoint.sh` calca el patrón de `backend/entrypoint.sh` (lanza `node dist/main.js` + `caddy run`, `wait -n`, propagación de señales) — opcionalmente corriendo `npm run migration:run` antes de arrancar Nest.
+
+### `docker-compose.yml` — servicios nuevos, sin tocar `backend`/`frontend`
+
+```yaml
+services:
+  backend:            # sin cambios
+    ...
+  frontend:           # sin cambios
+    ...
+
+  postgres-nest:
+    image: postgres:16-bookworm
+    environment:
+      - POSTGRES_USER=REDACTED
+      - POSTGRES_PASSWORD=REDACTED
+      - POSTGRES_DB=REDACTED
+    volumes:
+      - REDACTED_postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+
+  backend-nest:
+    build: ./backend-nest
+    env_file:
+      - ./backend-nest/.env
+    environment:
+      - DATABASE_URL=REDACTED
+    depends_on:
+      - postgres-nest
+    ports:
+      - "8081:80"      # puerto propio, NO wireado al Caddyfile del frontend
+
+volumes:
+  REDACTED_postgres_data:
+```
+
+`backend-nest/.env` (gitignored) solo necesita `OPENAI_API_KEY` (copiada del mismo valor que `backend/.env`, o una key separada si se prefiere trackear consumo por separado — decisión menor a confirmar). No se toca `frontend/Caddyfile` (que sigue proxy-eando `/api/*` solo a `backend:80`).
+
+---
+
+## 6. Plan de verificación end-to-end
+
+```bash
+# 1. Levantar solo el servicio nuevo + su DB (sin afectar backend/frontend existentes)
+docker compose up -d --build postgres-nest backend-nest
+
+# 2. Healthcheck
+curl -s http://localhost:8081/health
+
+# 3. Crear Brief (paso 1)
+BRIEF_ID=$(curl -s -X POST http://localhost:8081/briefs \
+  -H 'Content-Type: application/json' \
+  -d '{"raw_input":"Estamos construyendo una app para que founders indie encuentren su primer cliente en comunidades online."}' \
+  | jq -r '.id')
+
+# 4. (Opcional) editar chips
+curl -s -X PATCH http://localhost:8081/briefs/$BRIEF_ID \
+  -H 'Content-Type: application/json' \
+  -d '{"stage":"mvp"}'
+
+# 5. Discovery + scoring (pasos 2-3) → genera Results rankeados
+curl -s -X POST http://localhost:8081/briefs/$BRIEF_ID/discover | jq
+
+RESULT_ID=$(curl -s http://localhost:8081/briefs/$BRIEF_ID/results | jq -r '.[0].id')
+
+# 6. Generar outreach kit (paso 4)
+curl -s -X POST http://localhost:8081/results/$RESULT_ID/outreach | jq
+
+# 7. Loguear un Attempt con outcome (paso 5)
+curl -s -X POST http://localhost:8081/results/$RESULT_ID/attempts \
+  -H 'Content-Type: application/json' \
+  -d '{"message_sent":"Hola! vi que...", "outcome":"signed_up"}' | jq
+
+# 8. Dashboard: confirmar que el Attempt se refleja en KPIs/funnel
+curl -s http://localhost:8081/dashboard | jq
+```
+
+Criterio de éxito: el `dashboard` en el paso 8 muestra `total_attempts: 1`, `funnel.signed_up: 1`, y `refinement_insight: null` (porque el spec exige mínimo 3 attempts) — repetir el paso 7 dos veces más con outcomes distintos para verificar que `refinement_insight` deja de ser null a partir del tercer `Attempt`, cumpliendo el AC explícito de PRODUCT_SPEC.md ("generated once there's enough logged data, 3+ attempts minimum").
+
+Adicionalmente, verificar que **no se rompe nada existente**: `curl http://localhost:8080/api/dashboard-stats` (frontend → backend Python, puerto 8080 ya establecido) debe seguir funcionando exactamente igual, confirmando aislamiento total entre ambos backends.
+
+---
+
+### Critical Files for Implementation
+
+- `/home/adrian/projects/frontend/backend-nest/src/discovery/scoring/scoring.service.ts` — única fuente de verdad de la fórmula `confidence_total`, debe ser puro y testeado con Jest primero
+- `/home/adrian/projects/frontend/backend-nest/src/discovery/ports/channel-matcher.ts` + `adapters/openai-channel-matcher.ts` — traducción directa del `CommunityMatcher` del `.mmd`, punto único de integración con OpenAI para discovery
+- `/home/adrian/projects/frontend/backend-nest/Dockerfile` y `entrypoint.sh` — deben calcar el patrón Caddy+proceso ya validado en `backend/Dockerfile`/`backend/entrypoint.sh`
+- `/home/adrian/projects/frontend/docker-compose.yml` — añadir `postgres-nest`/`backend-nest` sin modificar una sola línea de los servicios `backend`/`frontend` existentes
+- `/home/adrian/projects/frontend/backend-nest/src/channel-catalog/seed/seed-channel-catalog.ts` — migración del catálogo estático `backend/communities.json`, con la limitación "no hay Cala real" documentada inline</result>
+<usage><subagent_tokens>35112</subagent_tokens><tool_uses>8</tool_uses><duration_ms>111379</duration_ms></usage>
+</task-notification>
+
+---
+
+commit and push backend-nest
+
+---
+
+ahora que recrear el prototipo del frontend diseñado para usar correctamente la nueva api, lo logico es hacerlo en react y tailwind siguiendo el diseño actual y creando desde el mapa para pasar al dashboard cuando este guardado
+
+---
+
+<task-notification>
+<task-id>a8a5383be6bbd85fa</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/tmp/claude-1000/-home-adrian-projects-frontend/03e5c589-db62-4470-8c7b-6f72c81cf6ca/tasks/a8a5383be6bbd85fa.output</output-file>
+<status>completed</status>
+<summary>Agent "Check for existing frontend tooling and current docker/compose state" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>All findings below are facts only — no recommendations.
+
+## 1. Existing frontend/React/Vite/Tailwind config files outside `backend-nest/`
+
+None found. A repo-wide search (excluding `backend-nest/` and `node_modules/`) for `package.json`, `vite.config.*`, `tailwind.config.*`, and `tsconfig.json` returned zero results, and no `node_modules` directory exists anywhere outside `backend-nest/`.
+
+## 2. Local Node.js / package-manager tooling
+
+- `node --version` → `v24.16.0`
+- `npm --version` → `11.13.0`
+- `npx --version` → `11.13.0`
+- `yarn` → not found (`bash: yarn: instrucción no encontrada`)
+- `pnpm --version` → `10.30.1`
+
+## 3. Exact current content
+
+**`/home/adrian/projects/frontend/frontend/Dockerfile`**
+```
+1  # caddy:2 is Debian-based (bookworm) by default — not the -alpine variant.
+2  FROM caddy:2
+3
+4  COPY Caddyfile /etc/caddy/Caddyfile
+5  COPY index.html map.html /usr/share/caddy/
+```
+
+**`/home/adrian/projects/frontend/frontend/Caddyfile`**
+```
+1  :80 {
+2  	root * /usr/share/caddy
+3  	encode gzip
+4  	file_server
+5
+6  	handle_path /api/* {
+7  		reverse_proxy {$BACKEND_UPSTREAM:backend:80}
+8  	}
+9  }
+```
+
+**`frontend` service block in `/home/adrian/projects/frontend/docker-compose.yml`** (lines 9-18):
+```yaml
+frontend:
+  build: ./frontend
+  volumes:
+    - ./frontend:/usr/share/caddy
+  environment:
+    - BACKEND_UPSTREAM=backend:80
+  ports:
+    - "8080:80"
+  depends_on:
+    - backend
+```
+Note: this compose file also defines a separate, unwired `backend-nest` service (lines 37-47) exposed on host port `8081`, plus `postgres-nest` (lines 21-35) — comment at line 20 explicitly labels it "parallel rewrite, not wired into the frontend yet."
+
+## 4. CORS configuration in backend-nest
+
+`/home/adrian/projects/frontend/backend-nest/src/main.ts` (full file, 18 lines) contains no CORS setup. A repo-wide grep for `enableCors`, `cors`, and `setGlobalPrefix` across `backend-nest/src/` returned no matches. `NestFactory.create(AppModule)` is called with no options object, and there is no global route prefix — all controller routes are mounted at root (e.g. `POST /briefs`, not `POST /api/briefs`).
+
+## 5. Literal response field names returned today
+
+**`POST /briefs`** (`brief.controller.ts:10-14`, `brief.service.ts:14-28`, `entities/brief.entity.ts`)
+Returns `{ ...brief, clarifyingQuestion }`:
+- `id` (string)
+- `rawInput` (string)
+- `productSummary` (string)
+- `audienceSegments` (string[])
+- `stage` (enum `Stage`)
+- `createdAt` (Date)
+- `clarifyingQuestion` (string | null)
+
+**`POST /briefs/:id/discover`** and **`GET /briefs/:id/results`** (`discovery.controller.ts`, `discovery.service.ts:49-53`, `dto/result-response.dto.ts`, `entities/result.entity.ts`)
+Both return `ResultResponseDto[]`, each item = full `ResultEntity` spread plus `isBestShot`:
+- `id`
+- `briefId`
+- `channelType` (enum `ChannelType`: `discord`, `reddit`, `facebook_group`, `slack`, `linkedin`, `twitter`, `newsletter`, `meetup`, `forum`, `company`, `individual`)
+- `name`
+- `url` (string | null)
+- `whyItFits`
+- `reachScore`
+- `receptivenessScore`
+- `warmthScore`
+- `confidenceTotal`
+- `source` (enum `ResultSource`: `verified_data`, `web_search`, `manual`)
+- `suggestedApproach` (string | null)
+- `draftMessage` (string | null)
+- `createdAt`
+- `isBestShot` (boolean, from `result-response.dto.ts:7,11`)
+
+Note: `ResultEntity` also carries a `brief` relation object (`entities/result.entity.ts:18-20`), but the DTO spread (`...result`) is over the entity instance, which does not populate that relation unless loaded — it is not selected/joined in `discovery.service.ts`'s `discover`/`findByBriefId` flow.
+
+**`POST /results/:id/outreach`** (`outreach.controller.ts:8-11`, `outreach.service.ts:15-25`)
+Returns the saved `ResultEntity` (same fields as above, i.e. the full result row with updated `suggestedApproach` and `draftMessage`). No separate outreach DTO exists.
+
+**`POST /results/:id/attempts`** (`attempt.controller.ts:9-12`, `attempt.service.ts:15-26`, `entities/attempt.entity.ts`)
+Request body per `dto/log-attempt.dto.ts:4-19`:
+- `messageSent` (string)
+- `outcome` (enum `AttemptOutcome`: `no_response`, `declined`, `interested`, `signed_up`, `paying`)
+- `revenue` (number, optional)
+- `notes` (string, optional)
+
+Response is the saved `AttemptEntity`:
+- `id`
+- `resultId`
+- `messageSent`
+- `outcome`
+- `revenue` (number | null)
+- `notes` (string | null)
+- `loggedAt` (Date)
+
+(`GET /attempts?resultId=` also exists at `attempt.controller.ts:14-17`, returning `AttemptEntity[]` with the `result` relation populated per `attempt.repository.ts`/`typeorm-attempt.repository.ts:18-28`.)
+
+**`GET /dashboard`** (`dashboard.controller.ts:8-11`, `dashboard.service.ts:28-54`, `dto/dashboard-response.dto.ts:31-40`)
+`DashboardResponseDto`:
+- `totalAttempts` (number)
+- `responseRate` (number)
+- `signUps` (number)
+- `revenue` (number)
+- `growthOverTime` (`DailyGrowthPoint[]`): `{ date, signups, revenue }`
+- `funnel` (`FunnelStage[]`): `{ stage: 'attempts'|'interested'|'signed_up'|'paying', count }`
+- `performanceByChannel` (`ChannelPerformance[]`): `{ channelType, attempts, responseRate, signups, revenue }`
+- `recentAttempts` (`RecentAttempt[]`): `{ id, resultId, channelType, outcome, loggedAt }`
+- `refinementInsight` (string | null)
+
+Also present: `GET /health` (`dashboard.controller.ts:13-16`) returns `{ status: 'ok' }`.</result>
+<usage><subagent_tokens>31407</subagent_tokens><tool_uses>14</tool_uses><duration_ms>51221</duration_ms></usage>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>aa0402bcaaa26634b</task-id>
+<tool-use-id>toolu_01DCD1F2Gdunc2tGr5kRgXVD</tool-use-id>
+<output-file>/tmp/claude-1000/-home-adrian-projects-frontend/03e5c589-db62-4470-8c7b-6f72c81cf6ca/tasks/aa0402bcaaa26634b.output</output-file>
+<status>completed</status>
+<summary>Agent "Explore current frontend/map.html and index.html design" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># Current State: `frontend/map.html` and `frontend/index.html`
+
+Both files read in full. Line numbers reference the current working tree (not any specific commit).
+
+---
+
+## 1. Color Palette
+
+**map.html** (`:root`, lines 9–25) — warm/violet palette, NOT green/cloud-blue despite commit message `ee3fea0` claiming that rename; a later palette commit (`3445a92`) apparently overwrote it again:
+
+| var | value | usage |
+|---|---|---|
+| `--bg` | `#fbf8ff` | page background (very pale lavender-white) |
+| `--surface` | `#f2efff` | cards, side panel |
+| `--surface2` | `#eae7ff` | inputs, panel-card bg elements |
+| `--border` | `#dcd6f5` | all borders |
+| `--accent` | `#7b6fdb` | primary purple accent |
+| `--accent2` | `#9b91e8` | secondary accent (hero em, panel-name) |
+| `--accent3` | `#c4bcff` | gradient highlight (center node) |
+| `--accent4` | `#a78bfa` | gradient mid (center node), unused elsewhere |
+| `--warning` | `#c4401a` | error text in playbook |
+| `--text` | `#120d1e` | primary text |
+| `--text2` | `#3d3358` | secondary text |
+| `--text3` | `#8f86ad` | tertiary/muted text |
+
+Plus hardcoded colors: body background stripe overlay `rgba(43,36,24,0.05)`; button gradient `linear-gradient(135deg, var(--accent), #5b4fb8)`; button text `#fff8ee`; center-node radial gradient `#c4bcff → #a78bfa → #7b6fdb`.
+
+`PLATFORM_COLORS` map (lines 562–572), used for bubble fill colors, all purple/blue-ish hues:
+```
+Reddit: #8f5fd1, Discord: #5b7fd1, Slack: #b06fc9, Facebook: #6a6fc4,
+LinkedIn: #5f8fc9, Forum: #9b7fd6, Newsletter: #7a5fb0, Meetup: #c470a8,
+Twitter/X: #4a4a68
+```
+Fallback bubble color: `#8a81b0`.
+
+**index.html** (`:root`, lines 8–24) — completely different, **dark-mode** palette:
+
+| var | value | usage |
+|---|---|---|
+| `--bg` | `#0a0a0f` | page background (near-black) |
+| `--surface` | `#13131a` | left panel, cards |
+| `--surface2` | `#1c1c28` | inputs, community cards, previews |
+| `--border` | `#2a2a3d` | borders throughout |
+| `--accent` | `#6c47ff` | primary purple/violet |
+| `--accent2` | `#ff4778` | pink/red accent |
+| `--accent3` | `#00d4aa` | teal/green accent |
+| `--text` | `#f0f0ff` | primary text |
+| `--text2` | `#9090b0` | secondary text |
+| `--text3` | `#5a5a7a` | muted text |
+| `--green` | `#00d4aa` | duplicate of accent3, used for "good" score badges |
+| `--yellow` | `#ffd166` | "medium" score badge, stat tile |
+| `--red` | `#ff4778` | duplicate of accent2, "low" score badge |
+| `--radius` | `12px` | shared border-radius token |
+
+**map.html and index.html do not share a palette** — one is light/lavender, the other is dark/neon. This is a key inconsistency to flag: the two "screens" of the app look like entirely different products color-wise.
+
+---
+
+## 2. Typography
+
+**map.html** (lines 22–24):
+- `--font-display`: `Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif` — used for logo (24px, weight 700), hero-tagline (15px, 600), hero-headline (27px, 700), center-node label (13px, 700), panel-score (20px, 700), playbook-title (32px, 700)
+- `--font`: system sans-serif stack — used for body/general text
+- `--mono`: `'SF Mono', Menlo, Consolas, monospace` — used for side-panel-label (10px) and map-ruler-label (11px), both uppercase/letter-spaced
+- Form labels: 11px, 700 weight, uppercase, 0.6px letter-spacing
+- Inputs: 14px
+- Orbit-node text: dynamically computed font sizes (see §3)
+
+**index.html** (line 23): single font stack `'Inter', system-ui, -apple-system, sans-serif` for everything (no serif/display font, no mono). Notable sizes:
+- Logo: 20px, weight 800
+- panel-title / card-header: 11–13px, uppercase, bold, colored `--accent`
+- stat-value: 26px, weight 900, letter-spacing -1px
+- playbook-title: 24px, weight 900
+- card-name: 14px, weight 700
+- body/labels: 12–14px
+
+So the two files use **different type systems entirely** (serif display font + mono labels in map.html vs. all-Inter, heavier weights in index.html).
+
+---
+
+## 3. map.html Structure &amp; Map Visualization
+
+Three `.screen` divs, toggled via `goToScreen(id)` (lines 506–509) which removes `.active` from all `.screen` elements and adds it to the target by id. No routing/history — pure DOM show/hide, single page.
+
+**Screen 1 — `#screen-input`** (lines 431–466): centered hero + form card side-by-side (`.input-layout`, flex row, collapses to column under 780px). Left: logo + tagline + headline ("From idea to *first user.*"). Right: `.card` with fields — Startup Name, What does it do? (textarea), Target customer, Stage (select), **Sector** (select, id=`s-category`), primary button "Map My Network →" (`onclick="findCommunities()"`), and a ghost button "🧪 Preview with demo data" (`onclick="loadDemoData()"`).
+
+**Screen 2 — `#screen-map`** (lines 469–487): flex row, full-bleed. Left: fixed 300px `.side-panel` (list of `.panel-card` per community: score, "#N match" badge, display name, meta line `size · platform · engagement`). Right: `.map-stage-wrap` containing:
+- `.map-header` (logo + "← Start over" ghost button)
+- `.map-ruler` (a horizontal line + label showing "N communities found", positioned top-center, with a deliberately-reserved empty wedge in the radial layout so no bubble overlaps it)
+- `.map-stage` — the actual visualization container, `position:relative`, into which JS injects DOM nodes
+- `.map-hint` footer text: "Click a community to generate its activation playbook"
+
+**The map visualization is plain absolutely-positioned `&lt;div&gt;` elements — no SVG/canvas.** Rendering logic in `renderMap()` (lines 594–675):
+- `.center-node`: a circle (110×110px) with radial gradient, centered via `top/left:50%; transform:translate(-50%,-50%)`, labeled with the startup name.
+- Each community becomes an `.orbit-node` div positioned via `top:50%; left:50%` plus CSS custom properties `--tx`/`--ty` (pixel offsets) consumed by the `transform` in CSS (`translate(calc(-50% + var(--tx)), calc(-50% + var(--ty)))`), animated in via `@keyframes nodeIn` (scale 0.4→1, opacity 0→1, staggered `animation-delay = i*0.06s`).
+- Each node also gets a `.connector` div: a 1px-tall gradient line from center to the node, rotated via `transform: rotate(angleDeg)` and sized via `width = dist`.
+
+**Node size/position/color logic** (lines 608–674, with explanatory comments already in the code):
+- Node diameter: `sizeScale = n&lt;=6 ? 1 : max(0.75, 6/n)`; `size = (65 + relevance_score*0.6) * sizeScale` — larger relevance score → bigger bubble, but the whole set shrinks as community count grows.
+- **Overlap-avoidance ("ruler"/spacing) logic**: total circumference needed is estimated from summed diameters × a `SPACING = 1.35` factor, converted to a radius (`totalDiameter*SPACING/(2π)`), floored at 170px; if that radius exceeds `maxRadius = min(cx,cy)*0.78` (would overflow the viewport), all bubble sizes are shrunk proportionally (`shrink = maxRadius/radius`) and radius clamped to `maxRadius`. This is the "prevent bubble overlap" logic mentioned in the commit message.
+- Angular placement: nodes are evenly spaced around a circle, but a wedge of `EXCLUDE_HALF = 0.6` radians (~34°) at the top is kept empty (`startAngle = -π/2 + EXCLUDE_HALF`, `totalArc = 2π - 2*EXCLUDE_HALF`) so no bubble sits under the `.map-ruler` label — this is the "reserve wedge for ruler" logic.
+- Color: `PLATFORM_COLORS[c.platform]` lookup, fallback `#8a81b0`.
+- **Text-overflow fix** (commit `789c0e9`): if `size &lt; 46px`, only the score % is shown (font scaled to bubble size, `max(9, size*0.22)`); otherwise both name and score are shown with a name font size computed from bubble size and name-string length (`max(7, min(12, (size*0.85)/max(6, len*0.42)))`) so the text shrinks to fit rather than truncating/overflowing.
+- Names are cleaned via `displayName()` (lines 574–576), which strips a leading `r/` (case-insensitive) — the "strip r/ prefix from displayed names" fix.
+- Clicking a node calls `generatePlaybook(c)`.
+
+**Screen 3 — `#screen-playbook`** (lines 490–499, rendering in `renderPlaybook()` lines 707–741): full-page vertical layout — top bar with title/platform tag and "← Back to map" ghost button, then `.pb-grid` (2-column grid, `pb-card.full` spans both columns): Week 1 Action Plan card, Targets/KPI + Do's &amp; Don'ts card, First Post card (full-width), DM Template card (full-width), Insider Tip card (full-width). While loading, shows `.center-loading` with a CSS spinner (`.spinner`, conic border spin animation).
+
+---
+
+## 4. index.html Structure
+
+**Not a simple two-panel layout anymore** — it now has a sticky `&lt;header&gt;` (lines 603–622) above the two-panel `.app` grid:
+- Header: logo (emoji icon 🗺️ in a gradient rounded square, no image), plus `.header-stats` — three live stat tiles (Communities Mapped, Startups Helped, Avg. Days to Customer) populated from an API call at page load (§5). Hidden at ≤900px.
+- `.app` = CSS grid `420px 1fr` (collapses to single column ≤900px).
+
+**Left panel** (`.left-panel`, lines 627–691): "Your Startup" title, form fields — Startup Name, What does it do? (textarea), Who is your target customer?, Stage (select, options now include emoji prefixes 💡🚀🌱📈), **Sector** (select, id=`startup-category` — expanded option list: B2B SaaS, Healthtech/Wellness, Fintech, Edtech, Developer Tools, Productivity, HR Tech/Recruiting, Ecommerce, AI/ML, Consumer, Other/General — more options than map.html's Sector list), primary button "🔍 Find My First 100 Customers". Below: a `.loader` (hidden by default, shown during fetch, has spinner + two lines of copy), then `.results-section` (hidden until results): header with match count + `#community-list` populated with `.community-card` elements (each has platform label, name, colored `.score-badge` [green/medium-yellow/low-red by score], icp_match/approach description, three `.meta-pill`s for size/engagement/time-to-first-customer, and a "Generate Activation Playbook →" button).
+
+**Right panel** (`.right-panel`, lines 694–728):
+- `.empty-state` (default view): large map emoji, "Your customer map lives here" title, explanatory subtext.
+- `.stats-row` (hidden until results; CSS grid of 4 `.stat-tile`s): Communities Found, Est. Reachable Audience, Fastest Path to Customer, Top Platform — computed client-side from the community list (`renderStats()`, lines 823–845).
+- `.playbook-area` (hidden until a playbook is generated): renders full playbook grid identical in content structure to map.html's screen 3 (Week 1 actions, KPI row, do's/don'ts two-column lists, first post preview with post-type tag, DM template with left border accent, insider tip banner with `::before` "💡 Insider tip:" content).
+
+Interaction flow difference from map.html: clicking a community **card body** (not the button) calls `selectCommunity()` (lines 848–870) which shows a lightweight preview (name/platform/description + a prompt to click the explicit button) without hitting the API; clicking the "Generate Activation Playbook →" **button** on the card (`event.stopPropagation()`, lines 873–916) is what actually calls the playbook endpoint. This two-step interaction (preview-on-card-click vs. generate-on-button-click) doesn't exist in map.html, where clicking a bubble immediately calls `generatePlaybook`.
+
+---
+
+## 5. API Calls
+
+Both files: `const API_BASE = '/api';` (map.html line 502, index.html line 733).
+
+**Backend** (`/home/adrian/projects/frontend/backend/main.py`) defines exactly three endpoints, mounted presumably under `/api` via reverse proxy (Caddy, per commit `93fefee`):
+
+1. **`GET /dashboard-stats`** — called only from index.html (line 992, fires once on page load, no button trigger). Response: `{communities_mapped, startups_helped, avg_days_to_first_customer}` (backend lines 44–50, hardcoded `2847/312/6.3`). index.html populates header stat tiles from it; failures are silently swallowed (`.catch(() =&gt; {})`).
+
+2. **`POST /find-communities`** — called from both files' `findCommunities()`.
+   - Request body (`Startup` model, backend lines 29–34): `{name, description, target_customer, stage, category}` — note the wire field is still `category`, even though the UI label is "Sector" (see §6).
+   - map.html: lines 543–547; index.html: lines 762–766. Same shape in both.
+   - Response: `{communities: [...]}` where each community object is the catalog entry merged with LLM-ranked fields (backend lines 55–112): `{id, name, platform, size, tags, categories, engagement, relevance_score, icp_match, engagement_level, time_to_first_customer}`.
+   - Frontend reads: `name`, `platform`, `relevance_score` (fallback 70 in map.html / 85 in index.html), `size`, `engagement_level` (map.html also falls back to `engagement`), `icp_match` (index.html also falls back to `approach`), `time_to_first_customer` (index.html only).
+
+3. **`POST /generate-playbook`** — called from `generatePlaybook()` in both.
+   - Request body (`PlaybookRequest`, backend lines 37–41): `{startup: {...Startup}, community_name, community_platform, community_description}`. Both frontends send `community_description: community.icp_match || ''`.
+   - map.html: lines 688–697; index.html: lines 898–907. Identical shape.
+   - Response shape (backend lines 130–141, LLM strict-JSON): `{community, platform, week1_actions: [...], kpis: {week1_target, conversion_goal}, dos: [...], donts: [...], first_post: {title, body, post_type}, first_dm_template, insider_tip}`.
+   - map.html's `renderPlaybook()` (lines 707–741) does not use `p.community`/`p.platform` from the response (title/platform were already set from the clicked community before the fetch, lines 679–680); index.html's `renderPlaybook()` (lines 919–988) does use `p.community || community.name` and `p.platform || community.platform`.
+
+Error handling: both throw on `!res.ok` using `await res.text()` as the error message, then `alert()` (map.html) or inline error div (both, in the playbook-generation catch path only).
+
+---
+
+## 6. Renamed Fields ("Category" → "Sector")
+
+- Both files' **UI label** is `&lt;label&gt;Sector&lt;/label&gt;` (map.html line 452; index.html line 656).
+- The **HTML element id** in map.html is still `id="s-category"` (line 453) and in index.html `id="startup-category"` (line 657) — the id/variable name was not renamed, only the visible label text.
+- The **JS variable / wire field** sent to the API is still `category` in both files (map.html line 528: `category: document.getElementById('s-category').value`; index.html line 751: same pattern with `startup-category`).
+- The **backend Pydantic model** field is also still `category` (`Startup.category`, backend line 34), and the prompt text still says `"- Category: {startup.category}"` (backend line 77).
+- Net effect: "Sector" is purely a display-label rename; the underlying data model, element ids, and API contract all still say `category` everywhere. This is the only renamed-field case found; no other UI copy renames (e.g. "relevance_score" is still shown as a raw number/percent, not relabeled).
+- Options differ between the two forms even though both are labeled "Sector": map.html's `#s-category` has 7 options (healthtech default-selected, b2b-saas, fintech, edtech, developer-tools, ai, general-startup); index.html's `#startup-category` has 11 options (b2b-saas default order-first but no option marked `selected`, healthtech, fintech, edtech, developer-tools, **productivity**, **hr-tech**, **ecommerce**, ai, **consumer**, general-startup) — three sector options exist only in index.html.
+
+---
+
+## 7. UI Components/Patterns Needing React Equivalents
+
+- **Buttons**: primary gradient CTA button (`.btn` / `.btn-primary`, disabled state with reduced opacity), pill-shaped "ghost" secondary button (`.btn-ghost`, map.html only), small inline "Generate Playbook" button (`.btn-generate-playbook`, index.html only).
+- **Form inputs**: text input, multi-line textarea, native `&lt;select&gt;` dropdown — all sharing one visual style (dark or light "surface2" fill, border, focus-ring via border-color change). Uppercase small-caps `&lt;label&gt;` component.
+- **Cards**: generic bordered/rounded card (`.card`, `.panel-card`, `.pb-card`/`.playbook-card`, `.community-card`) — some with a "full-width span" variant (`.pb-card.full` / `.playbook-card.full`) in a 2-col grid.
+- **Badges/pills/tags**: rounded score badge (`.panel-badge`, `.score-badge` with green/medium/low state variants), platform tag/pill (`.tag`, `.playbook-platform-tag`), small metadata pill (`.meta-pill`), post-type tag (`.post-type-tag`).
+- **Loader/spinner**: identical CSS ring spinner (`.spinner` + `@keyframes spin`) reused in three places (map.html playbook loading; index.html find-loader and playbook-loader), plus accompanying loading-copy text pattern (primary line + muted sub-line).
+- **Empty state**: icon + title + description block (`.empty-state`, index.html only).
+- **Stat tile / stat row**: 4-column stat grid with colored values (`.stats-row`/`.stat-tile`, index.html), plus header mini-stats (`.hstat`).
+- **List item row with hover/active state**: `.community-card` (index.html) with `:hover` translateX and `.active` highlighted-border/background state; `.panel-card` (map.html, no interactive states).
+- **Network/bubble map visualization**: custom component rendering a center node, N absolutely-positioned circular "orbit" nodes with dynamic size/font-size/color and connector lines, computed via JS geometry (radius/angle math) rather than any charting library — this is the most complex piece to port and has no direct Tailwind/React primitive; would need either SVG or absolutely-positioned divs driven by the same size/overlap-avoidance algorithm (§3).
+- **Do's/Don'ts two-column checklist** with custom `::before` glyphs (✓/✗ in index.html; inline `✓`/`✗`/`→` characters in map.html's template strings).
+- **Insider tip callout** with gradient background + colored `::before` label prefix (index.html `.insider-tip`; map.html has no equivalent styling, just a plain `.post-body` div).
+- **DM template block** with left accent border (`.dm-template`, index.html) vs. plain pre-wrap block (`.dm`, map.html) — divergent styling for the same content.
+- **Sticky header with backdrop-blur** (index.html only, `header` with `position: sticky` + `backdrop-filter: blur(12px)`).
+- **Screen/route switcher**: map.html's `.screen`/`.screen.active` show-one-hide-rest pattern driven by `goToScreen()` — the closest thing to client-side routing/state-machine navigation (Input → Map → Playbook, with back-navigation buttons), which in React would likely become route state or a screen-state reducer.
+- **Logo lockup**: circular cropped-background-image icon + wordmark with colored period (map.html, uses `logo_CHICK.jpeg` sprite via `background-position`) vs. emoji-in-gradient-square icon + wordmark (index.html) — two different logo implementations for the same product name, another inconsistency to reconcile in the rewrite.</result>
+<usage><subagent_tokens>42569</subagent_tokens><tool_uses>6</tool_uses><duration_ms>102323</duration_ms></usage>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>af4d11e824b0aa2ab</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/tmp/claude-1000/-home-adrian-projects-frontend/03e5c589-db62-4470-8c7b-6f72c81cf6ca/tasks/af4d11e824b0aa2ab.output</output-file>
+<status>completed</status>
+<summary>Agent "Explore prototype REDACTED-*.html design references" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># Report: Chick Prototype HTML Docs — UX Flow, Screens, Branding, and Backend-Mismatch Findings
+
+## 1. REDACTED-ux-journey.html — Screen-by-screen flow (most load-bearing doc)
+
+This file is a pure narrative/diagram page (no interactivity) describing the intended end-to-end product loop as a vertical stack of "step cards" connected by `↓` dividers, ending in a dark "Refinement Loop" summary card. It maps almost 1:1 onto your Brief → Result → Attempt domain. In order:
+
+1. **Idea Intake** (✍️) — Founder types a free-text description (no form fields) — the idea, audience guess, stage. Tagged "Idea Intake." Chick does: Fastino text-to-JSON converts this into a structured brief (audience hypothesis, product category, stage, tone) — explicitly treated as a *hypothesis*, not fact. Output pills: Audience hypothesis / Product category / Stage tag / Tone signal. → Maps to **POST /briefs** and likely **PATCH /briefs/:id** for hypothesis refinement.
+
+2. **Discovery** (🔍) — Engine searches Discords, subreddits, Facebook groups, company lists for each audience segment; verifies activity (not just indexes) and filters dead/low-quality communities. Chick does: Cala knowledge search supplies verified company/market data (Agro, Finance, HR verticals, etc.) — "no hallucinated names, no stale lists." Output pills: Subreddits mapped / Discord servers / Facebook groups / Company lists (Cala) / Activity verified. → Maps to **POST /briefs/:id/discover**.
+
+3. **Confidence Scoring** (📊) — Every discovered community/path is scored on three named axes before being shown to the founder, and ranked (highest confidence first, not biggest audience):
+   - 📣 **Reach** — relevant people matching ICP, not raw member count
+   - 🤝 **Receptiveness** — will self-promo get banned or welcomed (rules/mod culture/norms)
+   - 🔥 **Warmth** — cold list vs. somewhere founder already has a foothold
+   Output pills: Match score per community / Ranked shortlist (top 10) / Speed-to-first-customer estimate. → Maps to the results returned by **GET /briefs/:id/results** (implies each Result needs `reach`, `receptiveness`, `warmth` sub-scores plus a composite score and a speed-to-first-customer estimate field).
+
+4. **Outreach Kit** (📋) — Per-community, Chick drafts the culturally-correct move (lurk-and-comment for subreddit, DM for Discord, open post for Facebook). Generates: 7-day day-by-day plan, first post (copy-paste ready), DM template, platform-specific Do's &amp; Don'ts, Week 1 KPIs, an "insider tip" from pattern data. Output pills: Copy-paste post / DM template / Comment script / Do's &amp; Don'ts / Week 1 KPIs. → Maps to **POST /results/:id/outreach**.
+
+5. **Execute** (🚀) — The founder actually runs the plan outside the product (day-by-day: lurk, comment, post, DM, book calls). Output pills: 5–12 post replies / 3–6 DM conversations / 1–3 beta calls booked. This is a "real world" step with no direct API call shown, but it's the step immediately preceding attempt logging.
+
+6. **Tracking** (📈) — Every attempt logged: channel, message, outcome (yes/no/interested/silence). Chick tracks which posts got replies, which DMs got responses, which communities converted, message-variant performance, time-to-response per platform, "silence rate" (explicitly called out as a signal, not a null result). Output pills: Conversion data / Message performance / Silence rate / ICP refinement signals. → Maps to **POST /results/:id/attempts** and **GET /attempts**.
+
+7. **Refinement Loop** (🔁, final dark card) — Every reply/silence is classified; patterns emerge (e.g., "message tests well in Discords but dies in cold DMs," or "the audience guess was wrong entirely"); this **re-ranks confidence scoring for the next pass**, and is framed as a cross-founder "data moat." The card includes a compact horizontal loop diagram: `✍️ Intake → 🔍 Discover → 📊 Score → 📋 Kit → 🚀 Run → 📈 Track → 🔁 Refine`.
+
+Implication for your dashboard's `refinementInsight` field: this doc treats "refinement insight" as a narrative/pattern statement (e.g. "Reddit posts convert 3.2× better than cold DMs for this ICP") generated from attempt outcomes, not a numeric KPI — worth designing the UI as a callout/insight card rather than a chart.
+
+**Palette/type used here:** Light lilac theme — `body` bg `#FBF8FF`, step-card bg `#F2EFFF`, borders `rgba(123,111,219,0.22)`, accent/heading color `#7B6FDB`, ink text `#120D1E` / `#3D3358`. Fonts: Instrument Serif (headings/step numbers, italic accents) + Plus Jakarta Sans (body/labels). Refinement card breaks pattern with a near-black `#120D1E` background and cream/lilac text (`#FBF8FF`, `#9B91E8`) — the one "inverted" moment on the page. Key UI atoms to reproduce in React: numbered step-card with icon column, uppercase eyebrow "step-tag", "REDACTED-does" callout box (left-accent-border), pill/badge rows for outputs, 3-cell score grid for Reach/Receptiveness/Warmth, and the horizontal loop-step chain component.
+
+## 2. REDACTED-brief.html — Intake/brand-brief screen
+
+Important: **this file is not the intake *screen* UI** — it's a designer/content brief document (positioning copy, hero copy, 4-step flow summary, color swatches, type specimen, pricing tiers, footer line), styled as a scrollable spec page with copy-to-clipboard buttons on each text block. It does not show actual brief-intake form fields/textareas — that's shown instead in REDACTED-landing.html's `.input-card` (see below) and in REDACTED-dashboard.html's landing screen.
+
+Structure: logo/eyebrow header → H1 "From idea to first user." → sections separated by top-border dividers, each with an eyebrow label + Instrument-Serif H2: Positioning (tagline "Your GTM Co-Founder for Founders", one-liner, closer line "The finding is ours. The conversation is yours." — all in copyable "copy-block" cards), Hero Copy, Product Journey (4 cards: Describe/Discover/Draft/Refine — a condensed version of the ux-journey doc), Brand Colours (swatch grid with hex labels), Typography (type-row specimens), Pricing (3-tier grid: Free £0 / Pro £49/mo / Agency £199/mo), and a closing italic footer line.
+
+Palette (identical CSS vars to ux-journey/landing): `--cream:#FBF8FF`, `--cream2:#F2EFFF`, `--ink:#120D1E`, `--ink2:#3D3358`, `--gold:#7B6FDB` (labeled "Lilac" in the swatch, "gold" is just the var name), `--gold2:#9B91E8`, `--gold3:#C4BCFF`, `--gold4:#EAE7FF`, `--red:#C4401A` (called "Signal Red"). Explicit rule stated in the doc: *"no grey text — all text must be ink, ink2, or gold, never rgba-muted."* Fonts: Instrument Serif (hero/H1/H2), Plus Jakarta Sans (body/eyebrow, weights 400/500/600). Includes an inline SVG REDACTED/egg logo mark (lilac egg `#F2EFFF`/`#7B6FDB` stroke, purple REDACTED body `#A78BFA`, ink eyes, orange-red beak `#C4401A`) — a concrete logo asset worth porting to React as an SVG component.
+
+If you need an actual intake-screen layout reference, use REDACTED-landing.html's `.input-card` (two textareas: "What are you building?" + "Who is your exact customer?", a side column with a Category `&lt;select&gt;`, and a "Find My 100 →" CTA button) or REDACTED-dashboard.html's identical landing hero input — both are dark-theme (terracotta), not lilac (see §5 conflict below).
+
+## 3. REDACTED-dashboard.html — NOT a KPI tracking dashboard (critical finding)
+
+I read the entire file (1098 lines). Its `&lt;title&gt;` is **"Chick — Your GTM Co-Founder"** — identical to the landing page's app — and its content is a two-screen interactive demo:
+
+- **Landing/input screen** (`#landing`): nav with logo + "GTM Co-Founder · AI" tag, centered hero with two-textarea input card ("What are you building?" / "Who is your exact customer?"), a Category `&lt;select&gt;` (Healthtech, B2B SaaS, Fintech, Edtech, Dev Tools, HR Tech, Consumer, AI/Automation), a "Find My 100 →" CTA, and a footer stats row ("2,847 communities mapped" with a pulsing live-dot, "312 founders helped", "First customer avg. 6 days").
+- **App/discovery screen** (`#app`): top app-bar (logo, clickable brief-context switcher, "New Startup"/"Export Playbook" buttons) → a 4-cell **stats-strip** (Communities Mapped / Your Matches / Avg. Time to First Customer / Match Accuracy — these are discovery-stage vanity stats, not tracking KPIs) → a two-column **app-body**: left = filterable/sortable community list panel (filter chips All/Reddit/Facebook/Slack/Other, sort by Match Score/Size/Speed, a loading spinner state, community cards with score, name, platform badge, description, member/ICP/speed meta, and a "Playbook →" button) plus a bottom "Pattern Intelligence" signal bar (3 static stat rows e.g. "Niche communities outperform broad ones · 3.2×"); right = a playbook panel that's empty by default and, on clicking a community card, renders: eyebrow "Activation Playbook", header with name/platform/size/score/speed, Week-1 day-by-day rows, a "First Post" copy block (title+body+copy button), a DM Template copy block, a Do's/Don'ts two-column grid, a KPI pill row, and an italic "Insider Tip" callout.
+
+**This is functionally the same discovery + outreach-kit UI as REDACTED-landing.html's embedded mockup and REDACTED-ux-journey.html's steps 2–4** — not a post-attempt tracking dashboard. There is no chart, no funnel, no growth-over-time series, no revenue figure, no per-attempt log/table, and no numeric response-rate metric anywhere in the file (verified via grep for funnel/chart/canvas/revenue/signUp/recentAttempt/refinementInsight/responseRate — zero matches; the only "revenue" hits are unrelated community description text, and the only "signups" hit is a KPI pill string "20–50 signups from placement").
+
+**Comparison against your real GET /dashboard fields:**
+
+| Backend field | Present in REDACTED-dashboard.html? |
+|---|---|
+| totalAttempts | No — no attempt log/table exists at all |
+| responseRate | No |
+| signUps | No |
+| revenue | No |
+| growthOverTime | No — no chart/sparkline of any kind |
+| funnel | No |
+| performanceByChannel | Partial-in-spirit only — the "Pattern Intelligence" bar has 3 static rows loosely resembling channel-performance signals ("Reddit → Facebook converts best · 61%"), but it's hardcoded demo copy, not a real per-channel breakdown component |
+| recentAttempts | No |
+| refinementInsight | Partial-in-spirit — the ux-journey.html "Refinement Loop" card and this file's "Pattern Intelligence" signal bar are the closest conceptual analogs, but again as static/narrative text, not attempt-driven |
+
+**Conclusion for your plan:** none of the eight hackathon HTML docs (I also grepped REDACTED-tech-arch.html and REDACTED-product-spec.html for "dashboard/funnel/growth/responseRate/refinementInsight/recentAttempt" — zero hits) actually depicts the post-attempt tracking/KPI dashboard your NestJS backend is built to serve. You'll be designing that screen's UI from scratch against the API contract, using only the discovery/outreach-kit visual language (stat-strip cells, card layout, "Pattern Intelligence" panel idea) as a loose style precedent, not a literal one. Worth deciding early whether to reuse the dark-terracotta visual system from this file for the new dashboard, given it's the only "post-generation" screen with a stats-strip precedent in the whole prototype set.
+
+**Palette used in REDACTED-dashboard.html (distinct from the lilac docs):** CSS vars `--black:#090705`, `--dark:#100D09`, `--s1:#181410`, `--s2:#221D17`, `--s3:#2E281F` (surfaces), `--terra:#C4401A`, `--terra2:#D95525`, `--terra3:#F07050` (accent/orange-red), `--stone:#E8E0D4`, `--stone2:#F4EFE7` (near-white text), plus alpha stone tints for muted text/borders. Font: Plus Jakarta Sans only (weights 300–800) — no Instrument Serif here, unlike the other lilac docs. This is a **dark warm/terracotta theme**, conceptually closer to PRODUCT_SPEC.md's terracotta accent (`#C15F3C`) than to the lilac docs, but it's dark-mode vs. PRODUCT_SPEC's light warm-plaster (`#F5EFE5`) — so still a distinct third variant, not a match.
+
+## 4. REDACTED-landing.html — Palette/typography/branding only
+
+Full marketing single-pager: fixed blurred nav → hero (animated SVG egg-crack-to-REDACTED logo, gradient-text italic word in H1, primary/secondary CTA buttons) → `#how` journey section (4 flow-steps with connecting vertical line, each with a numbered circle, label/title/desc, and a step-specific visual mock — input-mock, community-list mock, draft-post mock, refine/signal mock) → a "Live Dashboard" section framed as a browser-chrome mockup (`.dashboard-frame` with traffic-light dots and a fake URL bar) showing the same ranked-communities + playbook two-panel UI as REDACTED-dashboard.html → pricing (Free/Pro/Agency, same tiers as brief.html) → CTA email-capture section → footer ("Built at Tech Europe × Cala Hackathon · Barcelona 2026").
+
+**Palette:** identical lilac CSS vars to REDACTED-brief.html/REDACTED-ux-journey.html: `--cream:#FBF8FF`, `--cream2:#F2EFFF`, `--ink:#120D1E`, `--ink2:#3D3358`, `--gold:#7B6FDB`, `--gold2:#9B91E8`, `--gold3:#C4BCFF`, `--gold4:#EAE7FF`, `--red:#C4401A`. The hero's italicized headline word uses a gradient text-fill (`linear-gradient(135deg,#7B6FDB,#A78BFA,#C4BCFF)` with `background-clip:text`) — a nice-to-have detail for a React hero component. **Fonts:** Instrument Serif (display/serif italics) + Plus Jakarta Sans (UI text), same pairing as the other lilac docs. Confirms the lilac/purple-on-cream light theme is the dominant branding across 5 of 8 prototype docs (ux-journey, brief, landing, api-integrations, cost-sim).
+
+## 5. REDACTED-api-integrations.html and REDACTED-cost-sim.html — brief summaries
+
+- **REDACTED-api-integrations.html**: Engineering reference doc ("v0.1 — Hackathon Build") cataloguing third-party service dependencies and contracts: Fastino (intake text-to-JSON structuring), Cala (verified knowledge search for community/market data), plus presumably other integrations further down (LLM drafting, etc. — not fully re-read here since it's backend-facing). Contains code blocks (dark `#120D1E` background, lilac-tinted syntax colors), field tables, and badges. Mostly backend-integration detail, low relevance to frontend UX beyond confirming the same lilac visual system and confirming Fastino/Cala are the two named external AI/data providers referenced in the ux-journey doc.
+- **REDACTED-cost-sim.html**: Business/finance simulation doc — unit economics, pricing tiers (Free/Pro/Agency, matching brief.html numbers), and 12-month revenue projection tables across 3 growth scenarios (numeric grids of signups/revenue/margin per month). Purely a pitch/finance artifact, not a UX reference — skip for frontend rewrite purposes beyond noting it reuses the same lilac palette and the same 3-tier pricing structure as REDACTED-brief.html/REDACTED-landing.html.
+
+## Branding conflict summary (important for your plan)
+
+There are **three distinct, non-matching brand systems** in play across the docs and the live repo:
+
+1. **Lilac/purple on cream, light theme** — Instrument Serif + Plus Jakarta Sans, `#FBF8FF`/`#F2EFFF` backgrounds, `#120D1E` ink, `#7B6FDB` primary accent, `#C4401A` red accent. Used by: REDACTED-ux-journey.html, REDACTED-brief.html, REDACTED-landing.html, REDACTED-api-integrations.html, REDACTED-cost-sim.html, REDACTED-tech-arch.html (per your note), **and the current live `frontend/frontend/map.html`** (`--bg:#fbf8ff`, `--accent:#7b6fdb`, `--text:#120d1e` — near-exact match). This is the dominant/majority hackathon direction and already partially live.
+2. **Dark terracotta/warm theme** — Plus Jakarta Sans only, near-black `#090705` background, `#C4401A` terracotta accent, warm stone/cream text (`#E8E0D4`). Used only by REDACTED-dashboard.html. Conceptually closer to PRODUCT_SPEC.md's terracotta accent color value but PRODUCT_SPEC.md specifies a **light** warm-plaster theme (`#F5EFE5` bg, `#C15F3C` terracotta, `#8E3E27` rust, `#767B54` olive, `#2E241A` ink) — so even these two "terracotta" references disagree on light vs. dark mode and exact hex values.
+3. **Dark generic-SaaS violet/pink/teal theme** — used by the **live `frontend/frontend/index.html`**: `--bg:#0a0a0f`, `--accent:#6c47ff` (violet, different hue from the lilac `#7B6FDB`), plus `--accent2:#ff4778` (pink) and `--accent3:#00d4aa` (teal) that appear nowhere else in any prototype doc or PRODUCT_SPEC.md.
+
+Net effect: your live frontend is itself internally inconsistent (index.html ≠ map.html), neither live page matches PRODUCT_SPEC.md's terracotta/olive spec, and the majority of hackathon design docs (5/8) point to a lilac direction that partially matches map.html but not index.html or PRODUCT_SPEC.md. Before starting the React+Tailwind rewrite you'll want an explicit decision on which of these three (or a new fourth) system is canonical — I'd flag PRODUCT_SPEC.md vs. map.html vs. index.html vs. REDACTED-dashboard.html as four genuinely different palettes currently coexisting in this codebase/design-doc set, not two.</result>
+<usage><subagent_tokens>74677</subagent_tokens><tool_uses>15</tool_uses><duration_ms>157714</duration_ms></usage>
+</task-notification>
