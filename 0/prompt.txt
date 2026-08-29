@@ -1,0 +1,1 @@
+claude mcp add --transport http cala https://api.cala.ai/mcp/   --header "X-API-KEY: REDACTED"
